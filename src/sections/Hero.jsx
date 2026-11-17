@@ -140,17 +140,11 @@ export default function Hero() {
         className="u-container relative z-10 flex min-h-[100svh] flex-col justify-between pb-8 pt-[96px] lg:pb-10 lg:pt-[116px]"
       >
         {/* Top rail */}
-        <div className="flex items-start justify-between gap-8">
+        <div className="flex items-start gap-8">
           <div ref={eyebrowRef} className="flex items-center gap-3">
             <span aria-hidden="true" className="h-[7px] w-[7px] shrink-0 bg-accent" />
             <p className="u-eyebrow text-canvas/75">International Sourcing &amp; Logistics</p>
           </div>
-
-          <p className="hidden max-w-[24ch] text-right text-[0.6875rem] uppercase leading-relaxed tracking-[0.14em] text-canvas-muted lg:block">
-            Sourcing origin — China
-            <br />
-            Coordinated worldwide
-          </p>
         </div>
 
         {/* Statement */}
