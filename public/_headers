@@ -1,0 +1,64 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Response headers
+# ─────────────────────────────────────────────────────────────────────────────
+# Read from the publish directory by Netlify and Cloudflare Pages. Vercel does
+# not support this file — the equivalent rules live in `vercel.json`, and the two
+# must be kept in step if either changes.
+#
+# Syntax: a path at column 0, its headers indented beneath it. `#` starts a
+# comment. Existing files are matched before the SPA fallback in `_redirects`.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Cross-Origin-Opener-Policy: same-origin
+
+  # Left deliberately without `includeSubDomains`/`preload`: both are long-lived
+  # commitments, and this is still a placeholder domain. Strengthen it once the
+  # real hostname and every subdomain of it are known to be HTTPS-only.
+  Strict-Transport-Security: max-age=31536000
+
+  # Content-Security-Policy.
+  #
+  #   script-src 'self'            No inline scripts are shipped and nothing is
+  #                                loaded from a third-party script host, so this
+  #                                stays strict. The JSON-LD block in index.html
+  #                                is a data block, not a script, and is exempt.
+  #   style-src  …fonts.googleapis The stylesheet is a linked bundle; the only
+  #                                third party is the Google Fonts stylesheet.
+  #                                No `'unsafe-inline'` is needed because React
+  #                                and GSAP write styles through the CSSOM, which
+  #                                CSP does not govern.
+  #   img-src    …images.unsplash Photography comes from the Unsplash CDN, and
+  #                                `data:` covers the inline SVG grain texture.
+  #   connect-src 'self'           The enquiry form posts to this origin.
+  #
+  # ⚠️  If you set VITE_API_BASE_URL to a different origin, you MUST add that
+  #     origin to `connect-src` here (and in vercel.json) or submissions will be
+  #     blocked by the browser.
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; img-src 'self' data: https://images.unsplash.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+
+# Vite fingerprints every file under /assets/, so the bytes behind a given URL
+# can never change. Cache them for a year.
+#
+# Every rule below sets a *different* header name from the one above it. That is
+# deliberate: Cloudflare Pages joins duplicate header values with a comma, and
+# two joined `Cache-Control` directives produce a header browsers treat as
+# stale. Disjoint names sidestep the problem on every host.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The HTML shell is not fingerprinted and names the current asset hashes, so it
+# must always be revalidated or a deploy will not be picked up.
+#
+# Matching is on the request path, so `/` and `/index.html` need separate
+# entries — neither matches the other. A client-route deep link such as
+# /sourcing matches `/*` only; hosts already serve HTML with a revalidating
+# default, so nothing is lost, but the entries below state the intent.
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate

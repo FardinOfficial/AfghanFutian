@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Afghan Futian — Connecting Markets. Moving the World.</title>
+    <meta
+      name="description"
+      content="Afghan Futian is an international sourcing, trading and supply chain company connecting China with opportunities worldwide through global sourcing, supply chain coordination and logistics."
+    />
+    <meta name="theme-color" content="#F4F3EF" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://afghanfutian.com/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Afghan Futian" />
+    <meta property="og:title" content="Afghan Futian — Connecting Markets. Moving the World." />
+    <meta
+      property="og:description"
+      content="Global sourcing, supply chain and logistics solutions connecting China with opportunities worldwide."
+    />
+    <meta property="og:url" content="https://afghanfutian.com/" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1590496793907-4d66e2994b4d?auto=format&fit=crop&w=1200&h=630&q=70" />
+    <meta property="og:image:alt" content="Afghan Futian — international sourcing and logistics" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Afghan Futian — Connecting Markets. Moving the World." />
+    <meta
+      name="twitter:description"
+      content="Global sourcing, supply chain and logistics solutions connecting China with opportunities worldwide."
+    />
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1590496793907-4d66e2994b4d?auto=format&fit=crop&w=1200&h=630&q=70" />
+
+    <!-- Typography: Space Grotesk (display) + Inter (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Only weights 400 and 500 are used anywhere in the interface. Asking for
+         the full family would download several weights that are never rendered. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Photography is served from the Unsplash CDN. Warm up the connection early. -->
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!--
+      Structured data.
+
+      Deliberately minimal: name, description, url, logo and the general area of
+      business. There is no `foundingDate`, no `address`, no `telephone`, no
+      `sameAs` and no `numberOfEmployees`, because Afghan Futian has not confirmed
+      any of those. Publishing a placeholder address or phone number as schema is
+      worse than publishing nothing — search engines surface it verbatim.
+
+      When the real details exist, add them to `CONTACT_DETAILS` and mirror them
+      here in the same edit.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Afghan Futian",
+        "url": "https://afghanfutian.com/",
+        "description": "International sourcing, trading and supply chain company connecting China's supplier base with buyers worldwide.",
+        "logo": "https://afghanfutian.com/favicon.svg",
+        "knowsAbout": [
+          "Global sourcing",
+          "International trade",
+          "Supply chain coordination",
+          "Logistics coordination"
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!--
+      No-JavaScript fallback.
+
+      The site is client-rendered, so with scripting disabled #root stays empty
+      and the visitor would otherwise see nothing at all. The styles for this
+      block live in src/styles/index.css — they are authored CSS, not generated
+      utilities, because they must render from the stylesheet alone.
+
+      The address below mirrors `CONTACT_DETAILS.email` in src/data/navigation.js.
+      It is the one place on the site that duplicates it, because it has to be
+      readable before any application code runs. Update both together.
+    -->
+    <noscript>
+      <div class="noscript">
+        <div class="noscript__inner">
+          <p class="u-eyebrow">JavaScript required</p>
+          <h1 class="noscript__title">This site needs JavaScript to run.</h1>
+          <p class="noscript__body">
+            Navigation, imagery and the enquiry form are all driven by JavaScript. Please enable
+            it, or reach us directly by email.
+          </p>
+          <p class="noscript__body">
+            <a href="mailto:hello@afghanfutian.com">hello@afghanfutian.com</a>
+          </p>
+        </div>
+      </div>
+    </noscript>
+
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

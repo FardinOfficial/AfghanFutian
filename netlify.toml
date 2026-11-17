@@ -1,0 +1,32 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Netlify deployment
+# ─────────────────────────────────────────────────────────────────────────────
+# Delete this file if you are not deploying to Netlify.
+
+# Lets editors validate this file as you type. Netlify ignores it when building.
+"$schema" = "https://open-api.netlify.com/netlify.schema.json"
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Vite 8 needs Node 20.19+ / 22.12+. Pin a major so builds are reproducible.
+  NODE_VERSION = "22"
+
+# SPA fallback.
+#
+# The site is a client-routed SPA, so a hard refresh on /sourcing must serve the
+# app shell rather than 404. `status = 200` makes this a rewrite, not a redirect:
+# the URL in the address bar is preserved.
+#
+# Netlify does not apply a redirect when a file exists at the same path, so
+# /assets/*, /favicon.svg, /robots.txt and /sitemap.xml are served normally.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Response headers are NOT configured here. They live in `public/_headers`, which
+# Vite copies into the publish directory, so that Netlify and Cloudflare Pages
+# share one definition instead of two that can drift. See that file.
