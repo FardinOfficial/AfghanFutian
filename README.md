@@ -131,6 +131,15 @@ path renders `NotFound`.
   race is inside ScrollTrigger, not application code, and it cannot occur in a
   production build (no double-mount), where the same navigation flow was
   verified clean. A comment in `src/main.jsx` records the full reasoning.
+- The bespoke cursor (`src/components/CustomCursor.jsx`) renders its ring and dot
+  as **siblings, not inside a wrapper**. A stacking context is an isolated group
+  for blending, so a `position: fixed; z-index: …` wrapper would confine the
+  children's `mix-blend-difference` to the wrapper's own transparent backdrop and
+  the cursor would paint as plain white — invisible on the light canvas. Each
+  element carries its own `z-index` instead; an element's *own* blend mode still
+  reaches the page even when it creates a stacking context. The ring also
+  switches to normal blending while it is filled with the accent, because
+  difference-blending a brand colour produces an unrelated one.
 
 ### Document metadata
 
