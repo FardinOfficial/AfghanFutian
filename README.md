@@ -219,25 +219,35 @@ small. That sibling clears AA on **both** light grounds the site ships
 
 ### Brand assets
 
-The logo mark is raster artwork, so it ships in two tones rather than as one
-file with a filter:
+The mark is raster artwork — a wide device whose ink is 1611×1074, an aspect of
+**1.50:1**. That ratio is the whole reason the lockup is sized the way it is: a
+1.5:1 mark drawn inside a square box only fills two thirds of the box's height,
+which is what made an earlier revision look undersized.
 
-| File | Ground | Used by |
-| --- | --- | --- |
-| `public/favicon.png` (192×192) | any | browser tab, `apple-touch-icon`, JSON-LD `logo` |
-| `public/logo-mark.png` (128×128) | light | the navbar once it goes solid |
-| `public/logo-mark-light.png` (128×128) | ink | navbar over the hero, mobile overlay, footer |
+| File | Size | Ground | Used by |
+| --- | --- | --- | --- |
+| `public/favicon.png` | 512×512 | any | browser tab, `apple-touch-icon`, JSON-LD `logo` |
+| `public/logo-mark.png` | 192×128 | light | the navbar once it goes solid |
+| `public/logo-mark-light.png` | 192×128 | ink | navbar over the hero, mobile overlay, footer |
 
-Three of the four lockups sit on the ink ground, where the original navy artwork
-would disappear. `logo-mark-light.png` is the same artwork with its two tones
-swapped — the navy mass becomes canvas cream and the light detail becomes brand
-navy — which keeps the mark's internal structure. A CSS filter would not:
-`brightness(0) invert(1)` collapses both tones into one silhouette, and a plain
+Three of the four lockups sit on the ink ground, where the navy artwork would
+disappear. `logo-mark-light.png` is the same artwork rendered in canvas cream,
+which keeps every stroke legible. A CSS filter would not: `brightness(0)
+invert(1)` collapses the mark's many strokes into one silhouette, and a plain
 `invert` turns navy into pale yellow.
 
-`Logo` takes `onDark` to choose between them. If the artwork is ever replaced,
-regenerate both marks from the new original rather than editing one by hand, so
-the pair cannot drift apart.
+All three are generated from a single source by
+`scripts/build_logo_assets.py` — `python3 scripts/build_logo_assets.py
+path/to/source.png`. The source is cropped to its ink, the true 1.50:1 aspect is
+preserved, and the favicon is composed as a square tile with the mark filling
+90% of its width, so the mark fills the browser tab rather than floating in a
+sea of padding. (The script needs macOS `sips` to decode the source and nothing
+else — the PNGs are written by a small encoder it carries.)
+
+`Logo` takes `onDark` to choose between the two marks, and `size` (`md` by
+default, `lg`) to scale the lockup. If the artwork is ever replaced, regenerate
+all three files from the new original rather than editing one by hand, so the
+set cannot drift apart.
 
 ---
 

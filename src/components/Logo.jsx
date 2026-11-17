@@ -1,21 +1,25 @@
 /**
  * Afghan Futian lockup — mark + wordmark.
  *
- * The mark ships as a raster asset rather than a drawn SVG, because the brand
- * artwork is not something we can express as strokes. It comes in two tones:
+ * The mark is supplied raster artwork, not something we can express as SVG
+ * strokes. It is a wide device: the ink is 1611×1074, an aspect of 1.50:1.
+ * That ratio matters — drawing it inside a square box is what made the old
+ * lockup look undersized, because a 1.5:1 artwork only fills two thirds of a
+ * square's height.
  *
- *   /logo-mark.png        the original — a dark navy mark for light grounds
- *   /logo-mark-light.png  value-reversed — a cream mark for the ink grounds
+ * It ships in two tones:
  *
- * One file cannot serve both. Three of the four places this lockup appears —
- * the navbar over the hero, the mobile overlay and the footer — sit on the ink
- * ground, where the original navy artwork would all but disappear. Reversing
- * the two tones preserves the mark's internal structure; a CSS filter such as
- * `brightness(0) invert(1)` would flatten both tones into a single silhouette
- * and throw that structure away.
+ *   /logo-mark.png        the original — navy #002060 for light grounds
+ *   /logo-mark-light.png  the same artwork in canvas cream for the ink grounds
  *
- * The reversed file is generated from the original, not drawn separately, so
- * the two can never drift apart. See the README.
+ * Three of the four places this lockup appears — the navbar over the hero, the
+ * mobile overlay and the footer — sit on the ink ground, where the navy
+ * artwork would all but disappear. Reversing the value keeps the mark's
+ * internal structure; a CSS filter such as `brightness(0) invert(1)` would
+ * flatten its many strokes into a single silhouette.
+ *
+ * Both files are generated from one source by `build_logo_assets.py` (see the
+ * README), so they cannot drift apart.
  *
  * Accessibility note: the wordmark is rendered as *plain, visible text* rather
  * than a screen-reader-only string beside an aria-hidden one. Screen readers
@@ -25,8 +29,9 @@
  * mark itself is decorative and therefore carries an empty `alt`.
  */
 export default function Logo({ className = '', showMark = true, size = 'md', onDark = false }) {
-  const typeSize = size === 'lg' ? 'text-[1.5rem]' : 'text-[1.0625rem]'
-  const markSize = size === 'lg' ? 'h-9 w-9' : 'h-[1.375rem] w-[1.375rem]'
+  const isLg = size === 'lg'
+  const typeSize = isLg ? 'text-[1.5rem]' : 'text-[1.125rem]'
+  const markSize = isLg ? 'h-10' : 'h-[1.875rem]'
   const markSrc = onDark ? '/logo-mark-light.png' : '/logo-mark.png'
 
   return (
@@ -35,11 +40,11 @@ export default function Logo({ className = '', showMark = true, size = 'md', onD
         <img
           src={markSrc}
           alt=""
-          width="128"
+          width="192"
           height="128"
           decoding="async"
           aria-hidden="true"
-          className={`${markSize} shrink-0 object-contain`}
+          className={`${markSize} w-auto shrink-0 object-contain`}
         />
       )}
       <span
