@@ -21,7 +21,7 @@
 # the URL in the address bar is preserved.
 #
 # Netlify does not apply a redirect when a file exists at the same path, so
-# /assets/*, /favicon.svg, /robots.txt and /sitemap.xml are served normally.
+# /assets/*, /favicon.png, /robots.txt and /sitemap.xml are served normally.
 [[redirects]]
   from = "/*"
   to = "/index.html"

@@ -83,7 +83,7 @@ export default function Footer() {
             over at sm, and twelve at lg. */}
         <div className="footer-columns grid grid-cols-2 gap-x-6 gap-y-10 py-[clamp(2.5rem,5vh,4rem)] sm:gap-x-8 lg:grid-cols-12">
           <div className="footer-col col-span-2 sm:col-span-1 lg:col-span-5 lg:pr-12">
-            <Logo />
+            <Logo onDark />
             <p className="mt-5 max-w-[42ch] text-sm leading-relaxed text-canvas/60">
               Afghan Futian is an international sourcing, trading and supply chain company. We
               connect sourcing operations in China with buyers and business opportunities worldwide.

@@ -5,5 +5,5 @@
 #   200  = rewrite (URL is preserved). A 301/302 here would break deep links.
 #
 # Existing static files are served before this rule is consulted, so
-# /assets/*, /favicon.svg, /robots.txt and /sitemap.xml are unaffected.
+# /assets/*, /favicon.png, /robots.txt and /sitemap.xml are unaffected.
 /*    /index.html   200

@@ -217,6 +217,28 @@ brand value, it is kept for large text and `#66665F` is used wherever text is
 small. That sibling clears AA on **both** light grounds the site ships
 (5.2:1 on canvas, 4.7:1 on surface).
 
+### Brand assets
+
+The logo mark is raster artwork, so it ships in two tones rather than as one
+file with a filter:
+
+| File | Ground | Used by |
+| --- | --- | --- |
+| `public/favicon.png` (192×192) | any | browser tab, `apple-touch-icon`, JSON-LD `logo` |
+| `public/logo-mark.png` (128×128) | light | the navbar once it goes solid |
+| `public/logo-mark-light.png` (128×128) | ink | navbar over the hero, mobile overlay, footer |
+
+Three of the four lockups sit on the ink ground, where the original navy artwork
+would disappear. `logo-mark-light.png` is the same artwork with its two tones
+swapped — the navy mass becomes canvas cream and the light detail becomes brand
+navy — which keeps the mark's internal structure. A CSS filter would not:
+`brightness(0) invert(1)` collapses both tones into one silhouette, and a plain
+`invert` turns navy into pale yellow.
+
+`Logo` takes `onDark` to choose between them. If the artwork is ever replaced,
+regenerate both marks from the new original rather than editing one by hand, so
+the pair cannot drift apart.
+
 ---
 
 ## The contact form

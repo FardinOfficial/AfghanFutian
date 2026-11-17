@@ -174,7 +174,9 @@ export default function Navbar() {
             className="shrink-0"
             onClick={() => menuOpen && closeMenu()}
           >
-            <Logo />
+            {/* The mark swaps tone with the bar: light over the hero's dark
+                photograph, dark once the bar goes solid. */}
+            <Logo onDark={overHero} />
           </Link>
 
           {/* Desktop navigation */}
@@ -241,7 +243,7 @@ export default function Navbar() {
           className="fixed inset-0 z-[75] flex flex-col bg-ink text-canvas lg:hidden"
         >
           <div className="u-container flex h-[72px] shrink-0 items-center justify-between">
-            <Logo />
+            <Logo onDark />
             <button
               type="button"
               onClick={closeMenu}
