@@ -24,6 +24,12 @@ import { useLenis } from '@/hooks/useSmoothScroll'
  * navigation sits beneath it. The oversized wordmark at the very bottom is the
  * site's final gesture — it rises out of the page edge as the last thing you
  * see, and doubles as a scroll cue back to the top.
+ *
+ * The footer carries a little padding-bottom of its own: the wordmark's SVG
+ * viewBox ends a few units below its baseline, but that alone left the name
+ * almost touching the bottom of the page. The padding lives on the <footer>
+ * rather than on the wordmark's container so the reveal animation — which is
+ * clipped by that container — keeps its exact behaviour.
  */
 export default function Footer() {
   const rootRef = useRef(null)
@@ -66,7 +72,10 @@ export default function Footer() {
   const year = new Date().getFullYear()
 
   return (
-    <footer ref={rootRef} className="relative overflow-hidden border-t border-line-invert bg-ink text-canvas">
+    <footer
+      ref={rootRef}
+      className="relative overflow-hidden border-t border-line-invert bg-ink pb-[clamp(1.25rem,3vh,2rem)] text-canvas"
+    >
       <div className="u-container pt-[clamp(4rem,9vh,7rem)]">
         {/* Brand statement */}
         <h2 className="footer-statement font-display text-display-2 max-w-[22ch] font-medium uppercase">
