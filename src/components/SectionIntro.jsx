@@ -62,6 +62,7 @@ export default function SectionIntro({
   tone = 'light',
   rule = false,
   headingClassName = 'max-w-[20ch]',
+  className = '',
   children,
 }) {
   const rootRef = useRef(null)
@@ -100,7 +101,7 @@ export default function SectionIntro({
       ref={rootRef}
       id={id}
       aria-labelledby={headingId}
-      className={`u-section ${theme.section}`}
+      className={`u-section ${theme.section} ${className}`}
     >
       <div className="u-container">
         {rule && <div ref={ruleRef} className={`mb-10 h-px w-full origin-left ${theme.rule}`} />}

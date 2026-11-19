@@ -433,7 +433,7 @@ renders it and `src/pages/SchedulePage.jsx` is the page.
    holds the company's availability — that connection is what makes the times
    shown *real*. Cal.com will not offer a slot that is already taken, in either
    direction, so double booking is not possible.
-2. Create an **Event Type** (e.g. `discovery`). Under its questions, set up:
+2. Create an **Event Type** (the live one is `meeting`). Under its questions, set up:
    - **Name** and **Email** — Cal.com's built-in fields; email required.
    - **Company / organisation** — a custom question, *optional*.
    - **Purpose of the meeting** — a custom question, *required*.
@@ -445,17 +445,21 @@ renders it and `src/pages/SchedulePage.jsx` is the page.
    - **Notifications** — a workflow that emails `contact@afghanfutian.com` on
      every new booking. Cal.com's own confirmation to the visitor already carries
      the reschedule and cancel links, so no extra work is needed for those.
-3. Set `VITE_CAL_LINK` to the event type's path, without the scheme and without a
-   trailing slash:
+3. Set `VITE_CAL_LINK` to the event type. Either a bare path or a full cal.com
+   URL is accepted; a trailing slash or query string is normalised away:
 
    ```
-   VITE_CAL_LINK=afghan-futian/discovery
+   VITE_CAL_LINK=https://cal.com/afghanfutian/meeting
    ```
 
    It is public — it is the URL a visitor is sent to — so it belongs in the
    `VITE_` namespace and is baked in at build time. **A change needs a rebuild.**
 4. Redeploy and open `/schedule`. You should see the calendar rather than the
-   "not connected" notice.
+   "not connected" notice. To confirm the value reached production, open the
+   deployed `/assets/index-*.js` bundle and search for `afghanfutian/meeting`;
+   an empty string there means Vercel built without the variable. The embed
+   listens for Cal.com's postMessage dimension events, so the frame grows and
+   shrinks with the booker instead of trapping a second scrollbar.
 
 > **With `VITE_CAL_LINK` unset — the default in this repository — the page does
 > not pretend to offer booking.** It says the calendar is not connected yet and

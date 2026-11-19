@@ -71,11 +71,29 @@ export default function SchedulePage() {
             : SCHEDULE_COPY.unconfigured.body
         }
         rule
+        className="pt-12 pb-20 lg:pt-16 lg:pb-28"
       >
-        <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-14 lg:mt-24 lg:grid-cols-12">
+        <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-14 lg:mt-16 lg:grid-cols-12">
           <div className="lg:col-span-8">
             {configured ? (
-              <ScheduleEmbed url={CAL_EMBED_URL} publicUrl={CAL_PUBLIC_URL} />
+              <>
+                <div className="mb-8">
+                  <p className="u-eyebrow">{SCHEDULE_COPY.stepsLabel}</p>
+                  <ol className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-3">
+                    {SCHEDULE_COPY.steps.map((step, index) => (
+                      <li key={step} className="bg-canvas px-5 py-5">
+                        <span className="u-eyebrow tabular-nums text-muted-strong">
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+                        <p className="mt-3 text-[0.9375rem] leading-relaxed text-muted-strong">
+                          {step}
+                        </p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+                <ScheduleEmbed url={CAL_EMBED_URL} publicUrl={CAL_PUBLIC_URL} />
+              </>
             ) : (
               <div className="border-t border-line pt-10">
                 <div className="flex flex-wrap items-center gap-3">
