@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "test": "node --test src",
+    "test": "node --test src api",
     "check": "npm run lint && npm test && npm run build",
     "preview": "vite preview"
   },

@@ -135,7 +135,7 @@ export default function Capabilities() {
             {CAPABILITIES.map((capability, index) => (
               <li
                 key={capability.id}
-                className="cap-row"
+                className="cap-row group"
                 onMouseEnter={() => setActive(index)}
               >
                 <span aria-hidden="true" className="cap-rule block h-px w-full origin-left bg-line" />
@@ -183,6 +183,7 @@ export default function Capabilities() {
                           src={capability.media}
                           sizes="100vw"
                           className="h-full w-full"
+                          imgClassName="u-zoom"
                         />
                       </div>
                     </div>
@@ -207,6 +208,7 @@ export default function Capabilities() {
                       decorative
                       sizes="(min-width: 1024px) 32vw, 100vw"
                       className="h-full w-full"
+                      imgClassName="u-zoom"
                     />
                   </div>
                 ))}

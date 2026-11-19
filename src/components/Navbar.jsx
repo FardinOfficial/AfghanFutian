@@ -4,10 +4,11 @@ import { Menu, X } from 'lucide-react'
 
 import Button from '@/components/Button'
 import Logo from '@/components/Logo'
+import SocialLinks from '@/components/SocialLinks'
 import { NAVBAR_LINKS, PRIMARY_NAV, ROUTES, CONTACT_DETAILS } from '@/data/navigation'
 import { EASE, gsap, useGSAP } from '@/lib/gsap'
 import { onIntroComplete } from '@/lib/intro'
-import { prefersReducedMotion } from '@/lib/motion'
+import { BREAKPOINT_XL, onMediaChange, prefersReducedMotion } from '@/lib/motion'
 import { useLenis } from '@/hooks/useSmoothScroll'
 import { useNavSentinel } from '@/hooks/useNavSentinel'
 
@@ -22,9 +23,32 @@ import { useNavSentinel } from '@/hooks/useNavSentinel'
  * The sentinel approach (`[data-nav-sentinel]`, placed at the foot of each
  * page's hero) is used instead of a `scrollY > 80` check because it stays
  * correct no matter how tall the hero is on a given screen. A hard-coded offset
- * always breaks on at least one breakpoint.
+ * always breaks on one viewport or another.
  *
- * If a page ships no sentinel, the navbar simply defaults to 'solid'.
+ * Link hover
+ * ----------------------------------------------------------------------------
+ * A nav link lifts to full-strength ink and draws an accent hairline beneath
+ * itself; over the dark hero it lifts to the accent colour itself. That split is
+ * deliberate rather than cosmetic: the accent is a bright yellow-green that
+ * reaches roughly 1.05:1 against the canvas ground, so accent *text* on the
+ * solid bar would be effectively invisible. The accent is therefore used as the
+ * hover colour only where it is legible, and as the underline — which is a
+ * graphic element, not text — everywhere. Font size, spacing and the bar's
+ * dimensions are untouched.
+ *
+ * The mobile overlay
+ * ----------------------------------------------------------------------------
+ * The overlay is a full-screen panel raised *above* the header (`z-[90]` against
+ * the header's `z-[80]`), and it carries its own logo and close button. It used
+ * to sit below the header, which meant the header's own logo and toggle painted
+ * on top of the panel's duplicates — two logos and two close controls, one of
+ * them light-on-dark and one dark-on-light. Raising the panel removes the
+ * overlap entirely and leaves exactly one control for each job.
+ *
+ * While it is open it traps focus, locks the page behind it, closes on Escape,
+ * on a link, on a click in the empty space, and on the viewport reaching the
+ * desktop breakpoint (where the panel is hidden by CSS and would otherwise
+ * strand the scroll lock on).
  */
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -48,6 +72,14 @@ export default function Navbar() {
   useEffect(() => {
     setMenuOpen(false)
   }, [pathname])
+
+  /* ---- Never leave the overlay open past the breakpoint that hides it ---- */
+  useEffect(() => {
+    if (!menuOpen) return undefined
+    return onMediaChange(BREAKPOINT_XL, (isDesktop) => {
+      if (isDesktop) setMenuOpen(false)
+    })
+  }, [menuOpen])
 
   useGSAP(
     () => {
@@ -147,6 +179,19 @@ export default function Navbar() {
     toggleRef.current?.focus()
   }, [])
 
+  /**
+   * Close only when the press lands on the backdrop itself — the panel's own
+   * empty space — never when it lands on a control inside it. Comparing against
+   * `currentTarget` rather than checking for a closest link keeps a tap on a
+   * link's padding from being treated as a backdrop tap.
+   */
+  const onBackdropClick = useCallback(
+    (event) => {
+      if (event.target === event.currentTarget) closeMenu()
+    },
+    [closeMenu],
+  )
+
   const overHero = !solid && !menuOpen
 
   return (
@@ -166,11 +211,10 @@ export default function Navbar() {
             : 'border-b border-line bg-canvas/85 text-ink backdrop-blur-[14px]'
         }`}
       >
-        <div className="u-container flex h-[72px] items-center justify-between gap-8 lg:h-[84px]">
+        <div className="u-container flex h-[72px] items-center justify-between gap-6 xl:h-[84px]">
           <Link
             to={ROUTES.home}
             aria-label="Afghan Futian — home"
-            data-cursor
             className="shrink-0"
             onClick={() => menuOpen && closeMenu()}
           >
@@ -179,17 +223,25 @@ export default function Navbar() {
             <Logo onDark={overHero} />
           </Link>
 
-          {/* Desktop navigation */}
-          <nav aria-label="Primary" className="hidden lg:block">
-            <ul className="flex items-center gap-9">
+          {/* Desktop navigation. Held back to `xl` rather than `lg`: five links
+              plus two calls to action need roughly 1155px of inner width and
+              the `lg` container offers ~932px, which wrapped the labels onto a
+              second line. See BREAKPOINT_XL in `src/lib/motion.js`. */}
+          <nav aria-label="Primary" className="hidden xl:block">
+            <ul className="flex items-center gap-6">
               {NAVBAR_LINKS.map((item) => (
                 <li key={item.to}>
                   <NavLink
                     to={item.to}
-                    data-cursor
                     className={({ isActive }) =>
-                      `u-link font-sans text-[0.8125rem] tracking-[0.01em] transition-opacity duration-300 ${
-                        isActive ? 'opacity-100' : 'opacity-65 hover:opacity-100'
+                      `u-link font-sans text-[0.8125rem] tracking-[0.01em] transition-colors duration-300 [--u-link-underline:var(--color-accent)] ${
+                        overHero
+                          ? isActive
+                            ? 'text-canvas'
+                            : 'text-canvas/75 hover:text-accent'
+                          : isActive
+                            ? 'text-ink'
+                            : 'text-ink/70 hover:text-ink'
                       }`
                     }
                   >
@@ -204,10 +256,17 @@ export default function Navbar() {
             {/* Hidden via a wrapper, not on the Button itself.
                 `Button`'s base classes always include `inline-flex`, and
                 Tailwind emits `.hidden` before `.inline-flex`, so
-                `className="hidden lg:inline-flex"` silently loses and the CTA
+                `className="hidden xl:inline-flex"` silently loses and the CTA
                 stays visible on phones. Hiding the wrapper sidesteps the
                 specificity tie entirely. */}
-            <div className="hidden lg:block">
+            <div className="hidden items-center gap-3 xl:flex">
+              <Button
+                to={ROUTES.schedule}
+                variant={overHero ? 'ghost' : 'outline'}
+                icon={false}
+              >
+                Schedule a Meeting
+              </Button>
               <Button to={ROUTES.contact} variant={overHero ? 'ghost' : 'solid'}>
                 Start a Conversation
               </Button>
@@ -221,8 +280,7 @@ export default function Navbar() {
               aria-expanded={menuOpen}
               aria-controls="mobile-navigation"
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-              data-cursor
-              className={`flex h-11 w-11 items-center justify-center border transition-colors duration-500 lg:hidden ${
+              className={`flex h-11 w-11 items-center justify-center border transition-colors duration-500 xl:hidden ${
                 overHero ? 'border-line-invert text-canvas' : 'border-line text-ink'
               }`}
             >
@@ -232,7 +290,8 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Mobile / tablet overlay */}
+      {/* Mobile / tablet overlay. Sits above the header so the header's logo
+          and toggle cannot paint through it; see the note at the top. */}
       {menuOpen && (
         <div
           id="mobile-navigation"
@@ -240,7 +299,8 @@ export default function Navbar() {
           role="dialog"
           aria-modal="true"
           aria-label="Site navigation"
-          className="fixed inset-0 z-[75] flex flex-col bg-ink text-canvas lg:hidden"
+          onClick={onBackdropClick}
+          className="fixed inset-0 z-[90] flex flex-col overflow-hidden bg-ink text-canvas xl:hidden"
         >
           <div className="u-container flex h-[72px] shrink-0 items-center justify-between">
             <Logo onDark />
@@ -256,7 +316,8 @@ export default function Navbar() {
 
           <nav
             aria-label="Mobile"
-            className="u-container flex flex-1 flex-col justify-center overflow-y-auto py-8"
+            onClick={onBackdropClick}
+            className="u-container flex min-h-0 flex-1 flex-col justify-center overflow-y-auto py-8"
           >
             <ul>
               {PRIMARY_NAV.map((item, index) => (
@@ -278,22 +339,49 @@ export default function Navbar() {
           </nav>
 
           <div className="u-container shrink-0 border-t border-line-invert py-6">
-            <div className="menu-aside grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div className="menu-aside">
+              <Button
+                to={ROUTES.schedule}
+                variant="accent"
+                size="lg"
+                icon={false}
+                onClick={closeMenu}
+                className="w-full"
+              >
+                Schedule a Meeting
+              </Button>
+            </div>
+
+            <div className="menu-aside mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div>
                 <p className="u-eyebrow text-canvas-muted">Email</p>
-                <a href={CONTACT_DETAILS.emailHref} className="mt-2 block text-sm text-canvas/85">
+                <a
+                  href={CONTACT_DETAILS.emailHref}
+                  onClick={closeMenu}
+                  className="mt-2 block text-sm text-canvas/85"
+                >
                   {CONTACT_DETAILS.email}
                 </a>
               </div>
               <div>
                 <p className="u-eyebrow text-canvas-muted">Telephone</p>
-                <a href={CONTACT_DETAILS.phoneHref} className="mt-2 block text-sm text-canvas/85">
+                <a
+                  href={CONTACT_DETAILS.phoneHref}
+                  onClick={closeMenu}
+                  className="mt-2 block text-sm text-canvas/85"
+                >
                   {CONTACT_DETAILS.phone}
                 </a>
               </div>
             </div>
-            <p className="menu-aside mt-5 text-[0.6875rem] leading-relaxed text-canvas-muted">
-              Contact details are placeholders pending confirmation.
+
+            <div className="menu-aside mt-6">
+              <p className="u-eyebrow text-canvas-muted">Elsewhere</p>
+              <SocialLinks tone="dark" className="mt-3" onNavigate={closeMenu} />
+            </div>
+
+            <p className="menu-aside mt-6 text-[0.6875rem] leading-relaxed text-canvas-muted">
+              Telephone and postal details are placeholders pending confirmation.
             </p>
           </div>
         </div>

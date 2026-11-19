@@ -3,15 +3,20 @@
 Marketing site for **Afghan Futian**, an international sourcing, trading and supply
 chain company working between China's supplier base and buyers worldwide.
 
-The site is a single-page application with nine routed pages plus a 404: a
+The site is a single-page application with ten routed pages plus a 404: a
 cinematic scroll narrative on the homepage, an editorial content page for each
-service, and two legal documents (a privacy notice and terms of use). It is
-built to be *handed over*: every piece of prose, every image and every contact
-detail lives in one file per concern, so replacing placeholder content is a
-targeted edit rather than a hunt.
+service, a meeting-booking page, and two legal documents (a privacy notice and
+terms of use). It is built to be *handed over*: every piece of prose, every image
+and every contact detail lives in one file per concern, so replacing placeholder
+content is a targeted edit rather than a hunt.
 
-> **Status:** design, content, animation, form and SEO work is complete. What
-> remains before launch is the content swap described in
+> **Status:** design, content, animation, form and SEO work is complete. The
+> enquiry form and the meeting-booking page are wired to real services — a
+> Vercel Function sending through Resend, and a Cal.com embed — and both are
+> **code-complete but unverified against a live account**, because they need
+> credentials this repository does not ship. See
+> [Enquiry email](#enquiry-email) and [Scheduling](#scheduling) for exactly what
+> to set. What remains besides that is the content swap described in
 > [Before launch](#before-launch) — real photography, real contact details, the
 > live domain — plus a legal review of the two draft documents in
 > `src/data/legal.js`.
@@ -29,6 +34,8 @@ targeted edit rather than a hunt.
 | Animation | GSAP 3 + `@gsap/react` | `useGSAP` handles cleanup; no animation leaks |
 | Scroll | Lenis | Smooth scroll, driven by the GSAP ticker |
 | Icons | `lucide-react` | Tree-shaken; only the icons actually used ship |
+| Enquiry email | Resend, via a Vercel Function | Server-side key, no database, one file |
+| Scheduling | Cal.com, in a plain `<iframe>` | Real availability without a third-party script in the page |
 | Lint | oxlint | Fast, and the template default |
 
 No CSS-in-JS, no component library, no state manager. The site is small enough
@@ -62,6 +69,9 @@ the enquiry form works end to end without a backend. See
 ## Project structure
 
 ```
+api/
+└─ contact.js      The only server-side code: POST /api/contact (Vercel Function)
+
 src/
 ├─ animations/     GSAP timelines, split by concern (hero, text, scroll)
 ├─ components/     Reusable UI: Button, Media, Navbar, Footer, form pieces …
@@ -76,7 +86,9 @@ src/
 
 Two folders exist beyond the originally specified set and are documented in their
 file headers: `lib/` (pure helpers with no React dependency) and `hooks/`
-(React-specific wrappers around them).
+(React-specific wrappers around them). `api/` sits outside `src/` on purpose:
+Vercel serves any file under it at the matching path, and it must not be part of
+the client bundle.
 
 ### The one rule that matters
 
@@ -275,16 +287,16 @@ Behaviour that was designed rather than defaulted:
 - **A honeypot field (`website`) silently succeeds.** Bots fill it; people never
   see it. The client returns success without sending a request.
 
-### API contract
+---
 
-Set `VITE_API_BASE_URL` to the API origin. When it is unset — the default — the
-endpoint resolves to the site's own origin, which is what a reverse-proxied
-deployment wants.
+## Enquiry email
 
-```
-VITE_API_BASE_URL=https://api.afghanfutian.com   →  POST that origin + /api/contact
-(unset)                                          →  POST same origin + /api/contact
-```
+The form posts to `POST /api/contact` **on the site's own origin**. `api/contact.js`
+is a Vercel Function, and Vercel serves any file under `api/` at the matching
+path — so that file *is* the endpoint. There is no router to configure and no
+separate service to deploy.
+
+### The contract
 
 ```
 POST {base}/api/contact
@@ -296,28 +308,163 @@ Content-Type: application/json
   "meta": { "submittedAt": "…", "locale": "en-GB", "path": "/contact" }
 }
 
-201  { "ok": true,  "id": "<mongo ObjectId>" }
+201  { "ok": true,  "id": "<provider message id>" }      accepted by the mail service
+201  { "ok": true,  "id": "…", "duplicate": true }       the same enquiry, seen again
+201  { "ok": true,  "id": null }                         silent bot drop (honeypot / too fast)
 400  { "ok": false, "errors": { "<field>": "<message>" } }
-429  { "ok": false, "errors": { "message": "…" } }
-5xx  treated as a generic failure
+405  method not allowed
+413  body too large
+429  { "ok": false, "errors": { "message": "…" } }       rate limited
+502  { "ok": false, "errors": { "message": "…" } }       the mail service refused it
+503  { "ok": false, "errors": { "message": "…" } }       not configured (no API key)
 ```
 
-The full contract — including the suggested MongoDB document and the
-`ContactSubmitError.kind` values the UI responds to — is documented at the top of
-`src/lib/api.js`. **Read that file before writing the server.**
+`{base}` is `VITE_API_BASE_URL` when it is set, and the site's own origin
+otherwise. **With the bundled Vercel Function, leave `VITE_API_BASE_URL` unset** —
+same origin is exactly what you want, and it keeps the CSP's `connect-src` at
+`'self'`.
+
+`201` is returned only once the mail service has **accepted** the message. The UI
+shows its success panel on nothing else, so a green tick always means a real
+handoff. The `ContactSubmitError.kind` values the UI branches on are documented
+at the top of `src/lib/api.js`.
+
+### What the function does
+
+In order: reject non-POST → parse with a 64 KB ceiling → drop silent bot traffic
+(a filled honeypot, or a form completed in under three seconds) → validate with
+**the same `validateForm` the browser uses** → sanitise every field → rate-limit
+per client and de-duplicate identical enquiries → send the notification and the
+visitor's confirmation.
+
+Two details worth knowing:
+
+- **There is no second copy of the validation rules.** `api/contact.js` imports
+  `validateForm` from `src/lib/validation.js` and `CONTACT_FORM_FIELDS` from
+  `src/data/contact.js`, so client and server cannot disagree about what a valid
+  enquiry is. The service list is imported rather than repeated too — it lives in
+  `src/data/serviceOptions.js`, a leaf module with no imports of its own, because
+  the function runs on plain Node ESM, which requires explicit file extensions
+  and must not be handed the whole content graph.
+- **The visitor's address becomes the `Reply-To`** on the notification, so
+  replying in the company inbox answers the visitor directly. The confirmation
+  the visitor receives carries `Reply-To: contact@afghanfutian.com`.
+
+> **Rate limiting is best-effort, and that is stated rather than hidden.** The
+> counters live in a module-scope `Map`. A serverless platform may run several
+> instances of the function, each with its own memory, so the limits hold per
+> instance. That stops a script hammering the form from one place; it is not a
+> substitute for a shared store (Vercel KV, Upstash, Redis) if the form is ever
+> attacked in earnest. Swapping the `Map` for a store is a change to two helpers.
+
+### Setting up Resend
+
+The code is complete; it needs an account.
+
+1. Create an account at <https://resend.com> and add the sending domain
+   (`afghanfutian.com`) under **Domains**. Resend prints DNS records — add them
+   at your DNS provider and wait until the domain reads **Verified**. Nothing
+   will send until this is done.
+2. Create an API key at <https://resend.com/api-keys>.
+3. In Vercel → your project → **Settings → Environment Variables**, set
+   `RESEND_API_KEY`. Set `CONTACT_FROM_EMAIL` if you want a sender other than the
+   default, and `CONTACT_TO_EMAIL` only if enquiries should go somewhere other
+   than `contact@afghanfutian.com`.
+4. Redeploy. `VITE_*` variables are baked in at build time; these are read at
+   runtime, so a redeploy is only needed because one accompanies the change.
+
+Then verify it for real: submit the live form and confirm **two** messages arrive
+— the notification in the company inbox, and the confirmation at the address you
+typed. Until that has been done, treat the integration as unverified.
 
 ### The dev mock
 
 `vite.config.js` registers a plugin with `apply: 'serve'`, so a `POST
 /api/contact` mock exists **only while `npm run dev` is running**. It is not part
 of the build and cannot be deployed. It implements the same status codes and
-error shape as the real contract, logs each enquiry to the terminal, and accepts
-the honeypot silently.
+error shape, logs each enquiry to the terminal, and accepts the honeypot
+silently — so the form can be worked on with no Resend key at all.
 
-The real handler must **import `validateForm` from `src/lib/validation.js`**
-rather than copying the rules. The mock deliberately keeps its own reduced copy
-only because importing application modules into `vite.config.js` drags their
-extensionless imports into Vite's config loader, which warns on every build.
+The mock keeps its own reduced copy of the rules rather than importing them,
+because importing application modules into `vite.config.js` drags their
+extensionless imports into Vite's config loader, which warns on every build. The
+real handler has no such constraint, and shares the real rules.
+
+---
+
+## Scheduling
+
+"Schedule a Meeting" — in the navbar, the overlay menu, the contact page and the
+closing call to action — leads to `/schedule`, which embeds a **Cal.com** booking
+page in a plain `<iframe>`.
+
+Why an iframe and not Cal.com's JavaScript embed: the embed is a third-party
+script executed inside this document, and the site's CSP is `script-src 'self'`.
+Adopting it would force `script-src https://app.cal.com` *and*, because Cal.com's
+loader injects a `<style>` element, `'unsafe-inline'` into `style-src` as well.
+The iframe costs one `frame-src https://cal.com` and keeps the booking flow in
+its own document, where a change on Cal.com's side cannot reach into this page.
+
+`src/data/scheduling.js` is the whole integration; `src/components/ScheduleEmbed.jsx`
+renders it and `src/pages/SchedulePage.jsx` is the page.
+
+### Setting up Cal.com
+
+1. Create an account at <https://cal.com> and connect the calendar that actually
+   holds the company's availability — that connection is what makes the times
+   shown *real*. Cal.com will not offer a slot that is already taken, in either
+   direction, so double booking is not possible.
+2. Create an **Event Type** (e.g. `discovery`). Under its questions, set up:
+   - **Name** and **Email** — Cal.com's built-in fields; email required.
+   - **Company / organisation** — a custom question, *optional*.
+   - **Purpose of the meeting** — a custom question, *required*.
+   - **Anything else you want us to know** — a custom question, *optional*, long
+     text.
+   - **Availability** — the real working hours of whoever takes the meeting, in
+     the company's business timezone. Cal.com converts the slots to the visitor's
+     own timezone automatically, which is why the page does not ask for one.
+   - **Notifications** — a workflow that emails `contact@afghanfutian.com` on
+     every new booking. Cal.com's own confirmation to the visitor already carries
+     the reschedule and cancel links, so no extra work is needed for those.
+3. Set `VITE_CAL_LINK` to the event type's path, without the scheme and without a
+   trailing slash:
+
+   ```
+   VITE_CAL_LINK=afghan-futian/discovery
+   ```
+
+   It is public — it is the URL a visitor is sent to — so it belongs in the
+   `VITE_` namespace and is baked in at build time. **A change needs a rebuild.**
+4. Redeploy and open `/schedule`. You should see the calendar rather than the
+   "not connected" notice.
+
+> **With `VITE_CAL_LINK` unset — the default in this repository — the page does
+> not pretend to offer booking.** It says the calendar is not connected yet and
+> routes the visitor to the enquiry form and the contact address instead. A
+> broken calendar is worse than an honest message, and a frontend-only booking
+> flow that mails nothing is worse still. That is why there is no fallback form
+> here: the enquiry form already exists, and it works.
+
+---
+
+## Environment variables
+
+Every variable, with the one thing that is easy to get wrong. Copy
+`.env.example` to `.env.local` for local work; set the secrets in the host's
+dashboard.
+
+| Variable | Kind | Required | Notes |
+| --- | --- | --- | --- |
+| `VITE_API_BASE_URL` | public, build-time | no | Leave unset with the bundled function (same origin). |
+| `VITE_CAL_LINK` | public, build-time | for booking | e.g. `afghan-futian/discovery`. Unset ⇒ honest "not connected" state. |
+| `RESEND_API_KEY` | secret, runtime | for email | Without it the endpoint answers `503` and sends nothing. |
+| `CONTACT_TO_EMAIL` | secret, runtime | no | Defaults to `contact@afghanfutian.com`. |
+| `CONTACT_FROM_EMAIL` | secret, runtime | no | Must be on a domain verified in Resend. Default: `Afghan Futian Website <website@afghanfutian.com>`. |
+| `CONTACT_ALLOWED_ORIGIN` | secret, runtime | no | Only for a cross-origin setup (`VITE_API_BASE_URL` set). |
+
+`VITE_*` values are **inlined into the browser bundle at build time** — they are
+public by definition, and changing one requires a rebuild. Everything else is
+read by the function at **runtime** and never reaches the browser.
 
 ---
 
@@ -360,18 +507,27 @@ npm test
 
 The enquiry pipeline is the only place in the site with real logic, so it is the
 only place with tests. They run on **Node's built-in test runner** — no framework
-is installed, which matches the project's stance on dependencies.
+is installed, which matches the project's stance on dependencies. The script
+scans both `src/` and `api/`:
 
 | File | Covers |
 | --- | --- |
 | `src/lib/validation.test.js` | `validateField`, `validateForm`, `buildMailtoFallback` |
 | `src/lib/api.test.js` | payload shaping and every `ContactSubmitError` branch, with `fetch` stubbed |
+| `api/contact.test.js` | the endpoint itself: method guard, honeypot, fill-time, validation, both email payloads, de-duplication, rate limiting, and the refusal to report a failed send as success |
+
+`api/contact.test.js` calls the handler directly with a fake request and
+response, and stubs `fetch`, so it never contacts Resend. That is what makes the
+server-side behaviour verifiable without an account — the only thing it cannot
+prove is that Resend accepts a real message from a verified domain, which needs
+the credentials described under [Enquiry email](#enquiry-email).
 
 `validation.js` and `api.js` import nothing, so they load in plain Node. The
 field descriptors in the tests are declared inline rather than imported from
-`src/data/contact.js`: that module uses bundler-style extensionless imports,
-which Node's ESM resolver refuses — and the tests are about the *rules*, not the
-copy, so a local fixture is the right boundary anyway.
+`src/data/contact.js`: the tests are about the *rules*, not the copy, so a local
+fixture is the right boundary. `api/contact.js` is different — it deliberately
+imports the real `validateForm`, and its test imports the real handler, so
+nothing about the server is mocked except the network.
 
 Anything that needs the alias, JSX or a DOM would need a bundler-aware runner
 (Vitest). Nothing currently does.
@@ -412,9 +568,9 @@ exist, add them to `CONTACT_DETAILS` and mirror them in the same edit.
 - [ ] Update the email in the `<noscript>` block of `index.html` to match `CONTACT_DETAILS.email`
 - [ ] Replace `afghanfutian.com` in `index.html`, `robots.txt` and `sitemap.xml`
 - [ ] Add a `sitemap.xml` entry for any new route
-- [ ] Build the Express + MongoDB service against the contract in `src/lib/api.js`
-- [ ] Set `VITE_API_BASE_URL` in the hosting environment (or reverse-proxy `/api`)
-- [ ] If the API is on another origin, add it to `connect-src` in `public/_headers` and `vercel.json`
+- [ ] Set `RESEND_API_KEY` (and a verified `CONTACT_FROM_EMAIL`) in the host's dashboard, then submit the live form and confirm both emails arrive
+- [ ] Create the Cal.com event type, set `VITE_CAL_LINK`, rebuild, and confirm a real booking lands on the calendar
+- [ ] Leave `VITE_API_BASE_URL` unset for the bundled function — or, if the API is elsewhere, set it and add that origin to `connect-src` in `public/_headers` and `vercel.json`
 - [ ] Delete the deployment configs for hosts you are not using
 - [ ] Run `npm run check`
 - [ ] Lighthouse on every route, at mobile and desktop
@@ -423,16 +579,35 @@ exist, add them to `CONTACT_DETAILS` and mirror them in the same edit.
 
 ## Deployment
 
-The site is a static build in `dist/`. The only hosting requirement is a **SPA
-fallback**: every unknown path must serve `index.html`, or a hard refresh on
-`/sourcing` returns a 404. Configs for the three common hosts are included — keep
-the one you use and delete the rest.
+The site is a static build in `dist/`, **plus one serverless function** for the
+enquiry endpoint. Two hosting requirements:
 
-| Host | Fallback | Headers |
-| --- | --- | --- |
-| Vercel | `vercel.json` → `rewrites` | `vercel.json` → `headers` |
-| Netlify | `netlify.toml` → `[[redirects]]` | `public/_headers` |
-| Cloudflare Pages | `public/_redirects` | `public/_headers` |
+1. A **SPA fallback**: every unknown path must serve `index.html`, or a hard
+   refresh on `/sourcing` returns a 404.
+2. The fallback must **not swallow `/api/`**. On Vercel the rewrite is therefore
+   scoped with a negative lookahead:
+
+   ```
+   { "source": "/:path((?!api/).*)", "destination": "/index.html" }
+   ```
+
+   Without it, `POST /api/contact` would be rewritten to `index.html` and the
+   function would never run.
+
+Vercel is the host this project is built for — it is the only one of the three
+with a functions runtime, and `api/contact.js` needs one. Configs for the other
+hosts remain in the repository but would need that endpoint hosted separately
+(and `VITE_API_BASE_URL` pointed at it).
+
+`api/contact.test.js` sits beside the function it tests, and **`.vercelignore`
+keeps it out of the deployment**: Vercel would otherwise publish every file under
+`api/` as a route, test files included.
+
+| Host | Fallback | Headers | Function |
+| --- | --- | --- | --- |
+| Vercel | `vercel.json` → `rewrites` | `vercel.json` → `headers` | `api/` → `/api/*` |
+| Netlify | `netlify.toml` → `[[redirects]]` | `public/_headers` | not included |
+| Cloudflare Pages | `public/_redirects` | `public/_headers` | not included |
 
 Response headers live in **`public/_headers`** rather than in `netlify.toml`, so
 that Netlify and Cloudflare Pages share one definition instead of two that can
@@ -449,14 +624,18 @@ The CSP is strict where it matters (`script-src 'self'` — no inline scripts ar
 shipped) and needs no `'unsafe-inline'` for styles, because React and GSAP write
 styles through the CSSOM, which CSP does not govern. It was verified against the
 production build in a browser: zero console violations, fonts and Unsplash
-photography still load.
+photography still load. The one relaxation for scheduling is
+`frame-src https://cal.com`, which is why the Cal.com embed is an iframe rather
+than a script.
 
 > **If you set `VITE_API_BASE_URL` to an origin other than the site's own, you
 > must add it to `connect-src`** in `public/_headers` *and* `vercel.json`, or the
 > browser will block every submission.
 
-Environment variables are prefixed `VITE_` and read at build time — a change
-requires a rebuild. See `.env.example`.
+`VITE_*` variables are read at build time — a change requires a rebuild. The
+server-side secrets (`RESEND_API_KEY` and friends) are read at runtime and belong
+in the host's dashboard, not in a file. See
+[Environment variables](#environment-variables) and `.env.example`.
 
 ---
 
@@ -500,3 +679,17 @@ it there:
 - **`react/only-export-components` warnings** in `useSmoothScroll.jsx` are
   expected: the file exports a provider plus two hooks. Splitting it would hurt
   readability more than the warning costs.
+- **`api/contact.js` must keep the `.js` extensions on its relative imports.**
+  It runs on plain Node ESM, not through Vite, and Node will not resolve an
+  extensionless specifier. Its imports are deliberately leaf modules
+  (`validation.js`, `data/contact.js`, `data/serviceOptions.js`) so the function
+  never pulls in the client's content graph.
+- **The SPA rewrite on Vercel must keep its negative lookahead**
+  (`/:path((?!api/).*)`). A plain catch-all would rewrite `POST /api/contact` to
+  `index.html` and the function would silently never run.
+- **The desktop header appears at `xl`, not `lg`.** Five nav links plus two
+  calls to action need about 1155px of inner width, and `lg` offers ~932px. See
+  `BREAKPOINT_XL` in `src/lib/motion.js` before moving it back.
+- **The enquiry rate limiter is per-instance, not global.** It is a module-scope
+  `Map`, which is honest for a small site and insufficient under a real attack.
+  A shared store is the upgrade path; see [Enquiry email](#enquiry-email).

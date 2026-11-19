@@ -159,11 +159,7 @@ export const VALUES = [
   },
 ]
 
-/** Service options for the contact form's "service of interest" select. */
-export const SERVICE_OPTIONS = [
-  'Global Sourcing',
-  'International Trade',
-  'Supply Chain Coordination',
-  'Logistics & Transportation',
-  'General Enquiry',
-]
+/** Service options for the contact form's "service of interest" select.
+    Re-exported from its own leaf module so `api/contact.js` can import it
+    without pulling in the rest of this file's content graph. */
+export { SERVICE_OPTIONS } from './serviceOptions'

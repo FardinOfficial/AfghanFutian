@@ -6,9 +6,17 @@ import { ArrowUpRight } from 'lucide-react'
  * The site's only button primitive.
  *
  * Design rationale: sharp rectangles, letterspaced uppercase labels and a
- * fill that wipes upward on hover. No rounded corners and no shadows — the
- * button reads as an architectural plate rather than a UI widget, which is
- * what keeps the interface from looking like a template.
+ * fill that wipes upward on hover. No rounded corners — the button reads as an
+ * architectural plate rather than a UI widget, which is what keeps the
+ * interface from looking like a template.
+ *
+ * Hover is a colour transition and a soft lift, nothing more. The accent fill
+ * wipes up behind the label, the label inverts, the arrow nudges — all of it
+ * colour and position, none of it scale. The one addition is a wide, low-opacity
+ * shadow that only appears on hover: it reads as the plate rising very slightly
+ * off the page, and because it is tinted to the ink token it is invisible on the
+ * dark grounds where it would only muddy the photograph behind it. Dimensions
+ * never change, so nothing on the page reflows when the pointer arrives.
  *
  * Renders as `<Link>` for internal routes, `<a>` for external/mail links and
  * `<button>` otherwise, so semantics always match behaviour.
@@ -17,7 +25,9 @@ import { ArrowUpRight } from 'lucide-react'
 const BASE =
   'group/btn relative isolate inline-flex items-center justify-center gap-3 overflow-hidden ' +
   'font-sans text-[0.6875rem] font-medium uppercase tracking-[0.16em] ' +
-  'px-7 py-[1.0625rem] transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ' +
+  'px-7 py-[1.0625rem] ' +
+  'transition-[color,background-color,border-color,box-shadow,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ' +
+  'hover:shadow-[0_18px_40px_-24px_rgba(20,20,20,0.65)] ' +
   'focus-visible:outline-2 focus-visible:outline-offset-[3px] disabled:cursor-not-allowed disabled:opacity-45'
 
 const VARIANTS = {

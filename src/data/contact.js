@@ -1,4 +1,7 @@
-import { SERVICE_OPTIONS } from './services'
+// The explicit `.js` extension is deliberate: this module is imported by the
+// server function in `api/contact.js`, and plain Node ESM requires it, whereas
+// Vite accepts either form.
+import { SERVICE_OPTIONS } from './serviceOptions.js'
 
 /**
  * CONTACT FORM MODEL
@@ -8,7 +11,7 @@ import { SERVICE_OPTIONS } from './services'
  * a one-object change.
  *
  * Field shape
- *   name           — key in the values object, and the MongoDB field name
+ *   name           — key in the values object, and in the submitted payload
  *   label          — visible label; also used in the `mailto:` fallback
  *   type           — text | email | tel | textarea | select
  *   required       — enforced on the client and again on the server

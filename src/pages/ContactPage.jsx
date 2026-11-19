@@ -1,3 +1,6 @@
+import { Link } from 'react-router-dom'
+
+import Button from '@/components/Button'
 import Callout from '@/components/Callout'
 import ContactForm from '@/components/ContactForm'
 import PageHero from '@/components/PageHero'
@@ -5,7 +8,7 @@ import SectionIntro from '@/components/SectionIntro'
 import SocialLinks from '@/components/SocialLinks'
 import { CLOSING_CTA } from '@/data/home'
 import { MEDIA } from '@/data/media'
-import { CONTACT_DETAILS } from '@/data/navigation'
+import { CONTACT_DETAILS, ROUTES } from '@/data/navigation'
 
 /**
  * Contact.
@@ -46,6 +49,12 @@ export default function ContactPage() {
             <a href={CONTACT_DETAILS.phoneHref} className="u-link mt-2 text-sm text-canvas/85">
               {CONTACT_DETAILS.phone}
             </a>
+          </li>
+          <li>
+            <p className="u-eyebrow text-canvas-muted">Prefer to talk</p>
+            <Link to={ROUTES.schedule} className="u-link mt-2 text-sm text-canvas/85">
+              Schedule a meeting
+            </Link>
           </li>
           <li>
             <p className="u-eyebrow text-canvas-muted">Elsewhere</p>
@@ -94,6 +103,19 @@ export default function ContactPage() {
                 </a>
                 . Both reach the same place as this form.
               </Callout>
+
+              <div className="mt-8 border-t border-line pt-8">
+                <h3 className="u-eyebrow">Prefer to talk it through</h3>
+                <p className="mt-4 max-w-[42ch] text-[0.9375rem] leading-relaxed text-muted-strong">
+                  Choose a time that suits you and we will confirm it by email. The
+                  calendar shows the times that are genuinely open.
+                </p>
+                <div className="mt-6">
+                  <Button to={ROUTES.schedule} variant="outline" size="lg" icon={false}>
+                    Schedule a Meeting
+                  </Button>
+                </div>
+              </div>
 
               <Callout label="About these details" className="mt-8">
                 We use what you send only to answer your enquiry. Nothing here is

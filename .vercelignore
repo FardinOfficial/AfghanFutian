@@ -1,0 +1,7 @@
+# .vercelignore — what must NOT be uploaded to Vercel
+# ============================================================================
+# Vercel treats every file under `api/` as a Serverless Function, so without
+# this the co-located test would be published as the route
+# `/api/contact.test` — an endpoint that runs a test file and answers nothing
+# useful. It is a test, not an endpoint.
+api/*.test.js

@@ -34,11 +34,16 @@
   #   img-src    …images.unsplash Photography comes from the Unsplash CDN, and
   #                                `data:` covers the inline SVG grain texture.
   #   connect-src 'self'           The enquiry form posts to this origin.
+  #   frame-src   …cal.com         The "Schedule a Meeting" page embeds the
+  #                                Cal.com booking calendar in an iframe. This is
+  #                                the *only* relaxation the scheduling feature
+  #                                needs: no third-party script is loaded, so
+  #                                `script-src` stays `'self'`.
   #
   # ⚠️  If you set VITE_API_BASE_URL to a different origin, you MUST add that
   #     origin to `connect-src` here (and in vercel.json) or submissions will be
   #     blocked by the browser.
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; img-src 'self' data: https://images.unsplash.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; img-src 'self' data: https://images.unsplash.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; frame-src https://cal.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
 
 # Vite fingerprints every file under /assets/, so the bytes behind a given URL
 # can never change. Cache them for a year.

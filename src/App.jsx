@@ -8,6 +8,7 @@ import Home from '@/pages/Home'
 import Logistics from '@/pages/Logistics'
 import NotFound from '@/pages/NotFound'
 import Privacy from '@/pages/Privacy'
+import SchedulePage from '@/pages/SchedulePage'
 import Sourcing from '@/pages/Sourcing'
 import SupplyChain from '@/pages/SupplyChain'
 import Terms from '@/pages/Terms'
@@ -29,6 +30,7 @@ export default function App() {
         <Route path={ROUTES.supplyChain} element={<SupplyChain />} />
         <Route path={ROUTES.logistics} element={<Logistics />} />
         <Route path={ROUTES.globalNetwork} element={<GlobalNetworkPage />} />
+        <Route path={ROUTES.schedule} element={<SchedulePage />} />
         <Route path={ROUTES.contact} element={<ContactPage />} />
         <Route path={ROUTES.privacy} element={<Privacy />} />
         <Route path={ROUTES.terms} element={<Terms />} />

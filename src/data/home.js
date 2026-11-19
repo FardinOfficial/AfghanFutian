@@ -145,6 +145,8 @@ export const CLOSING_CTA = {
     'Bring us a requirement — a product, a quantity, a destination. If it can be sourced and moved, we will tell you how. If it cannot, we will tell you that instead.',
   primary: { label: 'Start a Conversation', to: ROUTES.contact },
   secondary: { label: 'Email Afghan Futian', href: CONTACT_DETAILS.emailHref },
+  /** A second, lighter route in — for a reader who would rather talk than write. */
+  schedule: { label: 'Schedule a Meeting', to: ROUTES.schedule },
   /** Not a guarantee — a checklist. It exists to make the first reply useful. */
   brief: {
     label: 'What helps us respond',

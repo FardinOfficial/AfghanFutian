@@ -12,9 +12,9 @@ import { SOCIAL_LINKS } from '@/data/navigation'
  * Entries with no confirmed URL render as plain text, not as links. When real
  * profile URLs are added to `SOCIAL_LINKS`, they become anchors automatically.
  *
- * @param {{ tone?: 'light' | 'dark', className?: string }} props
+ * @param {{ tone?: 'light' | 'dark', className?: string, onNavigate?: () => void }} props
  */
-export default function SocialLinks({ tone = 'light', className = '' }) {
+export default function SocialLinks({ tone = 'light', className = '', onNavigate }) {
   const isDark = tone === 'dark'
 
   return (
@@ -29,7 +29,7 @@ export default function SocialLinks({ tone = 'light', className = '' }) {
                 href={social.href}
                 target="_blank"
                 rel="noreferrer noopener"
-                data-cursor
+                onClick={onNavigate}
                 className={`u-link text-sm transition-opacity duration-300 ${
                   isDark ? 'text-canvas/75 hover:text-canvas' : 'text-ink-70 hover:text-ink'
                 }`}

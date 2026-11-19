@@ -11,8 +11,8 @@ import { defineConfig } from 'vite'
  * running. It is not part of the build and must never be deployed.
  *
  * It implements the contract documented in `src/lib/api.js` — the same status
- * codes, the same error shape — so the form can be exercised end to end before
- * the real Express + MongoDB service exists.
+ * codes, the same error shape — so the form can be exercised end to end without
+ * a Resend key. The real endpoint is `api/contact.js`.
  *
  * The rules below are intentionally a *subset* of `src/lib/validation.js`: just
  * enough to reject an obviously incomplete enquiry. The real handler must import
@@ -53,7 +53,7 @@ function devContactEndpoint() {
     res.end(JSON.stringify(payload))
   }
 
-  /** A 24-character hex string, shaped like a MongoDB ObjectId. */
+  /** A 24-character hex string, shaped like a provider's message id. */
   const fakeObjectId = () =>
     Array.from({ length: 24 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
 

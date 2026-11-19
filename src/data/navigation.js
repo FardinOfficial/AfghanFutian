@@ -15,6 +15,7 @@ export const ROUTES = {
   supplyChain: '/supply-chain',
   logistics: '/logistics',
   globalNetwork: '/global-network',
+  schedule: '/schedule',
   contact: '/contact',
   privacy: '/privacy',
   terms: '/terms',
@@ -76,8 +77,8 @@ export const FOOTER_COMPANY = [
  * replacement is a single-file edit.
  */
 export const CONTACT_DETAILS = {
-  email: 'hello@afghanfutian.com',
-  emailHref: 'mailto:hello@afghanfutian.com',
+  email: 'contact@afghanfutian.com',
+  emailHref: 'mailto:contact@afghanfutian.com',
   phone: '+00 000 000 000',
   phoneHref: 'tel:+000000000000',
   addressLines: ['Registered office address', 'To be confirmed'],
@@ -144,6 +145,11 @@ export const PAGE_META = {
     title: 'Contact — Afghan Futian',
     description:
       'Start a conversation about your sourcing requirement or international business opportunity.',
+  },
+  [ROUTES.schedule]: {
+    title: 'Schedule a Meeting — Afghan Futian',
+    description:
+      'Book a meeting with Afghan Futian. Choose a date and time that suits you and receive confirmation and joining details by email.',
   },
   [ROUTES.privacy]: {
     title: 'Privacy Notice — Afghan Futian',

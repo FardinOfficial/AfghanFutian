@@ -177,7 +177,6 @@ export default function LegalDoc({ doc }) {
                     <li key={section.id}>
                       <Link
                         to={`#${section.id}`}
-                        data-cursor
                         aria-current={active ? 'true' : undefined}
                         className={`flex gap-3 text-sm leading-snug transition-colors duration-300 ${
                           active ? 'text-ink' : 'text-muted-strong hover:text-ink'
@@ -221,7 +220,6 @@ export default function LegalDoc({ doc }) {
                   </p>
                   <a
                     href={LEGAL_CONTACT.emailHref}
-                    data-cursor
                     className="u-link mt-7 inline-flex font-display text-display-3 font-medium text-ink"
                   >
                     {LEGAL_CONTACT.email}

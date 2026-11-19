@@ -3,7 +3,7 @@
  * ============================================================================
  * Pure functions, no React and no DOM. That matters for two reasons:
  *
- *   1. The same rules can be reused by the Express handler on the server, so
+ *   1. The same rules are reused by the server function in `api/contact.js`, so
  *      client and server never disagree about what a valid enquiry is.
  *   2. They are trivially testable without mounting a component.
  *

@@ -131,6 +131,9 @@ export default function ClosingCta() {
               <Button to={CLOSING_CTA.primary.to} variant="accent" size="lg">
                 {CLOSING_CTA.primary.label}
               </Button>
+              <Button to={CLOSING_CTA.schedule.to} variant="ghost" size="lg" icon={false}>
+                {CLOSING_CTA.schedule.label}
+              </Button>
               <Button href={CLOSING_CTA.secondary.href} variant="ghost" size="lg">
                 {CLOSING_CTA.secondary.label}
               </Button>

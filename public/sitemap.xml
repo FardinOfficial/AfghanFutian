@@ -35,6 +35,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://afghanfutian.com/schedule</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://afghanfutian.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

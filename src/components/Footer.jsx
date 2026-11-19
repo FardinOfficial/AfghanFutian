@@ -106,7 +106,6 @@ export default function Footer() {
                 <li key={item.label}>
                   <Link
                     to={item.to}
-                    data-cursor
                     className="u-link text-sm text-canvas/75 hover:text-canvas"
                   >
                     {item.label}
@@ -123,7 +122,6 @@ export default function Footer() {
                 <li key={item.label}>
                   <Link
                     to={item.to}
-                    data-cursor
                     className="u-link text-sm text-canvas/75 hover:text-canvas"
                   >
                     {item.label}
@@ -139,7 +137,6 @@ export default function Footer() {
               <li>
                 <a
                   href={CONTACT_DETAILS.emailHref}
-                  data-cursor
                   className="u-link hover:text-canvas"
                 >
                   {CONTACT_DETAILS.email}
@@ -148,7 +145,6 @@ export default function Footer() {
               <li>
                 <a
                   href={CONTACT_DETAILS.phoneHref}
-                  data-cursor
                   className="u-link hover:text-canvas"
                 >
                   {CONTACT_DETAILS.phone}
@@ -179,7 +175,6 @@ export default function Footer() {
                 <li key={item.label}>
                   <Link
                     to={item.to}
-                    data-cursor
                     className="u-link text-[0.6875rem] uppercase tracking-[0.14em] text-canvas/70 hover:text-canvas"
                   >
                     {item.label}
@@ -196,8 +191,6 @@ export default function Footer() {
             <button
               type="button"
               onClick={scrollToTop}
-              data-cursor
-              data-cursor-label="Top"
               className="group/up inline-flex items-center gap-2 text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-canvas/70 transition-colors duration-500 hover:text-accent"
             >
               Back to top

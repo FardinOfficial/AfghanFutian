@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 
-import CustomCursor from '@/components/CustomCursor'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import Footer from '@/components/Footer'
 import Navbar from '@/components/Navbar'
 import Preloader from '@/components/Preloader'
+import ScrollProgress from '@/components/ScrollProgress'
 import ClosingCta from '@/sections/ClosingCta'
 import { ROUTES } from '@/data/navigation'
 import { SmoothScrollProvider, useScrollReset } from '@/hooks/useSmoothScroll'
@@ -18,7 +18,7 @@ import { prefersReducedMotion } from '@/lib/motion'
  *
  * Owns everything that persists across route changes: the smooth-scroll
  * provider, the preloader, the navbar, the closing call to action, the footer
- * and the bespoke cursor.
+ * and the scroll progress bar.
  *
  * The preloader is rendered only on the very first load of the session. Once
  * the user navigates client-side there is nothing new to wait for, and replaying
@@ -63,7 +63,7 @@ export default function MainLayout() {
       </main>
 
       <Footer />
-      <CustomCursor />
+      <ScrollProgress />
     </SmoothScrollProvider>
   )
 }

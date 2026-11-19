@@ -1,14 +1,15 @@
 /**
  * CONTACT SUBMISSION LAYER
  * ============================================================================
- * The single place where the website talks to a backend. It is written now, and
- * deliberately, so that adding the Express + MongoDB service later is a matter of
- * writing the server — not of reworking the form.
+ * The single place where the website talks to a backend. The backend now exists
+ * — `api/contact.js`, a Vercel Function — so this file is the client half of a
+ * working pair rather than a stub waiting for a server. Point
+ * `VITE_API_BASE_URL` somewhere else and it talks to that instead.
  *
  * ── Configuration ────────────────────────────────────────────────────────────
  * Set `VITE_API_BASE_URL` to the API origin. When it is unset (the default) the
  * base is empty and the endpoint resolves to the same origin as the site, which
- * is what a reverse-proxied deployment wants:
+ * is what the bundled function wants:
  *
  *     VITE_API_BASE_URL=https://api.afghanfutian.com   →  POST /api/contact there
  *     (unset)                                          →  POST /api/contact here
@@ -33,21 +34,14 @@
  *     }
  *
  * ── Response contract ────────────────────────────────────────────────────────
- *     201  { "ok": true,  "id": "<mongo ObjectId>" }
+ *     201  { "ok": true,  "id": "<provider message id>" }   accepted for delivery
  *     400  { "ok": false, "errors": { "<field>": "<message>" } }   ← field-level
  *     429  { "ok": false, "errors": { "message": "…" } }           ← rate limited
  *     5xx  anything; treated as a generic failure
  *
- * ── Suggested MongoDB document ───────────────────────────────────────────────
- *     db.contact_enquiries.insertOne({
- *       name, company, email, phone, country, service, message,
- *       meta: { submittedAt: Date, locale, path, userAgent, ipHash },
- *       status: 'new',           // new → read → replied → archived
- *       createdAt: new Date(),
- *     })
- *
- * `ipHash` rather than the raw address: it is enough for rate limiting and
- * duplicate detection without storing a directly identifying value.
+ * `201` means the mail service *accepted* the message — it is not a promise that
+ * it was delivered, but it is a promise that it was handed over. The form shows
+ * success on nothing less. See `api/contact.js` for the server side.
  *
  * ── Error handling ───────────────────────────────────────────────────────────
  * Everything is normalised into a `ContactSubmitError` carrying a `kind`, so the

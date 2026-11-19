@@ -43,7 +43,6 @@ export default function NextStep({ label, to, description, eyebrow = 'Next stage
         <div ref={contentRef} className="group relative py-12 lg:py-16">
           <Link
             to={to}
-            data-cursor
             aria-labelledby={headingId}
             className="absolute inset-0 z-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
           />

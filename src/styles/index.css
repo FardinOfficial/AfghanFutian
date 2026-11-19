@@ -203,13 +203,6 @@
     border-radius: 2px;
   }
 
-  /* Hide the native cursor only when the bespoke cursor is actually running.
-     The class is applied from JS after a capability check. */
-  body.has-custom-cursor,
-  body.has-custom-cursor * {
-    cursor: none !important;
-  }
-
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
@@ -264,8 +257,14 @@
     color: var(--color-ink-70);
   }
 
-  /* Link with a hairline that draws in on hover. */
+  /* Link with a hairline that draws in on hover.
+     --------------------------------------------------------------------------
+     The underline colour is a custom property rather than `currentColor` so a
+     link whose label must stay legible — a navbar item on the light canvas,
+     where the accent fails contrast — can still draw the brand accent
+     underneath it. `currentColor` remains the default. */
   .u-link {
+    --u-link-underline: currentColor;
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -279,7 +278,7 @@
     bottom: 0;
     height: 1px;
     width: 100%;
-    background-color: currentColor;
+    background-color: var(--u-link-underline);
     transform: scaleX(0);
     transform-origin: right;
     transition: transform 0.5s var(--ease-editorial);
@@ -373,5 +372,49 @@
   opacity: 0.035;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================================
+   HOVER — GENTLE ZOOM
+   ========================================================================= */
+
+/* A very slight push-in for a photograph inside an interactive card.
+   ----------------------------------------------------------------------------
+   Two things about this rule are deliberate:
+
+   1. It targets the <img> itself, never the layer above it. The image reveals
+      are driven by GSAP, which writes a `transform` on that parent layer — and
+      a CSS hover transform on the same node would be silently overwritten by
+      the inline style GSAP leaves behind. The <img> is the one node in the
+      three-layer construction that no tween ever touches, so the two effects
+      cannot collide.
+
+   2. It is unlayered. The <img> also carries Tailwind's own `duration-*`,
+      `ease-*` and `scale-*` utilities, which live in the utilities layer; an
+      unlayered rule always wins over a layered one, so the hover state is not a
+      coin-flip on Tailwind's internal ordering. The values below mirror the
+      image's own settle exactly, so the resting state is unchanged — the only
+      difference is on hover. */
+.u-zoom {
+  transition-property: opacity, transform;
+  transition-duration: 1200ms;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .group:hover .u-zoom,
+  .group:focus-visible .u-zoom {
+    transform: scale(1.03);
+    transition-duration: 700ms;
+  }
+}
+
+/* Under reduced motion the zoom is dropped rather than merely shortened: a
+   scale change is motion, and the link's colour and underline still respond. */
+@media (prefers-reduced-motion: reduce) {
+  .group:hover .u-zoom,
+  .group:focus-visible .u-zoom {
+    transform: none;
+  }
 }
 
