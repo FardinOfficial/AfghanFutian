@@ -436,7 +436,8 @@ preserved handler in `server/handlers/`. The webhook keeps its public address
 and is rewritten to `api/webhook.js`, which verifies the exact raw bytes before
 parsing any event.
 
-`src/data/scheduling.js` holds the public event facts and copy.
+`src/data/scheduling.js` holds the public event facts and the optional Cal.com
+escape-hatch link.
 `server/lib/schedulingServer.js` holds every secret and is imported **only** by
 server handlers and the three functions above. The browser bundle contains no
 API key, webhook secret or Resend key. The CSP no longer needs `frame-src`, so
@@ -484,12 +485,33 @@ This account's current plan matters, so it is stated plainly:
 - "Remove Cal.com branding" is listed on Teams ($12/user/month) and above, but
   the official documentation describes it as removing branding from public
   booking pages, not necessarily from notification email bodies.
+- Cal.com's **calendar invite templates** can be edited on a Link, including the
+  manage link, but the official help desk states that invites are sent as plain
+  text. They cannot carry our full HTML email design.
+- The official **Guest notification settings** page confirms that disabling
+  attendee confirmation/cancellation/rescheduling mail is an Organization
+  setting, available only to organization admins. Custom SMTP is also
+  organization-only.
+- Cal.com's official **Workflows** page confirms the Free plan can build
+  workflows, but email-step copy uses the default template and cannot be
+  edited; custom email content starts on Teams.
+
+Sources checked for these statements in November 2026: [pricing](https://cal.com/pricing),
+[disable confirmation emails](https://cal.com/help/event-types/disable-confirmation),
+[guest notification settings](https://cal.com/help/enterprise/guest-notification-settings),
+[calendar invites](https://cal.com/help/event-types/calendar-invites), and
+[workflows](https://cal.com/help/workflows/workflowsoverview).
 
 Because of that, branded attendee mail is **off by default**. Set
 `SCHEDULE_SEND_ATTENDEE_EMAILS=true` only after you have actually disabled
 Cal.com's attendee emails, or after accepting a paid plan that lets you replace
 them. With it unset, Cal.com owns attendee mail and our branded company notice
 is still sent. No duplicate confirmation is produced by this codebase.
+
+These templates are branded, but they do **not** make the current Free account
+fully white-label. Cal.com's own notification infrastructure and plain-text
+calendar invites remain in place until the operator upgrades and reconfigures
+the provider. The flag is deliberately not enabled by default.
 
 Cal.com's confirmation carries its own cancel and reschedule links. The success
 screen on this site also shows a signed link to `/schedule/manage`, so the

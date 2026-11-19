@@ -24,10 +24,10 @@ const CONTROL_BASE =
   'transition-colors duration-300 placeholder:text-muted-strong'
 
 const FormField = forwardRef(function FormField(
-  { field, value, error, onChange, onBlur, disabled = false },
+  { field, value, error, onChange, onBlur, disabled = false, idPrefix = 'contact' },
   ref,
 ) {
-  const id = `contact-${field.name}`
+  const id = `${idPrefix}-${field.name}`
   const hintId = `${id}-hint`
   const errorId = `${id}-error`
 

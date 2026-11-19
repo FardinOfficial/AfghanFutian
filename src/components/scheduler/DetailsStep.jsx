@@ -1,6 +1,11 @@
 import FormField from '@/components/FormField'
 import { COMPANY } from '@/data/company.js'
-import { formatDate, formatTime, zoneLabel } from '@/lib/scheduling'
+import {
+  formatDate,
+  formatSlotRange,
+  SCHEDULE_EVENT,
+  zoneLabel,
+} from '@/lib/scheduling'
 
 const FIELDS = [
   {
@@ -19,11 +24,11 @@ const FIELDS = [
     required: true,
     autoComplete: 'email',
     maxLength: 254,
-    hint: 'Your confirmation, calendar invitation and joining link go here.',
+    hint: 'Your confirmation and joining link go here.',
   },
   {
     name: 'company',
-    label: 'Company or organisation',
+    label: 'Company',
     type: 'text',
     required: false,
     autoComplete: 'organization',
@@ -36,53 +41,51 @@ const FIELDS = [
     required: false,
     autoComplete: 'tel',
     maxLength: 40,
-    hint: 'Include your country code, for example +93 70 000 0000.',
+    hint: 'Include your country code.',
   },
   {
-    name: 'purpose',
-    label: 'Purpose of the meeting',
+    name: 'notes',
+    label: 'Notes',
     type: 'textarea',
-    required: true,
-    rows: 5,
+    required: false,
+    rows: 4,
     maxLength: 1000,
-    hint: 'A short outline helps us come prepared. Up to 1000 characters.',
+    hint: 'Anything you would like us to prepare. Up to 1000 characters.',
   },
 ]
 
-/** Contact details for a chosen slot. The honeypot is visually hidden. */
-export default function DetailsStep({ values, errors, selected, timeZone, onChange, onBlur }) {
-  return (
-    <div className="grid gap-12 lg:grid-cols-12">
-      <div className="lg:col-span-5">
-        <p className="u-eyebrow">Your selection</p>
-        <div className="mt-6 border-t border-line">
-          <div className="border-b border-line py-5">
-            <p className="text-[1.0625rem] leading-snug text-ink">
-              {formatDate(selected.start, timeZone)}
-            </p>
-            <p className="mt-2 text-[0.9375rem] tabular-nums text-muted-strong">
-              {formatTime(selected.start, timeZone)} – {formatTime(selected.end, timeZone)}{' '}
-              {zoneLabel(selected.start, timeZone)}
-            </p>
-          </div>
-          <div className="border-b border-line py-5 text-[0.875rem] leading-relaxed text-muted-strong">
-            <p>30 minutes · Google Meet</p>
-            <p className="mt-1">Hosted by {COMPANY.legalName}</p>
-          </div>
-        </div>
-      </div>
+/** Contact details for the chosen slot. The honeypot is visually hidden. */
+export default function DetailsStep({
+  values,
+  errors,
+  selected,
+  timeZone,
+  hourFormat,
+  onChange,
+  onBlur,
+}) {
+  const timeOptions = { hour12: hourFormat === '12' }
 
-      <div className="lg:col-span-7">
-        <p className="u-eyebrow">Your details</p>
-        <div className="mt-6 grid gap-6 sm:grid-cols-2">
+  return (
+    <>
+      <section className="scheduler-panel" aria-labelledby="schedule-details-heading">
+        <h2 id="schedule-details-heading" className="scheduler-panel-title">
+          Your details
+        </h2>
+        <p className="scheduler-muted mt-1.5">
+          Only your name and email are required. Everything else is optional.
+        </p>
+
+        <div className="scheduler-form mt-5">
           {FIELDS.map((field) => (
-            <div key={field.name} className={field.type === 'textarea' ? 'sm:col-span-2' : ''}>
+            <div key={field.name}>
               <FormField
                 field={field}
                 value={values[field.name]}
                 error={errors[field.name]}
                 onChange={onChange}
                 onBlur={onBlur}
+                idPrefix="schedule"
               />
             </div>
           ))}
@@ -101,7 +104,47 @@ export default function DetailsStep({ values, errors, selected, timeZone, onChan
             onChange={(event) => onChange('website', event.target.value)}
           />
         </div>
-      </div>
-    </div>
+      </section>
+
+      <section className="scheduler-panel scheduler-summary" aria-labelledby="schedule-summary-heading">
+        <h2 id="schedule-summary-heading" className="scheduler-panel-title">
+          Booking summary
+        </h2>
+
+        <div className="scheduler-summary-date">
+          <span className="u-eyebrow">Your time</span>
+          <strong>{formatDate(selected.start, timeZone)}</strong>
+          <p>
+            {formatSlotRange(selected.start, selected.end, timeZone, timeOptions)}{' '}
+            {zoneLabel(selected.start, timeZone)}
+          </p>
+        </div>
+
+        <dl>
+          {[
+            ['Duration', `${SCHEDULE_EVENT.durationMinutes} minutes`],
+            ['Location', SCHEDULE_EVENT.location],
+            ['Host', COMPANY.legalName],
+          ].map(([label, value]) => (
+            <div key={label} className="scheduler-summary-row">
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <div className="scheduler-notice mt-5">
+          <strong>Secure confirmation</strong>
+          <span>
+            Confirming creates a real reservation. Your confirmation includes a signed link for
+            rescheduling or cancelling — no account needed.
+          </span>
+        </div>
+
+        <p className="scheduler-muted mt-4 leading-relaxed">
+          Prefer to write first? Email <a href={COMPANY.emailHref}>{COMPANY.email}</a>.
+        </p>
+      </section>
+    </>
   )
 }

@@ -75,14 +75,42 @@ test('branded templates carry plain text, official identity, calendar and manage
   assert.doesNotMatch(message.html, /<script>/)
   assert.match(message.html, /&lt;script&gt;/)
   assert.match(message.text, /Add to calendar: https:\/\/calendar\.google\.com/)
-  assert.match(message.text, /Reschedule or cancel: https:\/\/afghanfutian\.com/)
+  assert.match(message.text, /Reschedule or cancel \(private signed link\): https:\/\/afghanfutian\.com/)
+  assert.match(message.text, /\+86 147 5788 1420/)
+  assert.match(message.text, /\+93 70 513 2426/)
+  assert.match(message.html, /logo-mark-light\.png/)
+  assert.match(message.html, /#d5ff55/)
+  assert.doesNotMatch(message.html, /display:flex/)
 
   const attachment = calendarAttachment(booking)
   assert.equal(attachment.filename, 'afghan-futian-meeting.ics')
   const ics = Buffer.from(attachment.content, 'base64').toString('utf8')
-  assert.match(ics, /PRODID:.*Afghan Futian Trading Company/)
-  assert.match(ics, /BEGIN:VEVENT/)
-  assert.match(ics, /meet\.google\.com/)
+  const unfolded = ics.replace(/\r\n /g, '')
+  assert.match(ics, /\r\n /)
+  assert.ok(
+    ics.split('\r\n').every((line) => Buffer.byteLength(line, 'utf8') <= 75),
+    'every ICS physical line must fit the RFC 5545 octet limit',
+  )
+  assert.match(unfolded, /ORGANIZER;CN=Afghan Futian Trading Company:mailto:contact@afghanfutian\.com/)
+  assert.match(unfolded, /STATUS:CONFIRMED/)
+  assert.doesNotMatch(unfolded, /schedule\/manage\?token=/)
+  assert.match(unfolded, /PRODID:.*Afghan Futian Trading Company/)
+  assert.match(unfolded, /BEGIN:VEVENT/)
+  assert.match(unfolded, /meet\.google\.com/)
+})
+
+test('all five scheduling emails share the branded, client-compatible structure', () => {
+  for (const kind of ['confirmation', 'notification', 'reminder', 'cancellation', 'reschedule']) {
+    const message = schedulingEmail(kind, booking)
+    assert.ok(message.subject.length > 0)
+    assert.match(message.html, /logo-mark-light\.png/)
+    assert.match(message.html, /<table role="presentation"/)
+    assert.match(message.html, /#d5ff55/)
+    assert.match(message.html, /afghanfutian\.com/)
+    assert.match(message.text, /Google Meet: https:\/\/meet\.google\.com/)
+    assert.match(message.text, /Add to calendar: https:\/\/calendar\.google\.com/)
+    assert.match(message.text, /contact@afghanfutian\.com/)
+  }
 })
 
 test('company notification is always ours; guest mail follows the explicit flag', async () => {

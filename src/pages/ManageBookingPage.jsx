@@ -1,26 +1,87 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { CalendarX2, Check, RotateCw, ShieldCheck } from 'lucide-react'
+import {
+  CalendarCheck2,
+  CalendarX2,
+  Check,
+  Clock3,
+  RotateCw,
+  ShieldCheck,
+  Video,
+} from 'lucide-react'
 
-import Button from '@/components/Button'
-import PageHero from '@/components/PageHero'
-import SectionIntro from '@/components/SectionIntro'
-import NativeScheduler from '@/components/NativeScheduler'
+import MeetingInfo, { NativeScheduler } from '@/components/NativeScheduler'
 import { COMPANY } from '@/data/company.js'
 import { CONTACT_DETAILS, ROUTES } from '@/data/navigation'
+import { readHourFormat } from '@/lib/hourFormat'
 import {
   ScheduleApiError,
   cancelBooking,
   fetchManage,
   SCHEDULE_ERROR_COPY,
 } from '@/lib/scheduleApi'
-import { formatDate, formatSlotRange, zoneLabel } from '@/lib/scheduling'
+import {
+  addToCalendarUrl,
+  formatDate,
+  formatSlotRange,
+  manageUrl,
+  SCHEDULE_EVENT,
+  zoneLabel,
+} from '@/lib/scheduling'
+
+function Header({ label, title, copy }) {
+  return (
+    <header className="scheduler-page-head">
+      <div>
+        <p className="scheduler-kicker">Manage · {label}</p>
+        <h1>{title}</h1>
+        <p>{copy}</p>
+      </div>
+      <div className="scheduler-head-meta">
+        <span className="scheduler-chip">
+          <ShieldCheck aria-hidden="true" strokeWidth={1.6} className="h-3.5 w-3.5" />
+          Signed link
+        </span>
+        <span className="scheduler-chip">
+          <Clock3 aria-hidden="true" strokeWidth={1.6} className="h-3.5 w-3.5" />
+          No account needed
+        </span>
+      </div>
+    </header>
+  )
+}
+
+function ManageCard({ children }) {
+  return <div className="scheduler-card">{children}</div>
+}
+
+function DetailGrid({ booking, timeZone, hourFormat = '12' }) {
+  const cells = [
+    ['Date', formatDate(booking.start, timeZone)],
+    ['Time', `${formatSlotRange(booking.start, booking.end, timeZone, { hour12: hourFormat === '12' })} ${zoneLabel(booking.start, timeZone)}`],
+    ['Duration', `${SCHEDULE_EVENT.durationMinutes} minutes`],
+    ['Timezone', timeZone.replaceAll('_', ' ')],
+    ['Reference', booking.reference],
+    ['Attendee', booking.name || 'You'],
+    ['Email', booking.email || '—'],
+    ['Location', booking.meetingUrl ? 'Google Meet' : SCHEDULE_EVENT.location],
+  ]
+  return (
+    <div className="scheduler-success-grid">
+      {cells.map(([label, value]) => (
+        <div key={label} className="scheduler-success-cell">
+          <span>{label}</span>
+          <strong>{value}</strong>
+        </div>
+      ))}
+    </div>
+  )
+}
 
 /**
  * ManageBookingPage — the destination of the signed link in a confirmation
- * email. No account and no login: the token in the URL is the proof that the
- * visitor is the attendee. It is bound to both the booking UID and the email
- * address at signing time, and the server re-checks both before any change.
+ * email. The URL token is the proof that the visitor is the attendee; the server
+ * re-checks it, the booking UID and the email before allowing any change.
  */
 export default function ManageBookingPage() {
   const [searchParams] = useSearchParams()
@@ -30,13 +91,23 @@ export default function ManageBookingPage() {
     booking: null,
     flags: null,
   }))
-  const [error, setError] = useState(() =>
-    token ? null : SCHEDULE_ERROR_COPY.invalid_link,
-  )
+  const [error, setError] = useState(() => (token ? null : SCHEDULE_ERROR_COPY.invalid_link))
   const [confirming, setConfirming] = useState(false)
   const [reason, setReason] = useState('')
   const [busy, setBusy] = useState(false)
   const [actionError, setActionError] = useState(null)
+  // Read the clock once so render stays pure and "past" never flickers.
+  const [nowIso] = useState(() => new Date().toISOString())
+  const [hourFormat] = useState(readHourFormat)
+  const cancelTriggerRef = useRef(null)
+  const dialogRef = useRef(null)
+  const cancelledHeadingRef = useRef(null)
+  const wasConfirmingRef = useRef(false)
+
+  const closeDialog = useCallback(() => {
+    setConfirming(false)
+    setReason('')
+  }, [])
 
   useEffect(() => {
     let active = true
@@ -58,13 +129,51 @@ export default function ManageBookingPage() {
         setState({ status: 'error', booking: null, flags: null })
       })
 
-    return () => {
-      active = false
-    }
+    return () => { active = false }
   }, [token])
+
+  useEffect(() => {
+    if (!confirming) return undefined
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape' && !busy) closeDialog()
+      if (event.key !== 'Tab' || !dialogRef.current) return
+      const focusable = [
+        ...dialogRef.current.querySelectorAll('button:not(:disabled), textarea:not(:disabled)'),
+      ]
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable.at(-1)
+      // A disabled confirm button can blur focus out of the dialog. Bring it
+      // back instead of letting Tab wander into the page behind the modal.
+      if (!dialogRef.current.contains(document.activeElement)) {
+        event.preventDefault()
+        const target = event.shiftKey ? last : first
+        target.focus()
+      } else if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [confirming, busy, closeDialog])
+
+  useEffect(() => {
+    if (wasConfirmingRef.current && !confirming) {
+      if (state.status === 'cancelled') cancelledHeadingRef.current?.focus()
+      else cancelTriggerRef.current?.focus()
+    }
+    wasConfirmingRef.current = confirming
+  }, [confirming, state.status])
 
   const cancel = async () => {
     if (!state.booking) return
+    // Move focus off the button before it becomes disabled, so the modal keeps
+    // focus even while the request is in flight.
+    dialogRef.current?.querySelector('textarea')?.focus()
     setBusy(true)
     setActionError(null)
     try {
@@ -74,7 +183,7 @@ export default function ManageBookingPage() {
         reason: reason.trim() || 'Cancelled by attendee via the website',
       })
       setState((current) => ({ ...current, status: 'cancelled' }))
-      setConfirming(false)
+      closeDialog()
     } catch (caught) {
       const kind = caught instanceof ScheduleApiError ? caught.kind : 'server'
       setActionError(SCHEDULE_ERROR_COPY[kind] ?? SCHEDULE_ERROR_COPY.server)
@@ -83,279 +192,278 @@ export default function ManageBookingPage() {
     }
   }
 
-  const header = (
-    <PageHero
-      index="09"
-      label="Manage meeting"
-      title="Your meeting."
-      description="Use the signed link from your booking confirmation to change or cancel a meeting. Nothing here asks you to create an account."
-    >
-      <ul className="mt-9 space-y-5 border-t border-line-invert pt-7">
-        <li className="flex items-start gap-4">
-          <ShieldCheck aria-hidden="true" strokeWidth={1.5} className="mt-0.5 h-4 w-4 text-accent" />
-          <p className="max-w-[38ch] text-sm leading-relaxed text-canvas/85">
-            This link is signed for one booking and one email address. It cannot be reused for
-            somebody else’s meeting.
-          </p>
-        </li>
-        <li>
-          <p className="u-eyebrow text-canvas-muted">Need help</p>
-          <a href={CONTACT_DETAILS.emailHref} className="u-link mt-2 text-sm text-canvas/85">
-            {CONTACT_DETAILS.email}
-          </a>
-        </li>
-      </ul>
-    </PageHero>
+  const shell = (content, header) => (
+    <div className="scheduler-page">
+      <div className="scheduler-shell">
+        {header}
+        {content}
+        <footer className="scheduler-page-foot">
+          <span>Questions? Write to {CONTACT_DETAILS.email}.</span>
+          <Link to={ROUTES.home}>Return to homepage</Link>
+        </footer>
+      </div>
+    </div>
   )
 
   if (state.status === 'loading') {
-    return (
-      <>
-        {header}
-        <SectionIntro
-          index="01"
-          label="Loading"
-          heading="Checking your link…"
-          support="We are reading the booking from our calendar now."
-        >
-          <p role="status" className="mt-10 text-[0.9375rem] text-muted-strong">
-            One moment…
-          </p>
-        </SectionIntro>
-      </>
+    return shell(
+      <ManageCard>
+        <div className="scheduler-panel scheduler-info">
+          <p className="u-eyebrow">Manage meeting</p>
+          <h2 className="mt-3">Checking your link…</h2>
+          <p className="scheduler-info-copy">Reading the booking from our live calendar.</p>
+        </div>
+        <div className="scheduler-success" role="status" aria-label="Loading booking">
+          <div className="scheduler-skeleton h-24" />
+          <div className="grid grid-cols-2 gap-3">
+            {Array.from({ length: 6 }, (_, index) => (
+              <div key={index} className="scheduler-skeleton h-16" />
+            ))}
+          </div>
+          <span className="sr-only">One moment…</span>
+        </div>
+      </ManageCard>,
+      <Header label="link" title="Opening your meeting." copy="We are verifying the signed link in your email." />,
     )
   }
 
   if (state.status === 'error') {
-    return (
-      <>
-        {header}
-        <SectionIntro
-          index="01"
-          label="Link unavailable"
-          heading="We could not open that booking."
-          support={error || SCHEDULE_ERROR_COPY.invalid_link}
-        >
-          <div className="mt-10 flex flex-wrap gap-3">
-            <Button to={ROUTES.contact} variant="accent" size="lg">
-              Contact us
-            </Button>
-            <Button to={ROUTES.schedule} variant="outline" size="lg" icon={false}>
-              Book a new meeting
-            </Button>
+    return shell(
+      <ManageCard>
+        <div className="scheduler-success solo">
+          <div className="scheduler-notice">
+            <strong>We could not open that booking.</strong>
+            <span>{error || SCHEDULE_ERROR_COPY.invalid_link}</span>
           </div>
-        </SectionIntro>
-      </>
-    )
-  }
-
-  if (state.status === 'cancelled' && state.booking) {
-    const booking = state.booking
-    return (
-      <>
-        {header}
-        <SectionIntro
-          index="01"
-          label="Cancelled"
-          heading="The meeting has been cancelled."
-          support="It has been removed from our calendar. The time is free again, and you will receive a confirmation by email."
-        >
-          <div className="mt-10 max-w-[44rem] border border-line bg-surface p-7 sm:p-9">
-            <dl className="grid gap-px bg-line sm:grid-cols-2">
-              {[
-                ['Was scheduled for', formatDate(booking.start, booking.timeZone)],
-                [
-                  'Time',
-                  `${formatSlotRange(booking.start, booking.end, booking.timeZone)} ${zoneLabel(booking.start, booking.timeZone)}`,
-                ],
-                ['Reference', booking.reference],
-                ['Host', COMPANY.legalName],
-              ].map(([label, value]) => (
-                <div key={label} className="bg-surface px-5 py-4">
-                  <dt className="u-eyebrow text-muted-strong">{label}</dt>
-                  <dd className="mt-2 text-[0.9375rem] text-ink">{value}</dd>
-                </div>
-              ))}
-            </dl>
-            <div className="mt-8 flex flex-wrap gap-3 border-t border-line pt-7">
-              <Button to={ROUTES.schedule} variant="accent" size="lg">
-                Book another time
-              </Button>
-              <a href={CONTACT_DETAILS.emailHref} className="u-link px-3 py-4 text-[0.75rem] font-medium uppercase tracking-[0.14em] text-ink">
-                Email us directly
-              </a>
-            </div>
+          <div className="scheduler-success-actions">
+            <Link to={ROUTES.contact} className="scheduler-btn primary">Contact us</Link>
+            <Link to={ROUTES.schedule} className="scheduler-btn">Book a new meeting</Link>
           </div>
-        </SectionIntro>
-      </>
-    )
-  }
-
-  if (state.status === 'rescheduling' && state.booking) {
-    return (
-      <>
-        {header}
-        <SectionIntro
-          index="01"
-          label="Reschedule"
-          heading="Choose a new time."
-          support="Your current booking stays in place until the new time is confirmed. Your old time remains available to you while you choose."
-        >
-          <div className="mt-10 max-w-[62rem]">
-            <NativeScheduler mode="reschedule" token={token} booking={state.booking} />
-          </div>
-        </SectionIntro>
-      </>
+        </div>
+      </ManageCard>,
+      <Header label="link" title="Link unavailable." copy="This management link is invalid or has expired." />,
     )
   }
 
   const booking = state.booking
-  const flags = state.flags ?? {}
+  const timeZone = booking.timeZone || 'UTC'
+  const info = <MeetingInfo selected={booking} timeZone={timeZone} hourFormat={hourFormat} />
+  const bookingStatus = String(booking.status || '').toLowerCase()
+  const providerCancelled = bookingStatus === 'cancelled' || bookingStatus === 'rejected'
+  const isPast =
+    Number.isFinite(Date.parse(booking.start)) && Date.parse(booking.start) <= Date.parse(nowIso)
 
-  return (
+  if (state.status === 'cancelled' || providerCancelled) {
+    return shell(
+      <ManageCard>
+        {info}
+        <section className="scheduler-success" aria-labelledby="manage-cancelled-heading">
+          <div className="scheduler-success-head">
+            <span className="scheduler-check"><CalendarX2 aria-hidden="true" strokeWidth={2.4} /></span>
+            <div>
+              <p className="u-eyebrow">Meeting cancelled</p>
+              <h2 id="manage-cancelled-heading" ref={cancelledHeadingRef} tabIndex={-1}>
+                {providerCancelled ? 'This meeting was cancelled.' : 'The meeting has been cancelled.'}
+              </h2>
+              <p className="scheduler-success-intro">
+                It is no longer on our calendar and the time is free again. Any cancellation notice
+                comes from our scheduling provider; the details below are for your records.
+              </p>
+            </div>
+          </div>
+          <DetailGrid booking={booking} timeZone={timeZone} hourFormat={hourFormat} />
+          <div className="scheduler-success-actions">
+            <Link to={ROUTES.schedule} className="scheduler-btn accent">Book another time</Link>
+            <a href={CONTACT_DETAILS.emailHref} className="scheduler-btn">Email us directly</a>
+            <Link to={ROUTES.home} className="scheduler-btn">Return to homepage</Link>
+          </div>
+        </section>
+      </ManageCard>,
+      <Header
+        label="cancelled"
+        title={providerCancelled ? 'Meeting cancelled.' : 'Cancellation complete.'}
+        copy="Your meeting is no longer scheduled."
+      />,
+    )
+  }
+
+  if (state.status === 'rescheduling') {
+    return shell(
+      <NativeScheduler
+        mode="reschedule"
+        token={token}
+        booking={booking}
+        onManageToken={(nextToken) => {
+          if (!nextToken || nextToken === token) return
+          // Cal.com can rotate the UID on reschedule. Keep the address bar in
+          // sync so refreshing the page opens the new booking, not the old one.
+          const next = new URL(manageUrl(nextToken))
+          window.history.replaceState(null, '', `${next.pathname}${next.search}`)
+        }}
+      />,
+      <Header
+        label="reschedule"
+        title="Choose a new time."
+        copy="Your current booking stays in place until the new time is confirmed."
+      />,
+    )
+  }
+
+  const flags = state.flags ?? {}
+  const calendar = addToCalendarUrl({
+    start: booking.start,
+    end: booking.end,
+    title: SCHEDULE_EVENT.title,
+    description: `Reference: ${booking.reference}`,
+    location: booking.meetingUrl || SCHEDULE_EVENT.location,
+    meetingUrl: booking.meetingUrl,
+  })
+
+  return shell(
     <>
-      {header}
-      <SectionIntro
-        index="01"
-        label="Confirmed"
-        heading="Everything is in place."
-        support="Review the details below, or use the actions here to change your booking."
-      >
-        <div className="mt-10 max-w-[44rem] border border-line bg-surface p-7 sm:p-9">
-          <div className="flex items-start gap-4 border-b border-line pb-7">
-            <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center bg-accent text-ink">
-              <Check strokeWidth={2.4} className="h-4 w-4" aria-hidden="true" />
+      <ManageCard>
+        {info}
+        <section className="scheduler-success" aria-labelledby="manage-ready-heading">
+          <div className="scheduler-success-head">
+            <span className="scheduler-check">
+              {isPast ? (
+                <CalendarCheck2 aria-hidden="true" strokeWidth={2.4} />
+              ) : (
+                <Check aria-hidden="true" strokeWidth={2.4} />
+              )}
             </span>
             <div>
-              <p className="font-display text-[1.25rem] font-medium leading-snug">
-                {formatDate(booking.start, booking.timeZone)}
-              </p>
-              <p className="mt-2 text-[0.9375rem] tabular-nums text-muted-strong">
-                {formatSlotRange(booking.start, booking.end, booking.timeZone)}{' '}
-                {zoneLabel(booking.start, booking.timeZone)}
+              <p className="u-eyebrow">{isPast ? 'Meeting ended' : 'Meeting confirmed'}</p>
+              <h2 id="manage-ready-heading">
+                {isPast ? 'This meeting has passed.' : 'Everything is in place.'}
+              </h2>
+              <p className="scheduler-success-intro">
+                {isPast
+                  ? 'The details below are kept for your records. Book a new time whenever you are ready.'
+                  : 'Review the details below, or use the actions to change your booking. This signed link works without an account.'}
               </p>
             </div>
           </div>
 
-          <dl className="grid gap-px bg-line sm:grid-cols-2">
-            {[
-              ['Reference', booking.reference],
-              ['Duration', '30 minutes'],
-              ['Location', booking.meetingUrl ? 'Google Meet' : 'To be confirmed by email'],
-              ['Attendee', booking.name || 'You'],
-            ].map(([label, value]) => (
-              <div key={label} className="bg-surface px-5 py-4">
-                <dt className="u-eyebrow text-muted-strong">{label}</dt>
-                <dd className="mt-2 break-words text-[0.9375rem] text-ink">{value}</dd>
-              </div>
-            ))}
-          </dl>
+          <DetailGrid booking={booking} timeZone={timeZone} hourFormat={hourFormat} />
 
-          {booking.meetingUrl && (
-            <a
-              href={booking.meetingUrl}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="u-link mt-7 inline-flex items-center gap-2 text-[0.75rem] font-medium uppercase tracking-[0.14em] text-ink"
-            >
-              Open Google Meet
-            </a>
+          {actionError && !confirming && (
+            <p role="alert" className="scheduler-alert">{actionError}</p>
           )}
 
-          {actionError && (
-            <p role="alert" className="mt-7 border-l-2 border-ink pl-4 text-[0.875rem] leading-relaxed text-ink">
-              {actionError}
-            </p>
-          )}
-
-          <div className="mt-8 flex flex-wrap gap-3 border-t border-line pt-7">
+          <div className="scheduler-success-actions">
+            {!isPast && booking.meetingUrl && (
+              <a href={booking.meetingUrl} target="_blank" rel="noreferrer noopener" className="scheduler-btn primary">
+                <Video aria-hidden="true" className="h-4 w-4" />
+                Open Google Meet
+              </a>
+            )}
+            {!isPast && (
+              <a href={calendar} target="_blank" rel="noreferrer noopener" className="scheduler-btn">
+                <CalendarCheck2 aria-hidden="true" className="h-4 w-4" />
+                Add to calendar
+              </a>
+            )}
             {flags.canReschedule && (
-              <Button
+              <button
+                type="button"
                 onClick={() => {
                   setActionError(null)
                   setState((current) => ({ ...current, status: 'rescheduling' }))
                 }}
-                variant="accent"
-                size="lg"
-                icon={false}
+                className="scheduler-btn"
               >
-                <RotateCw aria-hidden="true" strokeWidth={1.6} className="h-4 w-4" />
+                <RotateCw aria-hidden="true" className="h-4 w-4" />
                 Reschedule
-              </Button>
+              </button>
             )}
-
-            {flags.canCancel && !confirming && (
-              <Button
+            {flags.canCancel && (
+              <button
+                ref={cancelTriggerRef}
+                type="button"
                 onClick={() => {
                   setActionError(null)
                   setConfirming(true)
                 }}
-                variant="outline"
-                size="lg"
-                icon={false}
+                className="scheduler-btn"
               >
-                <CalendarX2 aria-hidden="true" strokeWidth={1.6} className="h-4 w-4" />
+                <CalendarX2 aria-hidden="true" className="h-4 w-4" />
                 Cancel meeting
-              </Button>
+              </button>
             )}
+            <Link to={ROUTES.home} className="scheduler-btn">Return to homepage</Link>
           </div>
 
-          {confirming && (
-            <div className="mt-8 border-t border-line pt-7">
-              <label htmlFor="cancel-reason" className="u-eyebrow text-ink">
-                Reason for cancellation <span className="text-muted-strong">Optional</span>
-              </label>
-              <textarea
-                id="cancel-reason"
-                rows={3}
-                maxLength={300}
-                value={reason}
-                onChange={(event) => setReason(event.target.value)}
-                className="mt-3 w-full border border-line bg-transparent px-4 py-3 font-sans text-[0.9375rem] focus:border-ink focus:outline-none"
-                placeholder="Let us know why, if you would like to."
-              />
-              <div className="mt-5 flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={cancel}
-                  disabled={busy}
-                  className="inline-flex items-center gap-2 bg-ink px-6 py-4 font-sans text-[0.6875rem] font-medium uppercase tracking-[0.16em] text-canvas transition-colors hover:bg-ink/85 disabled:opacity-50"
-                >
-                  {busy ? 'Cancelling…' : 'Yes, cancel this meeting'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirming(false)
-                    setReason('')
-                    setActionError(null)
-                  }}
-                  disabled={busy}
-                  className="px-4 py-4 font-sans text-[0.6875rem] font-medium uppercase tracking-[0.16em] text-muted-strong transition-colors hover:text-ink disabled:opacity-50"
-                >
-                  Keep my meeting
-                </button>
-              </div>
+          {(isPast || (!flags.canCancel && !flags.canReschedule)) && (
+            <div className="scheduler-notice">
+              <strong>
+                {isPast
+                  ? 'This meeting has already taken place.'
+                  : 'This meeting can no longer be changed here.'}
+              </strong>
+              <span>
+                Write to <a href={CONTACT_DETAILS.emailHref}>{COMPANY.email}</a> and we will help.
+              </span>
             </div>
           )}
+        </section>
+      </ManageCard>
 
-          {!flags.canCancel && !flags.canReschedule && (
-            <p className="mt-8 border-t border-line pt-7 text-[0.875rem] leading-relaxed text-muted-strong">
-              This meeting can no longer be changed here. Write to{' '}
-              <a href={CONTACT_DETAILS.emailHref} className="u-link text-ink">
-                {CONTACT_DETAILS.email}
-              </a>{' '}
-              and we will help.
+      {confirming && (
+        <div className="scheduler-dialog-backdrop" onMouseDown={() => !busy && closeDialog()}>
+          <div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cancel-dialog-heading"
+            aria-describedby={actionError ? 'cancel-dialog-copy cancel-dialog-error' : 'cancel-dialog-copy'}
+            className="scheduler-dialog"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <h2 id="cancel-dialog-heading">Cancel this meeting?</h2>
+            <p id="cancel-dialog-copy">
+              This removes the meeting from our calendar and frees the time for somebody else. You
+              can book again at any time.
             </p>
-          )}
+            {actionError && (
+              <p id="cancel-dialog-error" role="alert" className="scheduler-alert mt-3">{actionError}</p>
+            )}
+            <label htmlFor="cancel-reason" className="scheduler-control-label mt-4">
+              Reason <span className="normal-case tracking-normal">Optional</span>
+            </label>
+            <textarea
+              id="cancel-reason"
+              autoFocus
+              rows={3}
+              maxLength={300}
+              value={reason}
+              onChange={(event) => setReason(event.target.value)}
+              placeholder="Let us know why, if you would like to."
+            />
+            <div className="scheduler-dialog-actions">
+              <button type="button" onClick={() => void cancel()} disabled={busy} className="scheduler-btn accent">
+                {busy ? (
+                  <>
+                    <RotateCw aria-hidden="true" className="h-4 w-4 animate-spin" />
+                    Cancelling…
+                  </>
+                ) : (
+                  'Yes, cancel this meeting'
+                )}
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={closeDialog}
+                className="scheduler-btn"
+              >
+                Keep my meeting
+              </button>
+            </div>
+          </div>
         </div>
-
-        <p className="mt-8 text-[0.8125rem] leading-relaxed text-muted-strong">
-          <Link to={ROUTES.schedule} className="u-link text-ink">
-            Book a different meeting
-          </Link>
-        </p>
-      </SectionIntro>
-    </>
+      )}
+    </>,
+    <Header label="confirmed" title="Your meeting." copy="Review, reschedule or cancel this booking." />,
   )
 }

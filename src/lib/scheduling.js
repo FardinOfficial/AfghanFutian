@@ -92,17 +92,36 @@ export function formatDate(iso, timeZone, options = {}) {
   }).format(date)
 }
 
-export function formatTime(iso, timeZone) {
+export function formatTime(iso, timeZone, { hour12 = true } = {}) {
   const date = new Date(iso)
   if (Number.isNaN(date.getTime())) return ''
-  return formatter(timeZone, { hour: 'numeric', minute: '2-digit', hour12: true })
+  return formatter(timeZone, {
+    hour: hour12 ? 'numeric' : '2-digit',
+    minute: '2-digit',
+    hour12,
+  })
     .format(date)
     .replace(/\u202f/g, ' ')
 }
 
-export function formatSlotRange(startIso, endIso, timeZone) {
+export function formatSlotRange(startIso, endIso, timeZone, options = {}) {
   if (!startIso || !endIso) return ''
-  return `${formatTime(startIso, timeZone)} – ${formatTime(endIso, timeZone)}`
+  return `${formatTime(startIso, timeZone, options)} – ${formatTime(endIso, timeZone, options)}`
+}
+
+/**
+ * A Gregorian month grid keyed in UTC so a visitor west of Greenwich never sees
+ * the previous month. `weekStartsOn` uses the same numbering as Date#getUTCDay:
+ * 0 for Sunday (the Cal.com booking calendar) and 1 for Monday.
+ */
+export function calendarMonthGrid(year, monthIndex, weekStartsOn = 0) {
+  const first = new Date(Date.UTC(year, monthIndex, 1))
+  const offset = (first.getUTCDay() - weekStartsOn + 7) % 7
+  const count = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate()
+  return [
+    ...Array.from({ length: offset }, () => null),
+    ...Array.from({ length: count }, (_, index) => index + 1),
+  ]
 }
 
 /** Short zone label such as `GMT+4:30`, computed for the actual instant. */
@@ -168,6 +187,7 @@ export default {
   formatDate,
   formatTime,
   formatSlotRange,
+  calendarMonthGrid,
   isSlotBookable,
   dateKeyInZone,
   manageUrl,

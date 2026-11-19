@@ -25,11 +25,10 @@ import { prefersReducedMotion } from '@/lib/motion'
  * the curtain on every route change is the fastest way to make a site feel slow.
  *
  * The closing CTA lives here rather than on the homepage because every page
- * should end with the same ask — with two exceptions. Contact, where the reader
- * is already on the page that block exists to send them to; and the legal
- * documents, which are read for a specific clause rather than browsed, and which
- * should end on the document rather than on a pitch. It sits *inside* `<main>`,
- * so it stays within the page's main landmark instead of floating between two
+ * should end with the same ask — except on contact, the legal documents and the
+ * scheduling routes. Those pages are transactions or reference material, where
+ * an enquiry pitch would compete with the task. It sits *inside* `<main>`, so it
+ * stays within the page's main landmark instead of floating between two
  * landmarks.
  */
 export default function MainLayout() {
@@ -41,7 +40,12 @@ export default function MainLayout() {
 
   useDocumentMeta(pathname)
 
-  const showClosingCta = ![ROUTES.contact, ROUTES.privacy, ROUTES.terms].includes(pathname)
+  // The scheduling routes are focused transactions: the global closing enquiry
+  // block would push the booking card below the fold, so it is suppressed there
+  // while the navbar and footer remain untouched.
+  const showClosingCta =
+    ![ROUTES.contact, ROUTES.privacy, ROUTES.terms].includes(pathname) &&
+    !pathname.startsWith(ROUTES.schedule)
 
   return (
     <SmoothScrollProvider>
