@@ -7,8 +7,22 @@
    ========================================================================= */
 
 .scheduler-page {
+  /* The site navbar is fixed: 72px on small/medium screens and 84px from the
+     Tailwind `xl` breakpoint upward (see Navbar.jsx). Keep the transaction
+     surface clear of it with a breakpoint-matched offset, never a negative
+     margin or absolute positioning. */
+  --scheduler-nav-height: 72px;
+  --scheduler-nav-gap: 2.25rem;
   min-height: 60vh;
-  padding-block: 1.75rem 3.5rem;
+  padding-block: calc(var(--scheduler-nav-height) + var(--scheduler-nav-gap)) 3.5rem;
+  scroll-margin-top: var(--scheduler-nav-height);
+}
+
+@media (min-width: 1280px) {
+  .scheduler-page {
+    --scheduler-nav-height: 84px;
+    --scheduler-nav-gap: 2.5rem;
+  }
 }
 
 .scheduler-shell {
@@ -173,6 +187,13 @@
   overflow-wrap: anywhere;
 }
 
+.scheduler-zone-offset {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
 .scheduler-info-foot {
   margin-top: auto;
   padding-top: 1rem;
@@ -243,17 +264,68 @@
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 3px;
-  animation: scheduler-month-in 0.28s ease-out both;
 }
 
-@keyframes scheduler-month-in {
+/* Next enters from the right, previous enters from the left. Keeping this in
+   CSS makes the direction deterministic in every browser, without relying on
+   a JS animation ticker that can be throttled in background tabs. */
+.scheduler-month-grid--forward {
+  animation: scheduler-month-forward 0.28s ease-out both;
+}
+
+.scheduler-month-grid--backward {
+  animation: scheduler-month-backward 0.28s ease-out both;
+}
+
+@keyframes scheduler-month-forward {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateX(18px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
+  }
+}
+
+@keyframes scheduler-month-backward {
+  from {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.scheduler-card--forward {
+  animation: scheduler-step-forward 0.28s ease-out both;
+}
+
+.scheduler-card--backward {
+  animation: scheduler-step-backward 0.28s ease-out both;
+}
+
+@keyframes scheduler-step-forward {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scheduler-step-backward {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -904,7 +976,8 @@
 
 @media (max-width: 760px) {
   .scheduler-page {
-    padding-block: 1rem 2.5rem;
+    --scheduler-nav-gap: 1.5rem;
+    padding-bottom: 2.5rem;
   }
 
   .scheduler-card {
@@ -941,6 +1014,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .scheduler-card,
   .scheduler-month-grid,
   .scheduler-check {
     animation: none;

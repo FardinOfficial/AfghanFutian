@@ -4,6 +4,7 @@ import {
   formatDate,
   formatSlotRange,
   SCHEDULE_EVENT,
+  timeZoneLabel,
   zoneLabel,
 } from '@/lib/scheduling'
 
@@ -116,7 +117,7 @@ export default function DetailsStep({
           <strong>{formatDate(selected.start, timeZone)}</strong>
           <p>
             {formatSlotRange(selected.start, selected.end, timeZone, timeOptions)}{' '}
-            {zoneLabel(selected.start, timeZone)}
+            {zoneLabel(selected.start, timeZone)} · {timeZoneLabel(timeZone)}
           </p>
         </div>
 

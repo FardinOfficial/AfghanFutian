@@ -47,6 +47,7 @@ export default function DateTimeStep({
   error,
   onRetry,
   month,
+  monthDirection = 'forward',
   onMonthChange,
   window: bookingWindow,
 }) {
@@ -117,8 +118,9 @@ export default function DateTimeStep({
         </div>
 
         <div
-          className="scheduler-month-grid"
-          key={`${year}-${monthIndex}`}
+          className={`scheduler-month-grid scheduler-month-grid--${monthDirection}`}
+          key={`${year}-${monthIndex}-${monthDirection}`}
+          dir="ltr"
           aria-label={monthLabel(year, monthIndex)}
         >
           {WEEKDAYS.map((day) => (

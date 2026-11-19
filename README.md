@@ -452,10 +452,13 @@ and every schedule operation. Tests, helpers and internal handlers live under
 1. Connect the calendar that actually holds the company's availability. That
    connection is what makes the slots real; Cal.com will not offer a taken time.
 2. Confirm event type `7982708` (`afghanfutian/meeting`): 30 minutes, Google Meet,
-   free, cancellation and rescheduling enabled, minimum notice 120 minutes, and
-   the host's availability in `Asia/Kabul`. The native form collects name, email,
-   company, phone and purpose; send the optional custom answers to Cal.com as
-   `bookingFieldsResponses` if those questions are configured there.
+   free, cancellation and rescheduling enabled, minimum notice 120 minutes. In
+   Cal.com open **Event Types → meeting → Availability**, set the schedule time
+   zone to **(GMT+04:30) Kabul**, and save. Also check **Settings → My account →
+   General → Time zone** so the host's weekly hours are interpreted in Kabul.
+   The native form collects name, email, company, phone and purpose; send the
+   optional custom answers to Cal.com as `bookingFieldsResponses` if those
+   questions are configured there.
 3. Create a Cal.com API key (**Settings → Developer → API keys**) and set
    `CAL_API_KEY` in Vercel. Set `CAL_EVENT_TYPE_ID=7982708` explicitly.
 4. Set `SCHEDULE_TOKEN_SECRET` to a long random string. It signs the cancel and
@@ -464,9 +467,12 @@ and every schedule operation. Tests, helpers and internal handlers live under
 5. Set `VITE_CAL_LINK=https://cal.com/afghanfutian/meeting` if you want the
    direct calendar link beside the native booker. It is public and requires a
    rebuild; it is **not** used to fetch availability.
-6. Redeploy and open `/schedule`. Slots are fetched at request time — there is
-   no cache and no invented availability. With `CAL_API_KEY` missing the UI
-   shows an honest error and links to the enquiry form.
+6. Redeploy and open `/schedule`. The booking card defaults to **Kabul,
+   Afghanistan (GMT+04:30)**; visitors may change the timezone, and their choice
+   is used for the calendar, slot labels, booking, confirmation and management
+   pages. Slots are fetched at request time — there is no cache and no invented
+   availability. With `CAL_API_KEY` missing the UI shows an honest error and
+   links to the enquiry form.
 
 ### Email ownership and duplicate prevention
 

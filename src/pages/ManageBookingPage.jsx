@@ -26,6 +26,7 @@ import {
   formatSlotRange,
   manageUrl,
   SCHEDULE_EVENT,
+  timeZoneLabel,
   zoneLabel,
 } from '@/lib/scheduling'
 
@@ -60,7 +61,7 @@ function DetailGrid({ booking, timeZone, hourFormat = '12' }) {
     ['Date', formatDate(booking.start, timeZone)],
     ['Time', `${formatSlotRange(booking.start, booking.end, timeZone, { hour12: hourFormat === '12' })} ${zoneLabel(booking.start, timeZone)}`],
     ['Duration', `${SCHEDULE_EVENT.durationMinutes} minutes`],
-    ['Timezone', timeZone.replaceAll('_', ' ')],
+    ['Timezone', `${timeZoneLabel(timeZone)} (${zoneLabel(booking.start, timeZone)})`],
     ['Reference', booking.reference],
     ['Attendee', booking.name || 'You'],
     ['Email', booking.email || '—'],
@@ -193,7 +194,7 @@ export default function ManageBookingPage() {
   }
 
   const shell = (content, header) => (
-    <div className="scheduler-page">
+    <div className="scheduler-page" dir="ltr">
       <div className="scheduler-shell">
         {header}
         {content}

@@ -3,14 +3,19 @@ import test from 'node:test'
 
 import {
   SCHEDULE_EVENT,
+  addDaysToDateKey,
   addToCalendarUrl,
+  availabilityWindow,
   calendarMonthGrid,
   dateKeyInZone,
+  defaultTimeZone,
   formatSlotRange,
   formatTime,
   isSlotBookable,
   manageUrl,
+  timeZoneLabel,
   timezoneOptions,
+  zoneLabel,
 } from './scheduling.js'
 
 test('the event contract stays fixed', () => {
@@ -60,14 +65,38 @@ test('calendar grids support the Cal.com Sunday-first week', () => {
   assert.equal(mondayFirst[6], 1)
 })
 
-test('timezone options are unique, valid and include the company zone', () => {
+test('timezone options are unique, valid and start with the company zone', () => {
   const zones = timezoneOptions()
   const values = zones.map((zone) => zone.value)
   assert.equal(new Set(values).size, values.length)
-  assert.ok(values.includes('Asia/Kabul'))
+  assert.equal(values[0], 'Asia/Kabul')
+  assert.equal(zones[0].label, 'Kabul, Afghanistan')
   for (const zone of zones) {
     assert.doesNotThrow(() => new Intl.DateTimeFormat('en-GB', { timeZone: zone.value }))
   }
+})
+
+test('Kabul is the default timezone and its offset is displayed explicitly', () => {
+  assert.equal(defaultTimeZone(), 'Asia/Kabul')
+  assert.equal(timeZoneLabel('Asia/Kabul'), 'Kabul, Afghanistan')
+  assert.equal(zoneLabel('2026-11-19T09:00:00.000Z', 'Asia/Kabul'), 'GMT+04:30')
+
+  // 21:00 UTC is already 01:30 on the next day in Kabul. No manual offset is
+  // applied: Intl does the conversion from the exact instant.
+  assert.equal(formatTime('2026-11-19T21:00:00.000Z', 'Asia/Kabul', { hour12: false }), '01:30')
+  assert.equal(dateKeyInZone('2026-11-19T21:00:00.000Z', 'Asia/Kabul'), '2026-11-20')
+  assert.equal(formatSlotRange('2026-11-19T09:00:00.000Z', '2026-11-19T09:30:00.000Z', 'Asia/Kabul', { hour12: false }), '13:30 – 14:00')
+})
+
+test('availability dates are computed in the selected timezone, never UTC', () => {
+  const now = Date.parse('2026-11-19T20:15:00.000Z') // 00:45 in Kabul on the 20th
+  assert.equal(dateKeyInZone(new Date(now).toISOString(), 'Asia/Kabul'), '2026-11-20')
+  assert.deepEqual(availabilityWindow('Asia/Kabul', now), {
+    from: '2026-11-20',
+    to: '2026-12-20',
+  })
+  assert.equal(addDaysToDateKey('2026-11-30', 1), '2026-12-01')
+  assert.equal(addDaysToDateKey('2028-02-28', 1), '2028-02-29')
 })
 
 test('calendar and management links are built from official data', () => {

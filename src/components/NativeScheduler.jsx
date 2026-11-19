@@ -28,11 +28,13 @@ import {
 } from '@/lib/scheduleApi'
 import {
   addToCalendarUrl,
+  availabilityWindow,
+  defaultTimeZone,
   formatDate,
   formatSlotRange,
   manageUrl,
-  resolvedTimeZone,
   SCHEDULE_EVENT,
+  timeZoneLabel,
   timezoneOptions,
   zoneLabel,
 } from '@/lib/scheduling'
@@ -56,6 +58,9 @@ function validate(values) {
 }
 
 export function MeetingInfo({ selected, timeZone, hourFormat }) {
+  // Read the clock once so the displayed offset is stable across re-renders.
+  const [zoneInstant] = useState(() => new Date().toISOString())
+
   return (
     <aside className="scheduler-panel scheduler-info" aria-label="Meeting information">
       <Logo onDark showMark size="sm" />
@@ -83,7 +88,10 @@ export function MeetingInfo({ selected, timeZone, hourFormat }) {
         <div className="scheduler-fact">
           <Globe2 aria-hidden="true" />
           <dt>Timezone</dt>
-          <dd>{timeZone.replaceAll('_', ' ')}</dd>
+          <dd>
+            {timeZoneLabel(timeZone)}
+            <span className="scheduler-zone-offset">{zoneLabel(zoneInstant, timeZone)}</span>
+          </dd>
         </div>
         {selected && (
           <div className="scheduler-fact">
@@ -159,7 +167,7 @@ export function Summary({ booking, timeZone, token, emailsSent, isReschedule = f
           ['Date', formatDate(booking.start, timeZone)],
           ['Time', `${formatSlotRange(booking.start, booking.end, timeZone, { hour12: hourFormat === '12' })} ${zoneLabel(booking.start, timeZone)}`],
           ['Duration', `${SCHEDULE_EVENT.durationMinutes} minutes`],
-          ['Timezone', timeZone.replaceAll('_', ' ')],
+          ['Timezone', `${timeZoneLabel(timeZone)} (${zoneLabel(booking.start, timeZone)})`],
           ['Participant', booking.name || 'You'],
           ['Email', booking.email || '—'],
           ['Reference', booking.reference],
@@ -219,8 +227,12 @@ export function NativeScheduler({ mode = 'book', token, booking: initialBooking,
   const isReschedule = mode === 'reschedule'
   const initialUid = initialBooking?.uid || ''
   const [step, setStep] = useState('date')
+  // Forward is left-to-right, back is right-to-left. Month navigation carries
+  // its own direction so the calendar slides the way the arrows point.
+  const [stepDirection, setStepDirection] = useState('forward')
+  const [monthDirection, setMonthDirection] = useState('forward')
   const [timeZone, setTimeZone] = useState(
-    () => initialBooking?.timeZone || resolvedTimeZone(),
+    () => initialBooking?.timeZone || defaultTimeZone(),
   )
   const [hourFormat, setHourFormat] = useState(readHourFormat)
   const zones = useMemo(() => timezoneOptions(), [])
@@ -259,11 +271,14 @@ export function NativeScheduler({ mode = 'book', token, booking: initialBooking,
   const [submitError, setSubmitError] = useState(null)
   const [result, setResult] = useState(null)
 
+  const moveStep = useCallback((next, direction) => {
+    setStepDirection(direction)
+    setStep(next)
+  }, [])
+
   const loadSlots = useCallback(async () => {
     try {
-      const today = new Date()
-      const from = today.toISOString().slice(0, 10)
-      const to = new Date(today.getTime() + 30 * 86_400_000).toISOString().slice(0, 10)
+      const { from, to } = availabilityWindow(timeZone)
       const data = await fetchAvailability({
         from,
         to,
@@ -305,6 +320,9 @@ export function NativeScheduler({ mode = 'book', token, booking: initialBooking,
   }
 
   const changeMonth = (next) => {
+    const current = month.year * 12 + month.monthIndex
+    const target = next.year * 12 + next.monthIndex
+    setMonthDirection(target > current ? 'forward' : 'backward')
     setMonth(next)
     setActiveDate(null)
     setSelected(null)
@@ -359,13 +377,13 @@ export function NativeScheduler({ mode = 'book', token, booking: initialBooking,
         // neutral acknowledgement instead of trying to render a confirmation.
         if (!data.booking) {
           setResult({ booking: null, token: null, emailsSent: data.emailsSent ?? false })
-          setStep('success')
+          moveStep('success', 'forward')
           return
         }
         onManageToken?.(data.manageToken)
         setResult({ booking: data.booking, token: data.manageToken, emailsSent: data.emailsSent })
       }
-      setStep('success')
+      moveStep('success', 'forward')
     } catch (caught) {
       const kind = caught instanceof ScheduleApiError ? caught.kind : 'server'
       setSubmitError(SCHEDULE_ERROR_COPY[kind] ?? SCHEDULE_ERROR_COPY.server)
@@ -376,9 +394,9 @@ export function NativeScheduler({ mode = 'book', token, booking: initialBooking,
         setSlots(null)
         setError(null)
         setAttempt((value) => value + 1)
-        setStep('date')
+        moveStep('date', 'backward')
       } else if (caught.fieldErrors && !isReschedule) {
-        setStep('details')
+        moveStep('details', 'forward')
       }
     } finally {
       setSubmitting(false)
@@ -393,7 +411,7 @@ export function NativeScheduler({ mode = 'book', token, booking: initialBooking,
   if (step === 'success' && result) {
     if (!result.booking) {
       return (
-        <div className="scheduler-card">
+        <div key={step} className={`scheduler-card scheduler-card--${stepDirection}`} dir="ltr">
           <section className="scheduler-success solo" role="status" aria-labelledby="schedule-quiet-heading">
             <div className="scheduler-success-head">
               <span className="scheduler-check">
@@ -410,7 +428,11 @@ export function NativeScheduler({ mode = 'book', token, booking: initialBooking,
               </div>
             </div>
             <div className="scheduler-success-actions">
-              <button type="button" onClick={() => setStep('date')} className="scheduler-btn accent">
+              <button
+                type="button"
+                onClick={() => moveStep('date', 'backward')}
+                className="scheduler-btn accent"
+              >
                 Choose a time
               </button>
               <Link to={ROUTES.home} className="scheduler-btn">Return to homepage</Link>
@@ -421,7 +443,7 @@ export function NativeScheduler({ mode = 'book', token, booking: initialBooking,
     }
 
     return (
-      <div className="scheduler-card">
+      <div key={step} className={`scheduler-card scheduler-card--${stepDirection}`} dir="ltr">
         <MeetingInfo selected={selected} timeZone={timeZone} hourFormat={hourFormat} />
         <Summary
           booking={result.booking}
@@ -436,7 +458,7 @@ export function NativeScheduler({ mode = 'book', token, booking: initialBooking,
   }
 
   return (
-    <form className="scheduler-card" onSubmit={onSubmit} noValidate>
+    <form key={step} className={`scheduler-card scheduler-card--${stepDirection}`} dir="ltr" onSubmit={onSubmit} noValidate>
       <MeetingInfo selected={selected} timeZone={timeZone} hourFormat={hourFormat} />
 
       {step === 'date' && (
@@ -466,6 +488,7 @@ export function NativeScheduler({ mode = 'book', token, booking: initialBooking,
             setAttempt((value) => value + 1)
           }}
           month={month}
+          monthDirection={monthDirection}
           onMonthChange={changeMonth}
           window={bookingWindow}
         />
@@ -495,7 +518,9 @@ export function NativeScheduler({ mode = 'book', token, booking: initialBooking,
             type="button"
             onClick={() => {
               setErrors({})
-              setStep('details')
+              // A new booking never needs a management token. The chosen slot
+              // stays in state and is carried straight into the details form.
+              moveStep('details', 'forward')
             }}
             className="scheduler-btn accent"
           >
@@ -541,7 +566,7 @@ export function NativeScheduler({ mode = 'book', token, booking: initialBooking,
             </button>
             <button
               type="button"
-              onClick={() => setStep('date')}
+              onClick={() => moveStep('date', 'backward')}
               disabled={submitting}
               className="scheduler-text-btn inline-flex items-center gap-2"
             >

@@ -4,6 +4,10 @@ import { ArrowUpRight, Clock3, Globe2, Mail, Video } from 'lucide-react'
 import NativeScheduler from '@/components/NativeScheduler'
 import { CONTACT_DETAILS, ROUTES } from '@/data/navigation'
 import { CAL_PUBLIC_URL, SCHEDULE_EVENT } from '@/data/scheduling'
+import { timeZoneLabel, zoneLabel } from '@/lib/scheduling'
+
+const COMPANY_ZONE = SCHEDULE_EVENT.companyTimeZone
+const COMPANY_ZONE_LABEL = `${timeZoneLabel(COMPANY_ZONE)} (${zoneLabel('2026-01-01T00:00:00.000Z', COMPANY_ZONE)})`
 
 /**
  * Schedule — the only transactional route on the site.
@@ -15,7 +19,7 @@ import { CAL_PUBLIC_URL, SCHEDULE_EVENT } from '@/data/scheduling'
  */
 export default function SchedulePage() {
   return (
-    <div className="scheduler-page">
+    <div className="scheduler-page" dir="ltr">
       <div className="scheduler-shell">
         <header className="scheduler-page-head">
           <div>
@@ -37,7 +41,7 @@ export default function SchedulePage() {
             </span>
             <span className="scheduler-chip">
               <Globe2 aria-hidden="true" strokeWidth={1.6} className="h-3.5 w-3.5" />
-              Your timezone
+              Default: {COMPANY_ZONE_LABEL}
             </span>
           </div>
         </header>
@@ -46,8 +50,8 @@ export default function SchedulePage() {
 
         <footer className="scheduler-page-foot">
           <span>
-            Minimum notice {SCHEDULE_EVENT.minNoticeMinutes} minutes · Company time{' '}
-            {SCHEDULE_EVENT.companyTimeZone.replace('_', ' ')}.
+            Minimum notice {SCHEDULE_EVENT.minNoticeMinutes} minutes · Meetings are hosted in{' '}
+            {COMPANY_ZONE_LABEL}. You can change the timezone in the booking card.
           </span>
           <span className="inline-flex flex-wrap items-center gap-x-4 gap-y-1">
             <Link to={ROUTES.contact}>Send an enquiry instead</Link>

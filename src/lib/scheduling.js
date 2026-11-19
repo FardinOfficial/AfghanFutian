@@ -35,7 +35,6 @@ export const BOOKING_STATUS = {
 }
 
 const FALLBACK_ZONES = [
-  'Asia/Kabul',
   'UTC',
   'America/Los_Angeles',
   'America/New_York',
@@ -48,15 +47,34 @@ const FALLBACK_ZONES = [
   'Australia/Sydney',
 ]
 
+/** Explicit names for the zones we present prominently. */
+export const TIMEZONE_LABELS = {
+  [SCHEDULE_EVENT.companyTimeZone]: 'Kabul, Afghanistan',
+}
+
+/**
+ * The company zone, not the browser zone, is the default for a new booking.
+ * Existing bookings still render in the timezone stored with the booking, and
+ * visitors can choose any other zone from the selector.
+ */
+export function defaultTimeZone() {
+  return SCHEDULE_EVENT.companyTimeZone
+}
+
 export function resolvedTimeZone() {
   try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || defaultTimeZone()
   } catch {
-    return 'UTC'
+    return defaultTimeZone()
   }
 }
 
-/** A useful, bounded timezone list: browser-local, company zone, then common zones. */
+export function timeZoneLabel(value) {
+  if (!value) return ''
+  return TIMEZONE_LABELS[value] || String(value).replaceAll('_', ' ')
+}
+
+/** A useful, bounded timezone list: company zone, browser-local, then all zones. */
 export function timezoneOptions() {
   const local = resolvedTimeZone()
   let all = FALLBACK_ZONES
@@ -67,8 +85,8 @@ export function timezoneOptions() {
       // Older browsers and runtimes get the curated list above.
     }
   }
-  const zones = [...new Set([local, SCHEDULE_EVENT.companyTimeZone, ...all])]
-  return zones.map((value) => ({ value, label: value.replaceAll('_', ' ') }))
+  const zones = [...new Set([defaultTimeZone(), local, ...all])]
+  return zones.map((value) => ({ value, label: timeZoneLabel(value) }))
 }
 
 function formatter(timeZone, options) {
@@ -124,14 +142,14 @@ export function calendarMonthGrid(year, monthIndex, weekStartsOn = 0) {
   ]
 }
 
-/** Short zone label such as `GMT+4:30`, computed for the actual instant. */
+/** Explicit zone label such as `GMT+04:30`, computed for the actual instant. */
 export function zoneLabel(iso, timeZone) {
   const date = new Date(iso)
   if (Number.isNaN(date.getTime())) return timeZone
   try {
     const parts = new Intl.DateTimeFormat('en-US', {
       timeZone,
-      timeZoneName: 'shortOffset',
+      timeZoneName: 'longOffset',
     }).formatToParts(date)
     return parts.find((part) => part.type === 'timeZoneName')?.value || timeZone
   } catch {
@@ -160,6 +178,29 @@ export function dateKeyInZone(iso, timeZone) {
   return `${get('year')}-${get('month')}-${get('day')}`
 }
 
+/**
+ * Add calendar days to a `YYYY-MM-DD` key without ever going through local time.
+ * Date-only keys are instants-free, so UTC midnight is the safe arithmetic base.
+ */
+export function addDaysToDateKey(dateKey, days) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dateKey ?? ''))
+  if (!match) return ''
+  const [, year, month, day] = match.map(Number)
+  const next = new Date(Date.UTC(year, month - 1, day + days))
+  if (Number.isNaN(next.getTime())) return ''
+  return next.toISOString().slice(0, 10)
+}
+
+/**
+ * The 30-day availability window in the selected timezone, not UTC. Using
+ * `toISOString().slice(0, 10)` here hides a day near midnight in Kabul and other
+ * east-of-Greenwich zones.
+ */
+export function availabilityWindow(timeZone, now = Date.now(), days = 30) {
+  const from = dateKeyInZone(new Date(now).toISOString(), timeZone)
+  return { from, to: addDaysToDateKey(from, days) }
+}
+
 /** Build the management URL used in branded emails. The token is a signed capability. */
 export function manageUrl(token) {
   return `${siteUrl(SCHEDULE_ROUTES.manage)}?token=${encodeURIComponent(token)}`
@@ -182,7 +223,10 @@ export default {
   SCHEDULE_EVENT,
   SCHEDULE_ROUTES,
   BOOKING_STATUS,
+  TIMEZONE_LABELS,
+  defaultTimeZone,
   resolvedTimeZone,
+  timeZoneLabel,
   timezoneOptions,
   formatDate,
   formatTime,
@@ -190,6 +234,8 @@ export default {
   calendarMonthGrid,
   isSlotBookable,
   dateKeyInZone,
+  addDaysToDateKey,
+  availabilityWindow,
   manageUrl,
   addToCalendarUrl,
 }

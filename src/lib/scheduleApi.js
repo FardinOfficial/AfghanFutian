@@ -24,7 +24,7 @@ export class ScheduleApiError extends Error {
   }
 }
 
-async function request(path, { method = 'GET', body, signal } = {}) {
+async function request(path, { method = 'GET', body, signal, auth = 'none' } = {}) {
   let response
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
@@ -64,7 +64,17 @@ async function request(path, { method = 'GET', body, signal } = {}) {
     throw new ScheduleApiError('validation', 'Some details need another look.', data?.errors ?? null)
   }
   if (response.status === 401 || response.status === 403) {
-    throw new ScheduleApiError('invalid_link', 'This management link is invalid or has expired.')
+    // Only management endpoints use a signed capability token. Every 401/403
+    // used to be reported as an expired link, so a same-origin rejection from
+    // availability or booking produced the mismatched "invalid link" message
+    // during an ordinary new booking. Keep those failures distinct.
+    if (auth === 'manage' || data?.error === 'invalid_link') {
+      throw new ScheduleApiError('invalid_link', 'This management link is invalid or has expired.')
+    }
+    throw new ScheduleApiError(
+      'forbidden',
+      'The site could not verify this request. Reload the page and try again, or email us directly.',
+    )
   }
   if (response.status === 409) {
     if (data?.error === 'slot_taken') {
@@ -95,11 +105,16 @@ export function createBooking(payload, options = {}) {
 }
 
 export function fetchManage(token, options = {}) {
-  return request(`/manage?token=${encodeURIComponent(token)}`, options)
+  return request(`/manage?token=${encodeURIComponent(token)}`, { ...options, auth: 'manage' })
 }
 
 export function cancelBooking({ token, uid, reason }, options = {}) {
-  return request('/cancel', { method: 'POST', body: { token, uid, reason }, ...options })
+  return request('/cancel', {
+    method: 'POST',
+    body: { token, uid, reason },
+    ...options,
+    auth: 'manage',
+  })
 }
 
 export function rescheduleBooking({ token, uid, start, timeZone }, options = {}) {
@@ -107,6 +122,7 @@ export function rescheduleBooking({ token, uid, start, timeZone }, options = {})
     method: 'POST',
     body: { token, uid, start, timeZone },
     ...options,
+    auth: 'manage',
   })
 }
 
@@ -120,6 +136,7 @@ export const SCHEDULE_ERROR_COPY = {
   network: 'We could not reach the server. Please check your connection and try again.',
   timeout: 'The request took too long. Please try again.',
   'invalid_link': 'This management link is invalid or has expired.',
+  forbidden: 'The site could not verify this request. Reload the page and try again, or email us directly.',
   server: 'Something went wrong at our end. Please try again, or email us directly.',
   validation: 'Some details need another look.',
 }
