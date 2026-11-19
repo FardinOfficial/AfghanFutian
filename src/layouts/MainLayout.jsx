@@ -7,11 +7,22 @@ import Navbar from '@/components/Navbar'
 import Preloader from '@/components/Preloader'
 import ScrollProgress from '@/components/ScrollProgress'
 import ClosingCta from '@/sections/ClosingCta'
+import { MEDIA } from '@/data/media'
 import { ROUTES } from '@/data/navigation'
 import { SmoothScrollProvider, useScrollReset } from '@/hooks/useSmoothScroll'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta'
 import { isIntroComplete } from '@/lib/intro'
 import { prefersReducedMotion } from '@/lib/motion'
+
+/** Each page's closing plate — distinct imagery rather than one repeated photo. */
+const CLOSING_MEDIA = {
+  [ROUTES.home]: MEDIA.closingCta,
+  [ROUTES.about]: MEDIA.closingCtaAbout,
+  [ROUTES.sourcing]: MEDIA.closingCtaSourcing,
+  [ROUTES.supplyChain]: MEDIA.closingCtaSupplyChain,
+  [ROUTES.logistics]: MEDIA.closingCtaLogistics,
+  [ROUTES.globalNetwork]: MEDIA.closingCtaNetwork,
+}
 
 /**
  * MainLayout.
@@ -62,7 +73,7 @@ export default function MainLayout() {
             recovers. See ErrorBoundary. */}
         <ErrorBoundary key={pathname}>
           <Outlet />
-          {showClosingCta && <ClosingCta />}
+          {showClosingCta && <ClosingCta media={CLOSING_MEDIA[pathname] ?? MEDIA.closingCta} />}
         </ErrorBoundary>
       </main>
 

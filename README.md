@@ -17,8 +17,8 @@ content is a targeted edit rather than a hunt.
 > credentials this repository does not ship. See
 > [Enquiry email](#enquiry-email) and [Scheduling](#scheduling) for exactly what
 > to set. What remains besides that is the content swap described in
-> [Before launch](#before-launch) — real photography, real contact details, the
-> live domain — plus a legal review of the two draft documents in
+> [Before launch](#before-launch) — real contact details, the live domain —
+> plus a legal review of the two draft documents in
 > `src/data/legal.js`.
 
 ---
@@ -185,6 +185,8 @@ resolved with an offset for the fixed navbar.
 | `src/data/services.js` | Service names, slugs, descriptions, the form's service options |
 | `src/data/navigation.js` | Routes, nav, footer links, legal links, contact details, social links, page metadata |
 | `src/data/media.js` | The photography registry and `DEFAULT_OG_IMAGE` |
+| `IMAGE-SOURCES.md` | Licence, author and dimension register for every photograph |
+| `public/images/` | Locally hosted, optimized WebP photography |
 | `src/data/contact.js` | Contact form fields and copy |
 | `src/data/legal.js` | The privacy notice and terms of use, and the shared draft banner |
 
@@ -622,9 +624,9 @@ draft rather than silence, or a generic template copied from elsewhere.
 Two rules govern the copy, and they are the same rules as the rest of the site:
 
 - **Every statement is checkable against the code.** The fields the form collects
-  come from `contact.js`; the third-party requests described are the Google Fonts
-  and Unsplash CDN loads every page actually makes; the absence of cookies,
-  analytics and tracking is a fact about this codebase.
+  come from `contact.js`; the only third-party request described is the Google
+  Fonts stylesheet every page actually makes (photography is self-hosted); the
+  absence of cookies, analytics and tracking is a fact about this codebase.
 - **Undecided things are written as undecided.** No retention period, no
   governing law and no registered entity have been invented. Each is named as
   pending, with a note on what has to be filled in before the site is published.
@@ -678,21 +680,25 @@ Anything that needs the alias, JSX or a DOM would need a bundler-aware runner
 
 ## Before launch
 
-Everything below is a placeholder and is flagged as such in the code.
+Photography is now self-hosted, licensed and optimised. The remaining items
+below are still placeholders and are flagged as such in the code.
 
 | What | Where | Replace with |
 | --- | --- | --- |
-| Photography (25 images) | `src/data/media.js` | Self-hosted, art-directed assets |
-| Image `alt` text | `src/data/media.js` | A description of what the final image shows |
-| Social share card | `DEFAULT_OG_IMAGE` in `src/data/media.js`, and `index.html` | A designed 1200×630 image at `/og-image.jpg` |
+| Photography (25 images) | `public/images/` + `src/data/media.js` | ✅ Replaced with licensed, local WebP assets |
+| Image `alt` text | `src/data/media.js` | ✅ Descriptions of the final images |
+| Social share card | `DEFAULT_OG_IMAGE` in `src/data/media.js`, and `index.html` | ✅ 1200×630 card at `/og-image.jpg` |
 | Contact details | `CONTACT_DETAILS` in `src/data/navigation.js` | The real email, phone, address and hours |
 | Social links | `SOCIAL_LINKS` in `src/data/navigation.js` | Real URLs (`href: null` renders as plain text) |
 | Domain | `index.html`, `public/robots.txt`, `public/sitemap.xml` | The live hostname, everywhere |
 | Legal documents | `src/data/legal.js` | A lawyer-reviewed privacy notice and terms; remove the draft banner only after review |
 
-Images are served from the Unsplash CDN and centralised in `src/data/media.js`;
-nothing else in the codebase hard-codes an image URL. Every image is marked
-`isPlaceholder: true`.
+Images are self-hosted under `public/images/{section}/`, centralised in
+`src/data/media.js`, and documented in `IMAGE-SOURCES.md`. Nothing else in the
+codebase hard-codes an image URL. Each photo exists as WebP variants at 640,
+960, 1280, 1600 and 2000 px; the `Media` component emits `srcset`/`sizes` and
+reserves space via aspect ratio to avoid layout shift. All images have accurate
+descriptive `alt` text (or empty alt when decorative).
 
 The `Organization` JSON-LD in `index.html` is intentionally minimal — name,
 description, url, logo and the areas of business. There is **no** `foundingDate`,
@@ -703,8 +709,8 @@ exist, add them to `CONTACT_DETAILS` and mirror them in the same edit.
 
 ### Checklist
 
-- [ ] Replace all 25 images and rewrite their `alt` text
-- [ ] Design and host `/og-image.jpg`; point `DEFAULT_OG_IMAGE` and `index.html` at it
+- [x] Replace all 25 images and rewrite their `alt` text
+- [x] Design and host `/og-image.jpg`; point `DEFAULT_OG_IMAGE` and `index.html` at it
 - [ ] Fill in `CONTACT_DETAILS` and `SOCIAL_LINKS`
 - [ ] Have `src/data/legal.js` reviewed by a lawyer, fill in the retention period, governing law and registered entity, then remove the draft banner
 - [ ] Update the email in the `<noscript>` block of `index.html` to match `CONTACT_DETAILS.email`
@@ -771,7 +777,7 @@ two in step.** They set:
 The CSP is strict where it matters (`script-src 'self'` — no inline scripts are
 shipped) and needs no `'unsafe-inline'` for styles, because React and GSAP write
 styles through the CSSOM, which CSP does not govern. It was verified against the
-production build in a browser: zero console violations, fonts and Unsplash
+production build in a browser: zero console violations, fonts and self-hosted
 photography still load. The one relaxation for scheduling is
 `frame-src https://cal.com`, which is why the Cal.com embed is an iframe rather
 than a script.
