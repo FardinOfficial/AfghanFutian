@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Placeholder domain. Replace https://afghanfutian.com with the live hostname
-  before launch, and regenerate this file if routes change.
+  Official production domain. Regenerate this file if routes change.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>

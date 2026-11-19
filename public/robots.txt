@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-# Placeholder domain — replace with the live hostname before launch.
+# Official production sitemap.
 Sitemap: https://afghanfutian.com/sitemap.xml

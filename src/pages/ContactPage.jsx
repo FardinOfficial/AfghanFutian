@@ -1,3 +1,4 @@
+import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import Button from '@/components/Button'
@@ -46,9 +47,16 @@ export default function ContactPage() {
           </li>
           <li>
             <p className="u-eyebrow text-canvas-muted">Telephone</p>
-            <a href={CONTACT_DETAILS.phoneHref} className="u-link mt-2 text-sm text-canvas/85">
-              {CONTACT_DETAILS.phone}
-            </a>
+            <ul className="mt-2 space-y-2">
+              {CONTACT_DETAILS.phones.map((phone) => (
+                <li key={phone.id}>
+                  <a href={phone.href} className="u-link text-sm text-canvas/85">
+                    <span className="mr-2 text-canvas-muted">{phone.label}</span>
+                    {phone.display}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </li>
           <li>
             <p className="u-eyebrow text-canvas-muted">Prefer to talk</p>
@@ -97,11 +105,15 @@ export default function ContactPage() {
                 <a href={CONTACT_DETAILS.emailHref} className="u-link text-ink">
                   {CONTACT_DETAILS.email}
                 </a>{' '}
-                directly, or call{' '}
-                <a href={CONTACT_DETAILS.phoneHref} className="u-link text-ink">
-                  {CONTACT_DETAILS.phone}
+                directly, or call our China number{' '}
+                <a href={CONTACT_DETAILS.phones[0].href} className="u-link text-ink">
+                  {CONTACT_DETAILS.phones[0].display}
+                </a>{' '}
+                or our Afghanistan number{' '}
+                <a href={CONTACT_DETAILS.phones[1].href} className="u-link text-ink">
+                  {CONTACT_DETAILS.phones[1].display}
                 </a>
-                . Both reach the same place as this form.
+                . All three reach the same team as this form.
               </Callout>
 
               <div className="mt-8 border-t border-line pt-8">
@@ -124,6 +136,45 @@ export default function ContactPage() {
               </Callout>
             </div>
           </aside>
+        </div>
+
+        <div className="mt-20 border-t border-line pt-12 lg:mt-28">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="u-eyebrow">Where we are</p>
+              <h3 className="mt-4 font-display text-display-3 font-medium">
+                Three locations. One team.
+              </h3>
+            </div>
+            <p className="max-w-[38ch] text-sm leading-relaxed text-muted-strong">
+              Our sourcing work starts in China and our Afghanistan presence spans Kabul and
+              Mandawi. Each address opens an area search — no unverified map pin is published.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-px border border-line bg-line sm:grid-cols-3">
+            {CONTACT_DETAILS.locations.map((location) => (
+              <article key={location.id} className="flex min-h-[13rem] flex-col bg-canvas p-6">
+                <p className="u-eyebrow">{location.label}</p>
+                <p className="mt-6 text-[0.9375rem] leading-relaxed text-muted-strong">
+                  {location.lines.map((line) => (
+                    <span key={line} className="block">
+                      {line}
+                    </span>
+                  ))}
+                </p>
+                <a
+                  href={location.mapUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="u-link mt-auto pt-8 font-sans text-[0.6875rem] font-medium uppercase tracking-[0.16em] text-ink"
+                >
+                  Search the area
+                  <ArrowUpRight aria-hidden="true" strokeWidth={1.6} className="h-3.5 w-3.5" />
+                </a>
+              </article>
+            ))}
+          </div>
         </div>
       </SectionIntro>
     </>

@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 
+import { siteUrl } from '@/data/company.js'
 import { NOT_FOUND_META, PAGE_META } from '@/data/navigation'
 
 /**
@@ -60,8 +61,8 @@ export function useDocumentMeta(pathname) {
     setNamed('twitter:description', meta.description)
     setProperty('og:title', meta.title)
     setProperty('og:description', meta.description)
-    setProperty('og:url', `${window.location.origin}${pathname}`)
-    setNamed('robots', known ? 'index, follow' : 'noindex, nofollow')
+    setProperty('og:url', siteUrl(pathname))
+    setNamed('robots', meta.robots ?? (known ? 'index, follow' : 'noindex, nofollow'))
 
     if (meta.image) {
       setProperty('og:image', meta.image)
@@ -70,10 +71,10 @@ export function useDocumentMeta(pathname) {
 
     const existingCanonical = document.querySelector('link[rel="canonical"]')
 
-    if (known) {
+    if (known && !String(meta.robots).includes('noindex')) {
       const canonical = existingCanonical ?? document.createElement('link')
       canonical.setAttribute('rel', 'canonical')
-      canonical.setAttribute('href', `${window.location.origin}${pathname}`)
+      canonical.setAttribute('href', siteUrl(pathname))
       if (!existingCanonical) document.head.appendChild(canonical)
     } else {
       existingCanonical?.remove()

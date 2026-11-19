@@ -214,7 +214,7 @@ export default function Navbar() {
         <div className="u-container flex h-[72px] items-center justify-between gap-6 xl:h-[84px]">
           <Link
             to={ROUTES.home}
-            aria-label="Afghan Futian — home"
+            aria-label="Afghan Futian Trading Company — home"
             className="shrink-0"
             onClick={() => menuOpen && closeMenu()}
           >
@@ -365,13 +365,20 @@ export default function Navbar() {
               </div>
               <div>
                 <p className="u-eyebrow text-canvas-muted">Telephone</p>
-                <a
-                  href={CONTACT_DETAILS.phoneHref}
-                  onClick={closeMenu}
-                  className="mt-2 block text-sm text-canvas/85"
-                >
-                  {CONTACT_DETAILS.phone}
-                </a>
+                <ul className="mt-2 space-y-2">
+                  {CONTACT_DETAILS.phones.map((phone) => (
+                    <li key={phone.id}>
+                      <a
+                        href={phone.href}
+                        onClick={closeMenu}
+                        className="block text-sm text-canvas/85"
+                      >
+                        <span className="mr-2 text-canvas-muted">{phone.label}</span>
+                        {phone.display}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
 
@@ -379,10 +386,6 @@ export default function Navbar() {
               <p className="u-eyebrow text-canvas-muted">Elsewhere</p>
               <SocialLinks tone="dark" className="mt-3" onNavigate={closeMenu} />
             </div>
-
-            <p className="menu-aside mt-6 text-[0.6875rem] leading-relaxed text-canvas-muted">
-              Telephone and postal details are placeholders pending confirmation.
-            </p>
           </div>
         </div>
       )}

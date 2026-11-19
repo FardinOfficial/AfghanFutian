@@ -1,3 +1,4 @@
+import { COMPANY } from './company.js'
 import { DEFAULT_OG_IMAGE } from './media'
 
 /**
@@ -16,6 +17,7 @@ export const ROUTES = {
   logistics: '/logistics',
   globalNetwork: '/global-network',
   schedule: '/schedule',
+  scheduleManage: '/schedule/manage',
   contact: '/contact',
   privacy: '/privacy',
   terms: '/terms',
@@ -66,99 +68,99 @@ export const FOOTER_COMPANY = [
   { label: 'About Us', to: ROUTES.about },
   { label: 'Our Process', to: `${ROUTES.home}#process` },
   { label: 'Why Afghan Futian', to: `${ROUTES.home}#why` },
+  { label: 'Schedule a Meeting', to: ROUTES.schedule },
   { label: 'Contact', to: ROUTES.contact },
 ]
 
 /**
- * Placeholder contact details.
+ * Contact details, re-exported from the official company record.
  *
- * These are intentionally obvious stand-ins and must be replaced with the
- * company's real details before launch. They are gathered here so that the
- * replacement is a single-file edit.
+ * The `phone`, `phoneHref` and `addressLines` fields remain for components that
+ * only need one primary contact; new code should use `phones` and `locations`,
+ * which carry every officially supplied number and office.
  */
 export const CONTACT_DETAILS = {
-  email: 'contact@afghanfutian.com',
-  emailHref: 'mailto:contact@afghanfutian.com',
-  phone: '+00 000 000 000',
-  phoneHref: 'tel:+000000000000',
-  addressLines: ['Registered office address', 'To be confirmed'],
-  hours: 'Sunday – Thursday, 09:00 – 18:00',
-  isPlaceholder: true,
+  email: COMPANY.email,
+  emailHref: COMPANY.emailHref,
+  phone: COMPANY.phones[0].display,
+  phoneHref: COMPANY.phones[0].href,
+  phones: COMPANY.phones,
+  locations: COMPANY.locations,
+  addressLines: COMPANY.locations[0].lines,
+  isPlaceholder: false,
 }
 
-/**
- * Social profiles.
- *
- * `href: null` means the account is not yet confirmed. The SocialLinks
- * component renders those as plain text rather than a link — a link that goes
- * nowhere is worse than no link. Filling in a real URL automatically promotes
- * the entry to an anchor with the correct external-link attributes.
- */
-export const SOCIAL_LINKS = [
-  { label: 'LinkedIn', href: null },
-  { label: 'Instagram', href: null },
-  { label: 'Facebook', href: null },
-  { label: 'WhatsApp', href: null },
-]
+/** Official social profiles, with the exact supplied URLs. */
+export const SOCIAL_LINKS = COMPANY.socials.map(({ label, icon, href }) => ({
+  label,
+  icon,
+  href,
+}))
 
 /** Metadata used for any route that is not in `PAGE_META` (i.e. a 404). */
 export const NOT_FOUND_META = {
-  title: 'Page Not Found — Afghan Futian',
+  title: 'Page Not Found — Afghan Futian Trading Company',
   description:
-    'The page you were looking for has moved or was never here. Return to Afghan Futian to explore our sourcing, supply chain and logistics services.',
+    'The page you were looking for has moved or was never here. Return to Afghan Futian Trading Company to explore our sourcing, supply chain and logistics services.',
 }
 
 /** Per-route document metadata, applied by the layout on navigation. */
 export const PAGE_META = {
   [ROUTES.home]: {
-    title: 'Afghan Futian — Connecting Markets. Moving the World.',
+    title: 'Afghan Futian Trading Company — Connecting Markets. Moving the World.',
     description:
-      'Global sourcing, supply chain and logistics solutions connecting China with opportunities worldwide.',
+      'Global sourcing, supply chain and logistics solutions from Afghan Futian Trading Company, connecting China with opportunities worldwide.',
     image: DEFAULT_OG_IMAGE,
   },
   [ROUTES.about]: {
-    title: 'About Us — Afghan Futian',
+    title: 'About Us — Afghan Futian Trading Company',
     description:
-      'Learn how Afghan Futian connects sourcing operations in China with international buyers through coordinated supply chain and logistics.',
+      'Learn how Afghan Futian Trading Company connects sourcing operations in China with international buyers through coordinated supply chain and logistics.',
   },
   [ROUTES.sourcing]: {
-    title: 'Global Sourcing — Afghan Futian',
+    title: 'Global Sourcing — Afghan Futian Trading Company',
     description:
-      'Product and supplier sourcing in China, coordinated end to end for international buyers.',
+      'Product and supplier sourcing in China, coordinated end to end for international buyers by Afghan Futian Trading Company.',
   },
   [ROUTES.supplyChain]: {
-    title: 'Supply Chain — Afghan Futian',
+    title: 'Supply Chain — Afghan Futian Trading Company',
     description:
       'Supply chain coordination that carries a requirement from first sourcing conversation through to export.',
   },
   [ROUTES.logistics]: {
-    title: 'Logistics — Afghan Futian',
+    title: 'Logistics — Afghan Futian Trading Company',
     description:
       'International cargo and transportation coordination, arranged around your destination and timeline.',
   },
   [ROUTES.globalNetwork]: {
-    title: 'Global Network — Afghan Futian',
+    title: 'Global Network — Afghan Futian Trading Company',
     description:
-      'An illustrative view of how Afghan Futian connects its China sourcing origin with markets worldwide.',
+      'An illustrative view of how Afghan Futian Trading Company connects its China sourcing origin with markets worldwide.',
   },
   [ROUTES.contact]: {
-    title: 'Contact — Afghan Futian',
+    title: 'Contact — Afghan Futian Trading Company',
     description:
-      'Start a conversation about your sourcing requirement or international business opportunity.',
+      'Start a conversation with Afghan Futian Trading Company about your sourcing requirement or international business opportunity.',
   },
   [ROUTES.schedule]: {
-    title: 'Schedule a Meeting — Afghan Futian',
+    title: 'Schedule a Meeting — Afghan Futian Trading Company',
     description:
-      'Book a meeting with Afghan Futian. Choose a date and time that suits you and receive confirmation and joining details by email.',
+      'Book a meeting with Afghan Futian Trading Company. Choose a date and time that suits you and receive confirmation and joining details by email.',
+  },
+  [ROUTES.scheduleManage]: {
+    title: 'Manage Your Meeting — Afghan Futian Trading Company',
+    description:
+      'Reschedule or cancel an Afghan Futian Trading Company meeting using the signed link from your booking confirmation.',
+    robots: 'noindex, nofollow',
   },
   [ROUTES.privacy]: {
-    title: 'Privacy Notice — Afghan Futian',
+    title: 'Privacy Notice — Afghan Futian Trading Company',
     description:
-      'How Afghan Futian handles information sent through this website, including the contact form and the third-party requests a page makes.',
+      'How Afghan Futian Trading Company handles information sent through this website, including the contact form, meeting booker and third-party requests a page makes.',
   },
   [ROUTES.terms]: {
-    title: 'Terms of Use — Afghan Futian',
+    title: 'Terms of Use — Afghan Futian Trading Company',
     description:
-      'The terms on which the Afghan Futian website is provided, and what its content does and does not represent.',
+      'The terms on which the Afghan Futian Trading Company website is provided, and what its content does and does not represent.',
   },
 }

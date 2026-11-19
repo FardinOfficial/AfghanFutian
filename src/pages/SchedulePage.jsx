@@ -1,16 +1,12 @@
 import { Link } from 'react-router-dom'
+import { ArrowUpRight, CalendarDays, Clock3, Globe2, Mail } from 'lucide-react'
 
 import Button from '@/components/Button'
+import NativeScheduler from '@/components/NativeScheduler'
 import PageHero from '@/components/PageHero'
-import ScheduleEmbed from '@/components/ScheduleEmbed'
 import SectionIntro from '@/components/SectionIntro'
 import { CONTACT_DETAILS, ROUTES } from '@/data/navigation'
-import {
-  CAL_EMBED_URL,
-  CAL_PUBLIC_URL,
-  IS_SCHEDULING_CONFIGURED,
-  SCHEDULE_COPY,
-} from '@/data/scheduling'
+import { CAL_PUBLIC_URL, SCHEDULE_COPY, SCHEDULE_EVENT } from '@/data/scheduling'
 
 /**
  * Schedule.
@@ -26,16 +22,11 @@ import {
  *     appears here, which is correct: if the reader does not want to book, the
  *     enquiry form is the right next step, not a dead end.
  *
- * The booking surface itself is Cal.com, embedded in an iframe. See
- * `src/data/scheduling.js` for the integration notes and
- * `src/components/ScheduleEmbed.jsx` for the frame.
- *
- * When no calendar is connected the page does not pretend otherwise: it says so,
- * and it offers the enquiry form and the contact address instead.
+ * The booking surface is native to this site. Availability and reservations
+ * come from our own server functions, which hold the private Cal.com key; the
+ * browser never sees that key and never renders a third-party iframe.
  */
 export default function SchedulePage() {
-  const configured = IS_SCHEDULING_CONFIGURED
-
   return (
     <>
       <PageHero
@@ -45,6 +36,18 @@ export default function SchedulePage() {
         description={SCHEDULE_COPY.support}
       >
         <ul className="mt-9 space-y-5 border-t border-line-invert pt-7">
+          <li className="flex items-start gap-4">
+            <Clock3 aria-hidden="true" strokeWidth={1.5} className="mt-0.5 h-4 w-4 text-accent" />
+            <div>
+              <p className="u-eyebrow text-canvas-muted">
+                {SCHEDULE_EVENT.durationMinutes} minutes · {SCHEDULE_EVENT.location}
+              </p>
+              <p className="mt-2 max-w-[34ch] text-sm leading-relaxed text-canvas/85">
+                {SCHEDULE_EVENT.minNoticeMinutes}-minute minimum notice. Company time is{' '}
+                {SCHEDULE_EVENT.companyTimeZone.replace('_', ' ')}.
+              </p>
+            </div>
+          </li>
           <li>
             <p className="u-eyebrow text-canvas-muted">Prefer to write</p>
             <a href={CONTACT_DETAILS.emailHref} className="u-link mt-2 text-sm text-canvas/85">
@@ -63,58 +66,41 @@ export default function SchedulePage() {
       <SectionIntro
         id="booking"
         index="01"
-        label={configured ? 'Booking' : SCHEDULE_COPY.unconfigured.label}
-        heading={configured ? 'Choose a time.' : SCHEDULE_COPY.unconfigured.heading}
-        support={
-          configured
-            ? 'The times shown are the ones genuinely open in the calendar, in your own timezone. Booking one confirms it immediately — it cannot be taken twice.'
-            : SCHEDULE_COPY.unconfigured.body
-        }
+        label="Booking"
+        heading="Choose a time."
+        support="The times below come from our live calendar in your own timezone. Confirming one creates a real reservation — it cannot be taken twice."
         rule
         className="pt-12 pb-20 lg:pt-16 lg:pb-28"
       >
         <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-14 lg:mt-16 lg:grid-cols-12">
           <div className="lg:col-span-8">
-            {configured ? (
-              <>
-                <div className="mb-8">
-                  <p className="u-eyebrow">{SCHEDULE_COPY.stepsLabel}</p>
-                  <ol className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-3">
-                    {SCHEDULE_COPY.steps.map((step, index) => (
-                      <li key={step} className="bg-canvas px-5 py-5">
-                        <span className="u-eyebrow tabular-nums text-muted-strong">
-                          {String(index + 1).padStart(2, '0')}
-                        </span>
-                        <p className="mt-3 text-[0.9375rem] leading-relaxed text-muted-strong">
-                          {step}
-                        </p>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-                <ScheduleEmbed url={CAL_EMBED_URL} publicUrl={CAL_PUBLIC_URL} />
-              </>
-            ) : (
-              <div className="border-t border-line pt-10">
-                <div className="flex flex-wrap items-center gap-3">
-                  <Button to={ROUTES.contact} variant="accent" size="lg">
-                    Send an enquiry
-                  </Button>
-                  <Button href={CONTACT_DETAILS.emailHref} variant="outline" size="lg" icon={false}>
-                    Email us instead
-                  </Button>
-                </div>
+            <div className="mb-10">
+              <p className="u-eyebrow">{SCHEDULE_COPY.stepsLabel}</p>
+              <ol className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-3">
+                {SCHEDULE_COPY.steps.map((step, index) => (
+                  <li key={step} className="bg-canvas px-5 py-5">
+                    <span className="u-eyebrow tabular-nums text-muted-strong">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <p className="mt-3 text-[0.9375rem] leading-relaxed text-muted-strong">
+                      {step}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </div>
 
-                <p className="mt-8 max-w-[52ch] text-[0.8125rem] leading-relaxed text-muted-strong">
-                  {SCHEDULE_COPY.unconfigured.note}
-                </p>
-              </div>
-            )}
+            <div className="border border-line bg-canvas p-5 sm:p-8 lg:p-10">
+              <NativeScheduler />
+            </div>
           </div>
 
           <aside className="lg:col-span-3 lg:col-start-10">
             <div className="lg:sticky lg:top-32">
-              <h3 className="u-eyebrow">{SCHEDULE_COPY.fieldsLabel}</h3>
+              <h3 className="u-eyebrow flex items-center gap-2">
+                <CalendarDays aria-hidden="true" strokeWidth={1.5} className="h-4 w-4" />
+                {SCHEDULE_COPY.fieldsLabel}
+              </h3>
 
               <ul className="mt-6 border-t border-line">
                 {SCHEDULE_COPY.fields.map((item) => (
@@ -131,7 +117,10 @@ export default function SchedulePage() {
                 ))}
               </ul>
 
-              <h3 className="u-eyebrow mt-12">{SCHEDULE_COPY.afterLabel}</h3>
+              <h3 className="u-eyebrow mt-12 flex items-center gap-2">
+                <Mail aria-hidden="true" strokeWidth={1.5} className="h-4 w-4" />
+                {SCHEDULE_COPY.afterLabel}
+              </h3>
 
               <ul className="mt-6 border-t border-line">
                 {SCHEDULE_COPY.after.map((item) => (
@@ -147,6 +136,33 @@ export default function SchedulePage() {
                   </li>
                 ))}
               </ul>
+
+              <h3 className="u-eyebrow mt-12 flex items-center gap-2">
+                <Globe2 aria-hidden="true" strokeWidth={1.5} className="h-4 w-4" />
+                Timezones
+              </h3>
+              <p className="mt-4 text-[0.875rem] leading-relaxed text-muted-strong">
+                Every time is shown in the timezone you choose. The booking is stored against your
+                selected zone, not ours.
+              </p>
+
+              {CAL_PUBLIC_URL && (
+                <a
+                  href={CAL_PUBLIC_URL}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="u-link mt-8 inline-flex items-center gap-2 text-[0.75rem] font-medium uppercase tracking-[0.14em] text-ink"
+                >
+                  Open the calendar directly
+                  <ArrowUpRight aria-hidden="true" strokeWidth={1.6} className="h-3.5 w-3.5" />
+                </a>
+              )}
+
+              <div className="mt-10 border-t border-line pt-8">
+                <Button to={ROUTES.contact} variant="outline" size="lg" icon={false}>
+                  Send an enquiry instead
+                </Button>
+              </div>
             </div>
           </aside>
         </div>

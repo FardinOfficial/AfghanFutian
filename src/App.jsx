@@ -6,6 +6,7 @@ import ContactPage from '@/pages/ContactPage'
 import GlobalNetworkPage from '@/pages/GlobalNetworkPage'
 import Home from '@/pages/Home'
 import Logistics from '@/pages/Logistics'
+import ManageBookingPage from '@/pages/ManageBookingPage'
 import NotFound from '@/pages/NotFound'
 import Privacy from '@/pages/Privacy'
 import SchedulePage from '@/pages/SchedulePage'
@@ -31,6 +32,7 @@ export default function App() {
         <Route path={ROUTES.logistics} element={<Logistics />} />
         <Route path={ROUTES.globalNetwork} element={<GlobalNetworkPage />} />
         <Route path={ROUTES.schedule} element={<SchedulePage />} />
+        <Route path={ROUTES.scheduleManage} element={<ManageBookingPage />} />
         <Route path={ROUTES.contact} element={<ContactPage />} />
         <Route path={ROUTES.privacy} element={<Privacy />} />
         <Route path={ROUTES.terms} element={<Terms />} />

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 
 import Logo from '@/components/Logo'
 import SocialLinks from '@/components/SocialLinks'
+import { COMPANY } from '@/data/company.js'
 import {
   CONTACT_DETAILS,
   FOOTER_COMPANY,
@@ -94,8 +95,9 @@ export default function Footer() {
           <div className="footer-col col-span-2 sm:col-span-1 lg:col-span-5 lg:pr-12">
             <Logo onDark />
             <p className="mt-5 max-w-[42ch] text-sm leading-relaxed text-canvas/60">
-              Afghan Futian is an international sourcing, trading and supply chain company. We
-              connect sourcing operations in China with buyers and business opportunities worldwide.
+              {COMPANY.legalName} is an international sourcing, trading and supply chain company.
+              We connect sourcing operations in China with buyers and business opportunities
+              worldwide.
             </p>
           </div>
 
@@ -135,28 +137,32 @@ export default function Footer() {
             <h3 className="u-eyebrow text-canvas-muted">Contact</h3>
             <ul className="mt-5 space-y-3 text-sm text-canvas/75">
               <li>
-                <a
-                  href={CONTACT_DETAILS.emailHref}
-                  className="u-link hover:text-canvas"
-                >
+                <a href={CONTACT_DETAILS.emailHref} className="u-link hover:text-canvas">
                   {CONTACT_DETAILS.email}
                 </a>
               </li>
-              <li>
-                <a
-                  href={CONTACT_DETAILS.phoneHref}
-                  className="u-link hover:text-canvas"
-                >
-                  {CONTACT_DETAILS.phone}
-                </a>
-              </li>
-              <li className="text-canvas-muted">
-                {CONTACT_DETAILS.addressLines.map((line) => (
-                  <span key={line} className="block">
-                    {line}
+              {CONTACT_DETAILS.phones.map((phone) => (
+                <li key={phone.id}>
+                  <span className="block text-[0.6875rem] uppercase tracking-[0.14em] text-canvas-muted">
+                    {phone.label}
                   </span>
-                ))}
-              </li>
+                  <a href={phone.href} className="u-link mt-1 hover:text-canvas">
+                    {phone.display}
+                  </a>
+                </li>
+              ))}
+              {CONTACT_DETAILS.locations.map((location) => (
+                <li key={location.id} className="text-canvas-muted">
+                  <span className="block text-[0.6875rem] uppercase tracking-[0.14em] text-canvas/70">
+                    {location.label}
+                  </span>
+                  {location.lines.map((line) => (
+                    <span key={line} className="block text-xs leading-relaxed">
+                      {line}
+                    </span>
+                  ))}
+                </li>
+              ))}
             </ul>
 
             <SocialLinks tone="dark" className="mt-7" />
@@ -167,7 +173,7 @@ export default function Footer() {
         <div className="flex flex-col gap-4 border-t border-line-invert py-7 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
             <p className="text-[0.6875rem] uppercase tracking-[0.14em] text-canvas-muted">
-              © {year} Afghan Futian. All rights reserved.
+              © {year} {COMPANY.legalName}. All rights reserved.
             </p>
 
             <ul className="flex items-center gap-6">
@@ -185,9 +191,6 @@ export default function Footer() {
           </div>
 
           <div className="flex items-center gap-6">
-            <p className="hidden text-[0.6875rem] uppercase tracking-[0.14em] text-canvas-muted sm:block">
-              Contact details are placeholders
-            </p>
             <button
               type="button"
               onClick={scrollToTop}

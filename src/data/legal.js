@@ -44,7 +44,7 @@ export const PRIVACY = {
   label: 'Legal',
   title: 'Privacy Notice',
   intro:
-    'What happens to information when you use this website — the contact form, and the handful of third-party requests a page makes as it loads.',
+    'What happens to information when you use this website — the contact form, the meeting booker, and the third-party requests a page makes as it loads.',
   meta: [
     { label: 'Status', value: 'Draft' },
     { label: 'Applies to', value: 'This website' },
@@ -56,8 +56,8 @@ export const PRIVACY = {
       index: '01',
       heading: 'What this notice covers',
       paragraphs: [
-        'This notice explains what happens to information when you use this website. It covers the contact form on the Contact page, and the small number of third-party requests the site makes whenever a page loads.',
-        'It is written from what the site actually does. Where a decision has not been made yet — how long an enquiry is kept, for example — it says so, rather than stating a policy that does not exist.',
+        'This notice explains what happens to information when you use this website. It covers the contact form on the Contact page, the meeting booker on the Schedule page, and the small number of third-party requests the site makes whenever a page loads.',
+        'It is written from what the site actually does. Where a decision has not been made yet — how long an enquiry or booking is kept, for example — it says so, rather than stating a policy that does not exist.',
       ],
     },
     {
@@ -107,8 +107,9 @@ export const PRIVACY = {
       heading: 'Third-party requests the site makes',
       paragraphs: [
         'The site loads its typefaces from Google Fonts, and its placeholder photography from the Unsplash image CDN. When a page loads, your browser requests those files directly from those providers, which means your IP address and basic browser details are visible to them.',
-        'This happens on every visit, whether or not you use the contact form. It is a consequence of how the site is currently built, and it is stated here rather than left unmentioned.',
-        'Once the site is deployed, the company that hosts it will also keep standard server logs — such as IP address and requested page — as part of running the server. The host and its retention period have not been chosen yet.',
+        'This happens on every visit, whether or not you use a form. It is a consequence of how the site is currently built, and it is stated here rather than left unmentioned.',
+        'The meeting booker does not load Cal.com code in your browser and does not embed its calendar. Your browser calls this website only; the server then calls Cal.com and Resend. Those providers receive the details needed to make the booking and send its mail, under their own privacy terms.',
+        'The company that hosts this website also keeps standard server logs — such as IP address and requested page — as part of running the server. The host and its retention period have not been chosen yet.',
       ],
     },
     {
@@ -116,12 +117,22 @@ export const PRIVACY = {
       index: '06',
       heading: 'How long enquiries are kept',
       paragraphs: [
-        'A retention period has not been set yet. Until one is, treat this as undecided rather than as a promise: the period will be chosen when the storage for enquiries is finalised, and this notice will be updated to state it before the site is published.',
+        'A retention period has not been set yet for enquiries, and we have not yet confirmed the retention settings of the Cal.com account that stores bookings. Until both are decided, treat this as undecided rather than as a promise. This notice will be updated to state the periods before the site is published.',
+      ],
+    },
+    {
+      id: 'privacy-bookings',
+      index: '07',
+      heading: 'What the meeting booker collects',
+      paragraphs: [
+        'To reserve a meeting, the booker asks for your name, email address, company and phone number (both optional after the first two), the purpose of the meeting, and your timezone. It also records the date and time you choose.',
+        'That information is sent to this website’s own server, which passes the booking details to Cal.com so the meeting exists on the company calendar, and to Resend so the confirmation, notification and any reminder can be delivered. The private credentials for those services are never sent to your browser.',
+        'The confirmation screen shows a signed link that lets you reschedule or cancel that one booking without signing in, and our branded emails include the same link when they are enabled. Otherwise our scheduling provider’s confirmation carries its own management links. Our link is tied to both the booking and the email address it was issued for; changing either makes it invalid.',
       ],
     },
     {
       id: 'privacy-rights',
-      index: '07',
+      index: '08',
       heading: 'Your rights',
       paragraphs: [
         'What you are entitled to ask us to do with your information depends on where you live; different jurisdictions grant different rights. We have not yet confirmed which regime applies to Afghan Futian.',
@@ -131,7 +142,7 @@ export const PRIVACY = {
   ],
   contact: {
     label: 'How to contact us about privacy',
-    body: 'Privacy questions and requests go to the same address as everything else. The company’s registered name, registration number and registered office address are not yet published on this site, and must be added here before this notice is final.',
+    body: 'Privacy questions and requests go to the same address as everything else: contact@afghanfutian.com. Afghan Futian Trading Company publishes its official telephone numbers and office locations on the Contact page.',
   },
 }
 
@@ -175,12 +186,12 @@ export const TERMS = {
       ],
     },
     {
-      id: 'terms-placeholders',
+      id: 'terms-contact',
       index: '04',
-      heading: 'Placeholder details',
+      heading: 'Contact details',
       paragraphs: [
-        'The email address, telephone number and postal address shown on this site are placeholders. They must be replaced with the company’s real details before the site is published.',
-        'An enquiry sent to the placeholder address should not be relied on to reach the company.',
+        'The email address, telephone numbers and office locations shown on this site are the official contact details supplied by Afghan Futian Trading Company.',
+        'Map links, where provided, open an address search rather than a guessed pin. No opening hours or office classifications are published because none has been supplied.',
       ],
     },
     {
@@ -197,8 +208,8 @@ export const TERMS = {
       index: '06',
       heading: 'Links to other sites',
       paragraphs: [
-        'This site does not currently publish a link to any external website. Social profiles are named on the Contact page but are not yet active, so they are shown as plain text rather than as links.',
-        'If external links are added later, Afghan Futian is not responsible for the content or the practices of the sites they lead to.',
+        'This site links to the official Facebook, Instagram and TikTok profiles of Afghan Futian Trading Company. External links open in a new tab.',
+        'Afghan Futian is not responsible for the content or the practices of the sites those links lead to.',
       ],
     },
     {
@@ -206,7 +217,7 @@ export const TERMS = {
       index: '07',
       heading: 'Limitation of liability',
       paragraphs: [
-        'To the extent the law allows, Afghan Futian is not liable for any loss arising from your use of this website or from reliance on its content. Because the site is informational and still contains placeholders, it should not be relied on for any decision.',
+        'To the extent the law allows, Afghan Futian is not liable for any loss arising from your use of this website or from reliance on its content. Because the site is informational, it should not be relied on for any decision without written confirmation from the company.',
         'Nothing in these terms excludes any liability that cannot lawfully be excluded.',
       ],
     },

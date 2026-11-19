@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Afghan Futian — Connecting Markets. Moving the World.</title>
+    <title>Afghan Futian Trading Company — Connecting Markets. Moving the World.</title>
     <meta
       name="description"
-      content="Afghan Futian is an international sourcing, trading and supply chain company connecting China with opportunities worldwide through global sourcing, supply chain coordination and logistics."
+      content="Afghan Futian Trading Company is an international sourcing, trading and supply chain company connecting China with opportunities worldwide through global sourcing, supply chain coordination and logistics."
     />
     <meta name="theme-color" content="#F4F3EF" />
     <meta name="robots" content="index, follow" />
@@ -15,19 +15,19 @@
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Afghan Futian" />
-    <meta property="og:title" content="Afghan Futian — Connecting Markets. Moving the World." />
+    <meta property="og:site_name" content="Afghan Futian Trading Company" />
+    <meta property="og:title" content="Afghan Futian Trading Company — Connecting Markets. Moving the World." />
     <meta
       property="og:description"
       content="Global sourcing, supply chain and logistics solutions connecting China with opportunities worldwide."
     />
     <meta property="og:url" content="https://afghanfutian.com/" />
     <meta property="og:image" content="https://images.unsplash.com/photo-1590496793907-4d66e2994b4d?auto=format&fit=crop&w=1200&h=630&q=70" />
-    <meta property="og:image:alt" content="Afghan Futian — international sourcing and logistics" />
+    <meta property="og:image:alt" content="Afghan Futian Trading Company — international sourcing and logistics" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Afghan Futian — Connecting Markets. Moving the World." />
+    <meta name="twitter:title" content="Afghan Futian Trading Company — Connecting Markets. Moving the World." />
     <meta
       name="twitter:description"
       content="Global sourcing, supply chain and logistics solutions connecting China with opportunities worldwide."
@@ -53,25 +53,48 @@
     <link rel="apple-touch-icon" sizes="512x512" href="/favicon.png" />
 
     <!--
-      Structured data.
-
-      Deliberately minimal: name, description, url, logo and the general area of
-      business. There is no `foundingDate`, no `address`, no `telephone`, no
-      `sameAs` and no `numberOfEmployees`, because Afghan Futian has not confirmed
-      any of those. Publishing a placeholder address or phone number as schema is
-      worse than publishing nothing — search engines surface it verbatim.
-
-      When the real details exist, add them to `CONTACT_DETAILS` and mirror them
-      here in the same edit.
+      Structured data mirrors the official company record in
+      `src/data/company.js`. Only confirmed details are published. There is no
+      founding date, registration number, opening hours, rating or employee
+      count because none has been supplied.
     -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "Afghan Futian",
+        "name": "Afghan Futian Trading Company",
+        "alternateName": "Afghan Futian",
         "url": "https://afghanfutian.com/",
         "description": "International sourcing, trading and supply chain company connecting China's supplier base with buyers worldwide.",
         "logo": "https://afghanfutian.com/favicon.png",
+        "email": "contact@afghanfutian.com",
+        "telephone": ["+86 147 5788 1420", "+93 70 513 2426"],
+        "address": [
+          {
+            "@type": "PostalAddress",
+            "streetAddress": "Yiwu",
+            "addressLocality": "Yiwu",
+            "addressRegion": "Zhejiang Province",
+            "addressCountry": "CN"
+          },
+          {
+            "@type": "PostalAddress",
+            "streetAddress": "3rd Floor, Noor Plaza, Street 2, Qala-e-Fathullah",
+            "addressLocality": "Kabul",
+            "addressCountry": "AF"
+          },
+          {
+            "@type": "PostalAddress",
+            "streetAddress": "Sader Market, Mandawi",
+            "addressLocality": "Kabul",
+            "addressCountry": "AF"
+          }
+        ],
+        "sameAs": [
+          "https://www.facebook.com/share/19mRWeAZsQ/",
+          "https://www.instagram.com/afghanfutian?hvrq=MXI1b2l3czg1YXI1bQ==",
+          "https://www.tiktok.com/@afghan.futian.trading.co?_r=1&_t=ZS-9BXDz5gBOc5"
+        ],
         "knowsAbout": [
           "Global sourcing",
           "International trade",
@@ -92,9 +115,9 @@
       block live in src/styles/index.css — they are authored CSS, not generated
       utilities, because they must render from the stylesheet alone.
 
-      The address below mirrors `CONTACT_DETAILS.email` in src/data/navigation.js.
-      It is the one place on the site that duplicates it, because it has to be
-      readable before any application code runs. Update both together.
+      The address below mirrors `COMPANY.email` in src/data/company.js. It is
+      duplicated here because it must be readable before any application code
+      runs. Update both together.
     -->
     <noscript>
       <div class="noscript">
@@ -106,7 +129,7 @@
             it, or reach us directly by email.
           </p>
           <p class="noscript__body">
-            <a href="mailto:hello@afghanfutian.com">hello@afghanfutian.com</a>
+            <a href="mailto:contact@afghanfutian.com">contact@afghanfutian.com</a>
           </p>
         </div>
       </div>
