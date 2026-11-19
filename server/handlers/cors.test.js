@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { preflight } from '../../src/lib/schedulingServer.js'
+import { preflight } from '../lib/schedulingServer.js'
 import { request, response } from './testHelpers.js'
 
 test('a same-origin preflight gets only the headers the scheduler uses', () => {

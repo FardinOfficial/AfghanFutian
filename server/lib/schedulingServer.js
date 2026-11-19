@@ -1,12 +1,13 @@
 import { createHash, createHmac, randomUUID, timingSafeEqual } from 'node:crypto'
 
-import { COMPANY, siteUrl } from '../data/company.js'
+import { COMPANY, siteUrl } from '../../src/data/company.js'
 
 /**
  * SERVER-ONLY SCHEDULING UTILITIES
  * ============================================================================
- * Imported exclusively by Vercel Functions in `api/schedule/`. Never import
- * this module from a React component — it reads secrets and uses Node crypto.
+ * Imported exclusively by the server handlers in `server/handlers/` and the
+ * Vercel Functions in `api/`. Never import it from a React component — it reads
+ * secrets and uses Node crypto.
  *
  * Every request is validated before it reaches Cal.com or Resend. Only stable
  * status codes and provider error names are logged: no API keys, customer

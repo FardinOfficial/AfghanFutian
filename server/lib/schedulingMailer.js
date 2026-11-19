@@ -1,4 +1,4 @@
-import { COMPANY } from '../data/company.js'
+import { COMPANY } from '../../src/data/company.js'
 import { calendarAttachment, schedulingEmail } from './schedulingEmail.js'
 import { ProviderError, resendSend } from './schedulingServer.js'
 

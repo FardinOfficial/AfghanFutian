@@ -417,7 +417,7 @@ real handler has no such constraint, and shares the real rules.
 closing call to action — leads to `/schedule`, a **native React booking flow**.
 
 Cal.com remains the scheduling engine, but the booker is no longer an iframe.
-The browser talks only to our own Vercel Functions under `api/schedule/`:
+The browser talks only to our own Vercel Functions:
 
 | Endpoint | Purpose |
 | --- | --- |
@@ -428,10 +428,23 @@ The browser talks only to our own Vercel Functions under `api/schedule/`:
 | `POST /api/schedule/webhook` | Verified Cal.com lifecycle events, with provider-source markers so our own bookings are not double-notified. |
 | `GET /api/schedule/reminder` | Optional, secret-protected reconciliation fallback. Not scheduled by default. |
 
+All of those public URLs still work, but the deployment now has only three
+functions: `api/contact.js`, `api/schedule.js` and `api/webhook.js`.
+`vercel.json` rewrites `/api/schedule/<endpoint>` to the consolidated function
+before the React SPA fallback, and `server/scheduleRouter.js` dispatches to the
+preserved handler in `server/handlers/`. The webhook keeps its public address
+and is rewritten to `api/webhook.js`, which verifies the exact raw bytes before
+parsing any event.
+
 `src/data/scheduling.js` holds the public event facts and copy.
-`src/lib/schedulingServer.js` holds every secret and is imported **only** by the
-functions above. The browser bundle contains no API key, webhook secret or
-Resend key. The CSP no longer needs `frame-src`, so it is removed.
+`server/lib/schedulingServer.js` holds every secret and is imported **only** by
+server handlers and the three functions above. The browser bundle contains no
+API key, webhook secret or Resend key. The CSP no longer needs `frame-src`, so
+it is removed.
+
+These three functions are enough for the whole site, including the enquiry form
+and every schedule operation. Tests, helpers and internal handlers live under
+`server/`, so none of them are deployable function entry points.
 
 ### Setting up Cal.com
 
@@ -514,9 +527,15 @@ only sends the company notice for bookings created directly in Cal.com.
   idempotency key is still retained. The optional secret-protected
   `/api/schedule/reminder` endpoint reconciles by asking Cal.com for upcoming
   bookings instead. No cron is configured.
+- Vercel's Hobby plan allows at most 12 Serverless Functions per deployment.
+  The earlier layout put every file under `api/` — including tests and helpers —
+  in the function count, so the scheduler deployment was rejected. It is now
+  three functions by design, verified by `server/architecture.test.js`.
 - Vercel's Hobby terms restrict that plan to personal or non-commercial use.
   This is a company website, so the project requires Vercel Pro ($20 per
   developer seat/month) or another commercial hosting plan before production.
+  Lowering the function count fixes the deployment error; it does **not** make
+  Hobby commercially licensed.
 
 ---
 
@@ -586,18 +605,23 @@ are linked from the footer's legal bar, not the primary navigation.
 npm test
 ```
 
-The enquiry pipeline is the only place in the site with real logic, so it is the
-only place with tests. They run on **Node's built-in test runner** — no framework
-is installed, which matches the project's stance on dependencies. The script
-scans both `src/` and `api/`:
+Tests run on **Node's built-in test runner** — no framework is installed, which
+matches the project's stance on dependencies. The script scans `src/` and
+`server/`; nothing under `api/` is a test:
 
 | File | Covers |
 | --- | --- |
 | `src/lib/validation.test.js` | `validateField`, `validateForm`, `buildMailtoFallback` |
 | `src/lib/api.test.js` | payload shaping and every `ContactSubmitError` branch, with `fetch` stubbed |
-| `api/contact.test.js` | the endpoint itself: method guard, honeypot, fill-time, validation, both email payloads, de-duplication, rate limiting, and the refusal to report a failed send as success |
+| `src/lib/scheduling.test.js` | timezone and bookable-slot helpers shared by browser and server |
+| `src/lib/schedulingSecrets.test.js` | no secret or server-only module leaks into the browser tree |
+| `server/contact.test.js` | the enquiry endpoint: method guard, honeypot, fill-time, validation, both email payloads, de-duplication, rate limiting, and refusal to report a failed send as success |
+| `server/handlers/*.test.js` | availability, booking, manage/cancel/reschedule, CORS and signed webhook behaviour |
+| `server/lib/schedulingMailer.test.js` | branded templates, Resend idempotency and scheduled reminders |
+| `server/scheduleRouter.test.js` | all public schedule routes resolve and delegate correctly |
+| `server/architecture.test.js` | only three functions live in `api/` and their rewrites precede the SPA fallback |
 
-`api/contact.test.js` calls the handler directly with a fake request and
+`server/contact.test.js` calls the handler directly with a fake request and
 response, and stubs `fetch`, so it never contacts Resend. That is what makes the
 server-side behaviour verifiable without an account — the only thing it cannot
 prove is that Resend accepts a real message from a verified domain, which needs
@@ -660,8 +684,9 @@ exist, add them to `CONTACT_DETAILS` and mirror them in the same edit.
 
 ## Deployment
 
-The site is a static build in `dist/`, **plus one serverless function** for the
-enquiry endpoint. Two hosting requirements:
+The site is a static build in `dist/`, **plus three serverless functions**:
+`api/contact.js`, `api/schedule.js` and `api/webhook.js`. Two hosting
+requirements:
 
 1. A **SPA fallback**: every unknown path must serve `index.html`, or a hard
    refresh on `/sourcing` returns a 404.
@@ -676,13 +701,17 @@ enquiry endpoint. Two hosting requirements:
    function would never run.
 
 Vercel is the host this project is built for — it is the only one of the three
-with a functions runtime, and `api/contact.js` needs one. Configs for the other
-hosts remain in the repository but would need that endpoint hosted separately
-(and `VITE_API_BASE_URL` pointed at it).
+with a functions runtime, and the contact and schedule endpoints need one.
+Configs for the other hosts remain in the repository but would need those
+endpoints hosted separately (and `VITE_API_BASE_URL` pointed at them).
 
-`api/contact.test.js` sits beside the function it tests, and **`.vercelignore`
-keeps it out of the deployment**: Vercel would otherwise publish every file under
-`api/` as a route, test files included.
+Vercel publishes every `.js` file under `api/` as a function. Tests and helpers
+therefore live in `server/`, and **`.vercelignore` keeps any stray test out as a
+second line of defence**. The earlier layout had 14 files under `api/`: one
+contact function, six schedule handlers, a helper and six test files nested
+under `api/schedule/`. The old `api/*.test.js` ignore rule did not match nested
+files, so all 14 counted against the Hobby plan's limit of 12. Consolidation to
+three entry points removes that failure without changing any public URL.
 
 | Host | Fallback | Headers | Function |
 | --- | --- | --- | --- |

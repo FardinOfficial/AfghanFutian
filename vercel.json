@@ -3,7 +3,16 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/:path((?!api/).*)", "destination": "/index.html" }],
+  "rewrites": [
+    { "source": "/api/schedule/availability", "destination": "/api/schedule?route=availability" },
+    { "source": "/api/schedule/book", "destination": "/api/schedule?route=book" },
+    { "source": "/api/schedule/manage", "destination": "/api/schedule?route=manage" },
+    { "source": "/api/schedule/cancel", "destination": "/api/schedule?route=cancel" },
+    { "source": "/api/schedule/reschedule", "destination": "/api/schedule?route=reschedule" },
+    { "source": "/api/schedule/reminder", "destination": "/api/schedule?route=reminder" },
+    { "source": "/api/schedule/webhook", "destination": "/api/webhook" },
+    { "source": "/:path((?!api/).*)", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",

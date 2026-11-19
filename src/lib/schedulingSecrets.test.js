@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict'
-import { readdirSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import test from 'node:test'
 
 /**
  * The browser bundle must never contain a private integration credential.
  * This checks the modules Vite can reach from React; the server-only helpers
- * are excluded by name and live behind `api/schedule/` only.
+ * live in `server/lib/` and are never imported from the browser tree.
  */
 const ROOT = process.cwd()
 const SERVER_ONLY = new Set([
@@ -63,7 +63,11 @@ test('browser-safe source never references a secret or a server-only helper', ()
 })
 
 test('secrets are read only in the server-only scheduling module', () => {
-  const server = readFileSync(join(ROOT, 'src/lib/schedulingServer.js'), 'utf8')
+  for (const name of SERVER_ONLY) {
+    assert.equal(existsSync(join(ROOT, 'src/lib', name)), false, `${name} leaked into src/lib`)
+    assert.equal(existsSync(join(ROOT, 'server/lib', name)), true, `${name} is missing from server/lib`)
+  }
+  const server = readFileSync(join(ROOT, 'server/lib/schedulingServer.js'), 'utf8')
   for (const name of [
     'CAL_API_KEY',
     'CAL_WEBHOOK_SECRET',

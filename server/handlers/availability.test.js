@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { afterEach, beforeEach, test } from 'node:test'
 
+import { dateKeyInZone } from '../../src/lib/scheduling.js'
 import handler from './availability.js'
 import { jsonResponse, request, response, routerFetch } from './testHelpers.js'
 
@@ -9,6 +10,7 @@ VALID_START.setMinutes(0, 0, 0)
 const VALID = VALID_START.toISOString()
 const DAY = VALID.slice(0, 10)
 const NEXT = new Date(Date.parse(`${DAY}T00:00:00Z`) + 86_400_000).toISOString().slice(0, 10)
+const SLOT_DAY = dateKeyInZone(VALID, 'Asia/Kabul')
 const EXPIRED = new Date(Date.now() + 30 * 60 * 1000).toISOString()
 
 let realFetch
@@ -57,8 +59,8 @@ test('availability comes only from Cal.com and respects the notice rule', async 
 
   assert.equal(res.statusCode, 200)
   assert.equal(res.payload.ok, true)
-  assert.equal(res.payload.slots[DAY].length, 1)
-  assert.equal(res.payload.slots[DAY][0].start, VALID)
+  assert.equal(res.payload.slots[SLOT_DAY].length, 1)
+  assert.equal(res.payload.slots[SLOT_DAY][0].start, VALID)
   assert.equal(res.payload.event.minNoticeMinutes, 120)
   assert.equal(res.payload.window.from, DAY)
 

@@ -7,7 +7,7 @@ import {
   readAuthorizedBooking,
   sameOrigin,
   verifyCapability,
-} from '../../src/lib/schedulingServer.js'
+} from '../lib/schedulingServer.js'
 
 /**
  * GET /api/schedule/manage?token=…

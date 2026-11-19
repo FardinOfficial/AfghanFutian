@@ -7,8 +7,8 @@ import {
   signCapability,
   toBookingView,
   verifyCalSignature,
-} from '../../src/lib/schedulingServer.js'
-import { sendBookingEmail, sendCancellationNotice, sendRescheduleNotice } from '../../src/lib/schedulingMailer.js'
+} from '../lib/schedulingServer.js'
+import { sendBookingEmail, sendCancellationNotice, sendRescheduleNotice } from '../lib/schedulingMailer.js'
 
 /**
  * POST /api/schedule/webhook

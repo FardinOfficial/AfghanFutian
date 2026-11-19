@@ -7,8 +7,8 @@ import {
   publicError,
   signCapability,
   toBookingView,
-} from '../../src/lib/schedulingServer.js'
-import { sendReminder } from '../../src/lib/schedulingMailer.js'
+} from '../lib/schedulingServer.js'
+import { sendReminder } from '../lib/schedulingMailer.js'
 
 /**
  * GET /api/schedule/reminder — protected cron endpoint.

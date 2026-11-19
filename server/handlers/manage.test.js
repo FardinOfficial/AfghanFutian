@@ -4,7 +4,7 @@ import { afterEach, beforeEach, test } from 'node:test'
 import cancelHandler from './cancel.js'
 import manageHandler from './manage.js'
 import rescheduleHandler from './reschedule.js'
-import { signCapability } from '../../src/lib/schedulingServer.js'
+import { signCapability } from '../lib/schedulingServer.js'
 import { CAL_BOOKING, futureIso, jsonResponse, request, response, routerFetch } from './testHelpers.js'
 
 const START = futureIso(26)

@@ -13,16 +13,16 @@ import {
   rateLimit,
   readAuthorizedBooking,
   sameOrigin,
+  signCapability,
   toBookingView,
   verifyCapability,
-} from '../../src/lib/schedulingServer.js'
+} from '../lib/schedulingServer.js'
 import { isSlotBookable, SCHEDULE_EVENT } from '../../src/lib/scheduling.js'
-import { signCapability } from '../../src/lib/schedulingServer.js'
 import {
   cancelScheduledReminder,
   scheduleReminder,
   sendRescheduleNotice,
-} from '../../src/lib/schedulingMailer.js'
+} from '../lib/schedulingMailer.js'
 
 /**
  * POST /api/schedule/reschedule

@@ -1,4 +1,4 @@
-import { COMPANY, siteUrl } from '../data/company.js'
+import { COMPANY, siteUrl } from '../../src/data/company.js'
 import {
   addToCalendarUrl,
   formatDate,
@@ -6,7 +6,7 @@ import {
   manageUrl,
   SCHEDULE_EVENT,
   zoneLabel,
-} from './scheduling.js'
+} from '../../src/lib/scheduling.js'
 
 /**
  * BRANDED SCHEDULING EMAILS

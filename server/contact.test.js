@@ -1,14 +1,15 @@
 import assert from 'node:assert/strict'
 import { afterEach, beforeEach, test } from 'node:test'
 
-import handler from './contact.js'
+import handler from '../api/contact.js'
 
 /**
  * Tests for the enquiry endpoint.
  * ============================================================================
- * `api/contact.js` is the only server-side code in the project, and the only
- * place where a mistake sends an email that should not have gone out — or fails
- * to send one that should have. So it is tested directly, with no HTTP server:
+ * `api/contact.js` is one of the project's server entry points, and one of the
+ * places where a mistake sends an email that should not have gone out — or
+ * fails to send one that should have. So it is tested directly, with no HTTP
+ * server:
  * the function takes a Node request and response, and a fake pair is enough to
  * drive it.
  *

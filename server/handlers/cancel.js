@@ -13,8 +13,8 @@ import {
   sameOrigin,
   toBookingView,
   verifyCapability,
-} from '../../src/lib/schedulingServer.js'
-import { cancelScheduledReminder, sendCancellationNotice } from '../../src/lib/schedulingMailer.js'
+} from '../lib/schedulingServer.js'
+import { cancelScheduledReminder, sendCancellationNotice } from '../lib/schedulingMailer.js'
 
 /**
  * POST /api/schedule/cancel

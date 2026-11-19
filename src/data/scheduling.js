@@ -8,7 +8,7 @@ export { SCHEDULE_EVENT }
  * SCHEDULING — public, client-safe configuration and copy
  * ============================================================================
  * Availability and bookings are NOT configured here. They come from the
- * serverless functions under `api/schedule/`, which call Cal.com API v2 with a
+ * consolidated serverless functions in `api/`, which call Cal.com API v2 with a
  * private key. This module holds only what is safe to ship to the browser:
  * event facts, error-free copy, and the public booking URL used as an escape
  * hatch if the backend is unreachable.

@@ -17,9 +17,9 @@ import {
   sameOrigin,
   signCapability,
   toBookingView,
-} from '../../src/lib/schedulingServer.js'
+} from '../lib/schedulingServer.js'
 import { isSlotBookable, SCHEDULE_EVENT } from '../../src/lib/scheduling.js'
-import { scheduleReminder, sendBookingConfirmation } from '../../src/lib/schedulingMailer.js'
+import { scheduleReminder, sendBookingConfirmation } from '../lib/schedulingMailer.js'
 
 /**
  * POST /api/schedule/book

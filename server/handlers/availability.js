@@ -9,7 +9,7 @@ import {
   publicError,
   rateLimit,
   sameOrigin,
-} from '../../src/lib/schedulingServer.js'
+} from '../lib/schedulingServer.js'
 import { dateKeyInZone, isSlotBookable, SCHEDULE_EVENT } from '../../src/lib/scheduling.js'
 
 /**
