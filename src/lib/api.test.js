@@ -67,6 +67,7 @@ describe('buildContactPayload', () => {
       'name',
       'phone',
       'service',
+      'website',
     ])
   })
 
@@ -75,6 +76,26 @@ describe('buildContactPayload', () => {
 
     assert.equal(Number.isNaN(Date.parse(meta.submittedAt)), false)
     assert.equal(meta.submittedAt, new Date(meta.submittedAt).toISOString())
+  })
+
+  it('sends the start time separately from the submission time', () => {
+    const startedAt = Date.now() - 30_000
+    const { meta } = buildContactPayload({}, { startedAt })
+
+    assert.equal(meta.startedAt, new Date(startedAt).toISOString())
+    assert.ok(Date.parse(meta.submittedAt) - Date.parse(meta.startedAt) >= 30_000)
+  })
+
+  it('omits an unknown start time so the server can skip its timing guard', () => {
+    const { meta } = buildContactPayload({}, { startedAt: null })
+    const wire = JSON.parse(JSON.stringify(meta))
+
+    assert.ok(!('startedAt' in wire), 'undefined must not become a JSON field')
+  })
+
+  it('includes the honeypot value so the server can make the decision', () => {
+    assert.equal(buildContactPayload({}).website, '')
+    assert.equal(buildContactPayload({}, { honeypot: 'http://spam.example' }).website, 'http://spam.example')
   })
 
   it('builds a JSON-serialisable payload outside a browser', () => {
@@ -114,11 +135,46 @@ describe('submitContactForm', () => {
     }
   })
 
-  it('tolerates a success response with no id', async () => {
+  /*
+   * Regression: the production outage. The server returns 201 `{ok:true,
+   * id:null}` for silent bot drops. Treating that as success is exactly why
+   * visitors saw "Enquiry received" while nothing was sent.
+   */
+  it('rejects a 201 with no provider id instead of claiming success', async () => {
     const restore = stubFetch(async () => json({ ok: true }))
 
     try {
-      assert.deepEqual(await submitContactForm({}), { id: null })
+      await assert.rejects(submitContactForm({}), (error) => {
+        assert.equal(error.kind, 'server')
+        assert.match(error.message, /could not confirm/)
+        return true
+      })
+    } finally {
+      restore()
+    }
+  })
+
+  it('accepts an id-bearing 201, including a duplicate of an already sent enquiry', async () => {
+    const restore = stubFetch(async () => json({ ok: true, id: 'resend_42', duplicate: true }))
+
+    try {
+      assert.deepEqual(await submitContactForm({}), { id: 'resend_42' })
+    } finally {
+      restore()
+    }
+  })
+
+  it('forwards the honeypot and start time in the request body', async () => {
+    let sent
+    const restore = stubFetch(async (url, init) => {
+      sent = JSON.parse(init.body)
+      return json({ ok: true, id: 'resend_43' })
+    })
+
+    try {
+      await submitContactForm({}, { honeypot: 'filled', startedAt: 1_000 })
+      assert.equal(sent.website, 'filled')
+      assert.equal(sent.meta.startedAt, new Date(1_000).toISOString())
     } finally {
       restore()
     }

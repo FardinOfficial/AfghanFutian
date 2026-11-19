@@ -52,6 +52,12 @@ export default function ContactForm() {
   const summaryRef = useRef(null)
   const failureRef = useRef(null)
   const successRef = useRef(null)
+  /** When the visitor first interacted with the form, for the server's timing guard. */
+  const startedAtRef = useRef(null)
+
+  const noteStart = () => {
+    if (startedAtRef.current === null) startedAtRef.current = Date.now()
+  }
 
   /* Focus is requested by setting an intent, then performed in an effect once the
      element that should receive it has actually been rendered. */
@@ -86,6 +92,7 @@ export default function ContactForm() {
   const showSummary = errorEntries.length > 0
 
   const handleChange = (name, value) => {
+    noteStart()
     setValues((prev) => ({ ...prev, [name]: value }))
 
     // Only re-validate fields that are already flagged, and only once the reader
@@ -103,6 +110,7 @@ export default function ContactForm() {
   }
 
   const handleBlur = (name) => {
+    noteStart()
     setTouched((prev) => ({ ...prev, [name]: true }))
 
     const message = validateField(fieldsByName[name], values[name])
@@ -128,17 +136,11 @@ export default function ContactForm() {
     setFailure(null)
     setStatus('idle')
     setHoneypot('')
+    startedAtRef.current = null
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-
-    // A bot filled the hidden field. Accept it silently and send nothing.
-    if (honeypot.trim()) {
-      setStatus('success')
-      queueFocus('success')
-      return
-    }
 
     const { errors: nextErrors, valid } = validateForm(CONTACT_FORM_FIELDS, values)
 
@@ -156,7 +158,10 @@ export default function ContactForm() {
     setFailure(null)
 
     try {
-      await submitContactForm(values)
+      // The server owns the honeypot decision. Sending the field instead of
+      // short-circuiting to success here means a browser-autofilled hidden
+      // input can never produce a green tick for an unsent enquiry.
+      await submitContactForm(values, { honeypot, startedAt: startedAtRef.current })
       setStatus('success')
       queueFocus('success')
     } catch (error) {

@@ -29,6 +29,9 @@ import handler from './contact.js'
 /** Every request the handler made, in order. */
 let calls = []
 
+/** Every diagnostic line the handler emitted. */
+let logs = []
+
 /** Swapped per test to make the stub fail. */
 let reply = () => ({ ok: true, status: 200, body: { id: `resend_${calls.length}` } })
 
@@ -118,8 +121,10 @@ const ENV_KEYS = [
   'CONTACT_ALLOWED_ORIGIN',
 ]
 
-beforeEach(() => {
+beforeEach((t) => {
   calls = []
+  logs = []
+  t.mock.method(console, 'info', (line) => logs.push(String(line)))
   reply = () => ({ ok: true, status: 200, body: { id: `resend_${calls.length}` } })
   for (const key of ENV_KEYS) delete process.env[key]
 })
@@ -189,13 +194,84 @@ test('drops a form completed faster than a person could type', async () => {
 
   const res = response()
   await handler(
-    request({ body: enquiry({ meta: { submittedAt: new Date().toISOString() } }) }),
+    request({
+      body: enquiry({
+        meta: {
+          startedAt: new Date().toISOString(),
+          submittedAt: new Date().toISOString(),
+        },
+      }),
+    }),
     res,
   )
 
   assert.equal(res.statusCode, 201)
   assert.equal(res.payload.id, null)
   assert.equal(calls.length, 0)
+  assert.ok(logs.some((line) => line.includes('reason=too-fast')))
+})
+
+/*
+ * Regression: the production outage. The old client stamped `submittedAt` when
+ * it built the request, so the server saw a sub-three-second "fill" for every
+ * real enquiry and silently returned success without sending anything.
+ */
+test('a submission timestamp created at send time must not drop the enquiry', async () => {
+  process.env.RESEND_API_KEY = 'test-key'
+
+  const res = response()
+  const body = enquiry({
+    meta: {
+      submittedAt: new Date().toISOString(),
+      locale: 'en-GB',
+      path: '/contact',
+    },
+  })
+
+  await handler(request({ body, ip: freshClient() }), res)
+
+  assert.equal(res.statusCode, 201)
+  assert.equal(res.payload.ok, true)
+  assert.equal(res.payload.id, 'resend_1')
+  assert.equal(calls.length, 2, 'both emails must be handed to the mail service')
+})
+
+test('a start time in the past is a real visit, not a bot', async () => {
+  process.env.RESEND_API_KEY = 'test-key'
+
+  const res = response()
+  await handler(
+    request({
+      body: enquiry({
+        meta: { startedAt: new Date(Date.now() - 45_000).toISOString() },
+      }),
+      ip: freshClient(),
+    }),
+    res,
+  )
+
+  assert.equal(res.statusCode, 201)
+  assert.equal(res.payload.id, 'resend_1')
+  assert.equal(calls.length, 2)
+})
+
+test('a missing or implausible start time is never treated as a fast bot', async () => {
+  process.env.RESEND_API_KEY = 'test-key'
+
+  for (const startedAt of [undefined, 'not-a-date', new Date(Date.now() + 60_000).toISOString()]) {
+    const res = response()
+    await handler(
+      request({
+        body: enquiry({ meta: startedAt ? { startedAt } : {} }),
+        ip: freshClient(),
+      }),
+      res,
+    )
+
+    assert.equal(res.statusCode, 201)
+    assert.match(res.payload.id, /^resend_\d+$/)
+  }
+  assert.equal(calls.length, 6)
 })
 
 /* --------------------------------------------------------------------------
@@ -310,4 +386,33 @@ test('reports a refused send as 502, never as a false success', async (t) => {
 
   assert.equal(res.statusCode, 502)
   assert.equal(res.payload.ok, false)
+  assert.ok(logs.some((line) => line.includes('status=422')))
+  assert.ok(!logs.join('\n').includes('domain not verified'), 'provider detail must not be logged')
+})
+
+test('treats an acceptance with no provider id as a failure', async () => {
+  process.env.RESEND_API_KEY = 'test-key'
+  reply = () => ({ ok: true, status: 200, body: {} })
+
+  const res = response()
+  await handler(request({ body: enquiry(), ip: freshClient() }), res)
+
+  assert.equal(res.statusCode, 502)
+  assert.equal(res.payload.ok, false)
+  assert.ok(logs.some((line) => line.includes('code=missing-id')))
+})
+
+test('diagnostics record provider ids but no personal data or credentials', async () => {
+  process.env.RESEND_API_KEY = 'super-secret-key'
+  const body = enquiry()
+
+  await handler(request({ body, ip: freshClient() }), response())
+
+  const joined = logs.join('\n')
+  assert.match(joined, /accepted notification id=resend_\d+/)
+  assert.match(joined, /accepted confirmation id=resend_\d+/)
+  assert.ok(!joined.includes('super-secret-key'))
+  assert.ok(!joined.includes(body.name))
+  assert.ok(!joined.includes(body.email))
+  assert.ok(!joined.includes(body.message))
 })

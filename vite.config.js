@@ -79,7 +79,7 @@ function devContactEndpoint() {
         // silently, exactly as the client does, and store nothing.
         if (typeof values?.website === 'string' && values.website.trim()) {
           server.config.logger.info('[dev contact] honeypot triggered — silently accepted')
-          return send(res, 201, { ok: true, id: fakeObjectId() })
+          return send(res, 201, { ok: true, id: null })
         }
 
         const errors = {}

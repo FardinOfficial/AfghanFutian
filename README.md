@@ -304,13 +304,16 @@ Content-Type: application/json
 
 {
   "name": "…", "company": "…", "email": "…", "phone": "…",
-  "country": "…", "service": "…", "message": "…",
-  "meta": { "submittedAt": "…", "locale": "en-GB", "path": "/contact" }
+  "country": "…", "service": "…", "message": "…", "website": "",
+  "meta": {
+    "submittedAt": "…",  "startedAt": "…",
+    "locale": "en-GB",   "path": "/contact"
+  }
 }
 
 201  { "ok": true,  "id": "<provider message id>" }      accepted by the mail service
 201  { "ok": true,  "id": "…", "duplicate": true }       the same enquiry, seen again
-201  { "ok": true,  "id": null }                         silent bot drop (honeypot / too fast)
+201  { "ok": true,  "id": null }                         silent bot drop — the UI reports failure
 400  { "ok": false, "errors": { "<field>": "<message>" } }
 405  method not allowed
 413  body too large
@@ -324,18 +327,29 @@ otherwise. **With the bundled Vercel Function, leave `VITE_API_BASE_URL` unset**
 same origin is exactly what you want, and it keeps the CSP's `connect-src` at
 `'self'`.
 
-`201` is returned only once the mail service has **accepted** the message. The UI
-shows its success panel on nothing else, so a green tick always means a real
-handoff. The `ContactSubmitError.kind` values the UI branches on are documented
-at the top of `src/lib/api.js`.
+`startedAt` is recorded when the visitor first touches the form; `submittedAt`
+is created when the request is built. They must not be the same value — the
+timing guard measures the gap between them, and using the submission timestamp
+alone drops every genuine enquiry.
+
+The UI shows its success panel only for a `201` carrying a real provider id, so
+a green tick always means a real handoff. A `201` with `id: null` is a silent bot
+drop and is surfaced as an error with a `mailto:` fallback. The
+`ContactSubmitError.kind` values the UI branches on are documented at the top of
+`src/lib/api.js`.
 
 ### What the function does
 
 In order: reject non-POST → parse with a 64 KB ceiling → drop silent bot traffic
-(a filled honeypot, or a form completed in under three seconds) → validate with
-**the same `validateForm` the browser uses** → sanitise every field → rate-limit
-per client and de-duplicate identical enquiries → send the notification and the
-visitor's confirmation.
+(a filled honeypot, or a form completed in under three seconds, measured from
+`meta.startedAt`) → validate with **the same `validateForm` the browser uses** →
+sanitise every field → rate-limit per client and de-duplicate identical
+enquiries → send the notification and the visitor's confirmation.
+
+Function logs use reason codes (`drop reason=…`, `accepted notification id=…`,
+`failed confirmation status=…`). They deliberately contain no names, addresses,
+message bodies, API keys or raw client addresses; the provider message id is
+recorded on acceptance so a Resend log can be matched to a submission.
 
 Two details worth knowing:
 

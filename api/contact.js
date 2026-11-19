@@ -19,7 +19,10 @@ import { validateForm } from '../src/lib/validation.js'
  *   1. Rejects anything that is not a POST.
  *   2. Parses the JSON body, with a size ceiling.
  *   3. Drops silent bot traffic: a filled honeypot, or a form completed faster
- *      than a person can type.
+ *      than a person can type. The latter is measured from `meta.startedAt`,
+ *      which the browser records when the visitor first touches the form — never
+ *      from the submission timestamp, which is created at send time and would
+ *      make every real enquiry look instant.
  *   4. Validates with the *same* pure function the browser uses
  *      (`validateForm`), so client and server can never disagree about what a
  *      valid enquiry is. There is no second copy of the rules.
@@ -63,6 +66,18 @@ const DEDUPE_WINDOW_MS = 5 * 60 * 1000
 
 /** A person cannot read a page and complete seven fields this fast. */
 const MIN_FILL_MS = 3000
+
+/** Ignore timestamps that are stale or ahead of the server clock. */
+const MAX_FILL_MS = 24 * 60 * 60 * 1000
+
+/**
+ * Structured, PII-free diagnostics. Only stable reason codes, statuses and
+ * provider message ids are logged — never names, addresses, message bodies,
+ * API keys or raw client addresses.
+ */
+const log = (reason, detail = '') => {
+  console.info(`[contact] ${reason}${detail ? ` ${detail}` : ''}`)
+}
 
 /* --------------------------------------------------------------------------
    In-memory state. See "Known limits" above.
@@ -191,6 +206,14 @@ const TO_EMAIL = () => process.env.CONTACT_TO_EMAIL?.trim() || 'contact@afghanfu
 const FROM_EMAIL = () =>
   process.env.CONTACT_FROM_EMAIL?.trim() || 'Afghan Futian Website <website@afghanfutian.com>'
 
+class MailError extends Error {
+  constructor(status, code = '') {
+    super(`mail service responded ${status}${code ? ` (${code})` : ''}`)
+    this.status = status
+    this.code = code
+  }
+}
+
 async function sendEmail({ apiKey, ...message }) {
   const response = await fetch(RESEND_ENDPOINT, {
     method: 'POST',
@@ -202,16 +225,24 @@ async function sendEmail({ apiKey, ...message }) {
   })
 
   if (!response.ok) {
-    let detail = ''
+    // Read only the provider's stable error `name`. The raw body can echo the
+    // recipient address, so it is deliberately never logged or returned.
+    let code = ''
     try {
-      detail = JSON.stringify(await response.json())
+      const body = await response.json()
+      if (typeof body?.name === 'string') code = body.name.slice(0, 40)
     } catch {
-      detail = await response.text().catch(() => '')
+      // A non-JSON error page is still an error; the status says enough.
     }
-    throw new Error(`Resend responded ${response.status}: ${detail.slice(0, 400)}`)
+    throw new MailError(response.status, code)
   }
 
-  return response.json().catch(() => ({}))
+  const result = await response.json().catch(() => ({}))
+  // An acceptance without an id is not an acceptance we can account for.
+  if (typeof result?.id !== 'string' || !result.id) {
+    throw new MailError(response.status, 'missing-id')
+  }
+  return result
 }
 
 function rows(entries) {
@@ -280,12 +311,26 @@ export default async function handler(req, res) {
   // A bot filled the field a person cannot see. Accept it silently: a bot that
   // is told it failed simply tries again.
   if (typeof body.website === 'string' && body.website.trim()) {
+    log('drop reason=honeypot')
     return send(res, 201, { ok: true, id: null })
   }
 
-  const submittedAt = Date.parse(body?.meta?.submittedAt ?? '')
-  if (Number.isFinite(submittedAt) && Date.now() - submittedAt < MIN_FILL_MS) {
+  /*
+   * Timing protection measures how long the visitor spent filling the form.
+   * `submittedAt` is stamped when the request is built, so it can only tell us
+   * about network latency — using it here would drop every real enquiry. The
+   * browser sends `startedAt` from the first interaction instead. If that value
+   * is missing or implausible, skip the check rather than punish a legitimate
+   * visitor (an older cached bundle, a clock change, an autofilled form).
+   */
+  const startedAt = Date.parse(body?.meta?.startedAt ?? '')
+  const elapsed = Date.now() - startedAt
+  if (Number.isFinite(startedAt) && elapsed >= 0 && elapsed < MIN_FILL_MS) {
+    log('drop reason=too-fast', `fillMs=${elapsed}`)
     return send(res, 201, { ok: true, id: null })
+  }
+  if (Number.isFinite(startedAt) && (elapsed < 0 || elapsed > MAX_FILL_MS)) {
+    log('timing ignored reason=implausible')
   }
 
   /* ---- 2. Validation, with the browser's own rules ----------------------- */
@@ -313,6 +358,7 @@ export default async function handler(req, res) {
   const client = clientKey(req)
   const times = hits.get(client) ?? []
   if (times.length >= RATE_LIMIT_MAX) {
+    log('drop reason=rate-limited')
     return send(res, 429, {
       ok: false,
       errors: { message: 'Too many enquiries from this connection. Please try again shortly.' },
@@ -323,6 +369,7 @@ export default async function handler(req, res) {
   const previous = recent.get(fingerprint)
   if (previous) {
     // Already handled a moment ago. Report success without sending twice.
+    log('drop reason=duplicate')
     return send(res, 201, { ok: true, id: previous.id, duplicate: true })
   }
 
@@ -428,12 +475,16 @@ export default async function handler(req, res) {
     </div>`,
   }
 
-  let notificationId = null
+  const errorDetail = (error) =>
+    `status=${error?.status ?? 'unknown'}${error?.code ? ` code=${error.code}` : ''}`
+
+  let notificationId
   try {
     const result = await sendEmail({ apiKey, ...notification })
-    notificationId = result?.id ?? null
+    notificationId = result.id
+    log('accepted notification', `id=${notificationId}`)
   } catch (error) {
-    console.error('[contact] notification failed:', error?.message)
+    log('failed notification', errorDetail(error))
     // The enquiry never reached the company. Do not tell the visitor it did.
     return send(res, 502, {
       ok: false,
@@ -446,9 +497,10 @@ export default async function handler(req, res) {
   // The confirmation is a courtesy. If it fails, the enquiry is still delivered,
   // so the visitor is told the truth — that it arrived — rather than an error.
   try {
-    await sendEmail({ apiKey, ...confirmation })
+    const result = await sendEmail({ apiKey, ...confirmation })
+    log('accepted confirmation', `id=${result.id}`)
   } catch (error) {
-    console.error('[contact] confirmation failed:', error?.message)
+    log('failed confirmation', errorDetail(error))
   }
 
   recent.set(fingerprint, { at: now, id: notificationId })

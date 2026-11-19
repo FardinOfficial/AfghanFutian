@@ -25,23 +25,31 @@
  *       "phone":    "…",        // optional, ≤40
  *       "country":  "…",        // optional, ≤80
  *       "service":  "…",        // required, one of SERVICE_OPTIONS
- *       "message":  "…",        // required, 20–2000
+ *       "website":  "…",        // honeypot; people leave it empty
  *       "meta": {               // context the server cannot infer, all optional
- *         "submittedAt": "2026-01-01T00:00:00.000Z",
+ *         "submittedAt": "2026-01-01T00:00:00.000Z",  // when the request was built
+ *         "startedAt":   "2026-01-01T00:00:00.000Z",  // when filling began
  *         "locale":      "en-GB",
  *         "path":        "/contact"
  *       }
  *     }
  *
+ * `startedAt` is deliberately different from `submittedAt`. The server's timing
+ * guard measures how long a visitor spent on the form; a timestamp created at
+ * send time would make every genuine enquiry look instantaneous.
+ *
  * ── Response contract ────────────────────────────────────────────────────────
  *     201  { "ok": true,  "id": "<provider message id>" }   accepted for delivery
+ *     201  { "ok": true,  "id": "…", "duplicate": true }    already accepted
+ *     201  { "ok": true,  "id": null }                      silent bot drop
  *     400  { "ok": false, "errors": { "<field>": "<message>" } }   ← field-level
  *     429  { "ok": false, "errors": { "message": "…" } }           ← rate limited
  *     5xx  anything; treated as a generic failure
  *
- * `201` means the mail service *accepted* the message — it is not a promise that
- * it was delivered, but it is a promise that it was handed over. The form shows
- * success on nothing less. See `api/contact.js` for the server side.
+ * Only a `201` carrying a real provider id counts as success. A `201` with a
+ * null id is a silent bot drop and is reported as a failure here, so a genuine
+ * submission can never be told it was delivered when nothing was handed over.
+ * See `api/contact.js` for the server side.
  *
  * ── Error handling ───────────────────────────────────────────────────────────
  * Everything is normalised into a `ContactSubmitError` carrying a `kind`, so the
@@ -82,9 +90,13 @@ export const HONEYPOT_FIELD = 'website'
 /**
  * Build the request body from raw form values.
  * Kept separate so the shape can be asserted without performing a request.
+ *
+ * @param {Record<string, string>} values raw form values
+ * @param {{ honeypot?: string, startedAt?: number | null }} [options]
  */
-export function buildContactPayload(values) {
+export function buildContactPayload(values, options = {}) {
   const clean = (key) => (values[key] ?? '').trim()
+  const { honeypot = '', startedAt = null } = options
 
   return {
     name: clean('name'),
@@ -94,8 +106,12 @@ export function buildContactPayload(values) {
     country: clean('country'),
     service: clean('service'),
     message: clean('message'),
+    website: typeof honeypot === 'string' ? honeypot : '',
     meta: {
       submittedAt: new Date().toISOString(),
+      // JSON.stringify drops undefined, so an absent start time is simply not
+      // sent. The server then skips its timing check instead of guessing.
+      startedAt: Number.isFinite(startedAt) ? new Date(startedAt).toISOString() : undefined,
       locale: typeof navigator !== 'undefined' ? navigator.language : undefined,
       path: typeof window !== 'undefined' ? window.location.pathname : undefined,
     },
@@ -106,10 +122,11 @@ export function buildContactPayload(values) {
  * Submit a contact enquiry.
  *
  * @param {Record<string, string>} values raw form values
- * @returns {Promise<{ id: string | null }>}
+ * @param {{ honeypot?: string, startedAt?: number | null }} [options]
+ * @returns {Promise<{ id: string }>}
  * @throws {ContactSubmitError}
  */
-export async function submitContactForm(values) {
+export async function submitContactForm(values, options = {}) {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
 
@@ -118,7 +135,7 @@ export async function submitContactForm(values) {
     response = await fetch(CONTACT_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify(buildContactPayload(values)),
+      body: JSON.stringify(buildContactPayload(values, options)),
       signal: controller.signal,
     })
   } catch (error) {
@@ -145,7 +162,15 @@ export async function submitContactForm(values) {
   }
 
   if (response.ok) {
-    return { id: data?.id ?? null }
+    // A 201 with no provider id is a silent drop (honeypot / too-fast guard),
+    // not a delivered enquiry. Never present it as success to a real visitor.
+    if (data?.ok === true && typeof data.id === 'string' && data.id) {
+      return { id: data.id }
+    }
+    throw new ContactSubmitError(
+      'server',
+      'We could not confirm that your enquiry was sent. Please email us directly.',
+    )
   }
 
   if (response.status === 400) {
