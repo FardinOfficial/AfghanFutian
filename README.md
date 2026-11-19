@@ -389,7 +389,12 @@ The code is complete; it needs an account.
 
 Then verify it for real: submit the live form and confirm **two** messages arrive
 — the notification in the company inbox, and the confirmation at the address you
-typed. Until that has been done, treat the integration as unverified.
+typed. Check the spam folder too; if the messages land there, mark them as *not
+spam* and add the sender to the mailbox's contacts. Authentication records are
+on `send.afghanfutian.com` (SPF/MX) and `resend._domainkey.afghanfutian.com`
+(DKIM) — do not add Resend to the root domain's SPF, which must keep authorising
+Hostinger's mail server. Until both messages have been seen, treat the
+integration as unverified.
 
 ### The dev mock
 
