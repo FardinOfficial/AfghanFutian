@@ -1,73 +1,157 @@
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, Clock3, Globe2, Mail, Video } from 'lucide-react'
 
-import NativeScheduler from '@/components/NativeScheduler'
+import Button from '@/components/Button'
+import PageHero from '@/components/PageHero'
+import ScheduleEmbed from '@/components/ScheduleEmbed'
+import SectionIntro from '@/components/SectionIntro'
 import { CONTACT_DETAILS, ROUTES } from '@/data/navigation'
-import { CAL_PUBLIC_URL, SCHEDULE_EVENT } from '@/data/scheduling'
-import { timeZoneLabel, zoneLabel } from '@/lib/scheduling'
-
-const COMPANY_ZONE = SCHEDULE_EVENT.companyTimeZone
-const COMPANY_ZONE_LABEL = `${timeZoneLabel(COMPANY_ZONE)} (${zoneLabel('2026-01-01T00:00:00.000Z', COMPANY_ZONE)})`
+import {
+  CAL_EMBED_URL,
+  CAL_PUBLIC_URL,
+  IS_SCHEDULING_CONFIGURED,
+  SCHEDULE_COPY,
+} from '@/data/scheduling'
 
 /**
- * Schedule — the only transactional route on the site.
+ * Schedule.
  *
- * The global navbar and footer stay exactly as they are; only this page body is
- * replaced by a compact, product-style booking surface. Availability and
- * reservations are handled by our own server functions, which keep the Cal.com
- * key server-side. Nothing here renders a third-party iframe.
+ * The one page on the site that performs a transaction rather than making an
+ * argument, so it is built differently from every other inner page:
+ *
+ *   • No photograph. Every other page opens on a plate; this one opens on ink
+ *     alone, which is the same choice the legal documents make and for the same
+ *     reason — it is a utility, and a decorative image would only push the thing
+ *     the reader came for further down.
+ *   • No custom booker. Cal.com's official iframe owns the calendar, slots,
+ *     details form, confirmation, Google Meet link, and reschedule/cancel flow.
+ *
+ * The global navbar and footer are untouched. `PageHero` carries the existing
+ * `data-nav-sentinel` and its own top padding, so the booking surface sits below
+ * the fixed navbar at every breakpoint.
  */
 export default function SchedulePage() {
+  const configured = IS_SCHEDULING_CONFIGURED
+
   return (
-    <div className="scheduler-page" dir="ltr">
-      <div className="scheduler-shell">
-        <header className="scheduler-page-head">
-          <div>
-            <p className="scheduler-kicker">Schedule · Meeting</p>
-            <h1>Book a meeting.</h1>
-            <p>
-              Choose a live open time, add a few details and confirm. Your Google Meet link and a
-              secure management link follow by email.
-            </p>
-          </div>
-          <div className="scheduler-head-meta">
-            <span className="scheduler-chip">
-              <Clock3 aria-hidden="true" strokeWidth={1.6} className="h-3.5 w-3.5" />
-              {SCHEDULE_EVENT.durationMinutes} minutes
-            </span>
-            <span className="scheduler-chip">
-              <Video aria-hidden="true" strokeWidth={1.6} className="h-3.5 w-3.5" />
-              Google Meet
-            </span>
-            <span className="scheduler-chip">
-              <Globe2 aria-hidden="true" strokeWidth={1.6} className="h-3.5 w-3.5" />
-              Default: {COMPANY_ZONE_LABEL}
-            </span>
-          </div>
-        </header>
-
-        <NativeScheduler />
-
-        <footer className="scheduler-page-foot">
-          <span>
-            Minimum notice {SCHEDULE_EVENT.minNoticeMinutes} minutes · Meetings are hosted in{' '}
-            {COMPANY_ZONE_LABEL}. You can change the timezone in the booking card.
-          </span>
-          <span className="inline-flex flex-wrap items-center gap-x-4 gap-y-1">
-            <Link to={ROUTES.contact}>Send an enquiry instead</Link>
-            <a href={CONTACT_DETAILS.emailHref} className="inline-flex items-center gap-1.5">
-              <Mail aria-hidden="true" strokeWidth={1.6} className="h-3.5 w-3.5" />
+    <>
+      <PageHero
+        index="08"
+        label={SCHEDULE_COPY.label}
+        title={SCHEDULE_COPY.heading}
+        description={SCHEDULE_COPY.support}
+      >
+        <ul className="mt-9 space-y-5 border-t border-line-invert pt-7">
+          <li>
+            <p className="u-eyebrow text-canvas-muted">Prefer to write</p>
+            <a href={CONTACT_DETAILS.emailHref} className="u-link mt-2 text-sm text-canvas/85">
               {CONTACT_DETAILS.email}
             </a>
-            {CAL_PUBLIC_URL && (
-              <a href={CAL_PUBLIC_URL} target="_blank" rel="noreferrer noopener">
-                Open Cal.com directly
-                <ArrowUpRight aria-hidden="true" strokeWidth={1.6} className="ml-1 inline h-3.5 w-3.5" />
-              </a>
+          </li>
+          <li>
+            <p className="u-eyebrow text-canvas-muted">Have a detailed requirement</p>
+            <Link to={ROUTES.contact} className="u-link mt-2 text-sm text-canvas/85">
+              Use the enquiry form
+            </Link>
+          </li>
+        </ul>
+      </PageHero>
+
+      <SectionIntro
+        id="booking"
+        index="01"
+        label={configured ? 'Booking' : SCHEDULE_COPY.unconfigured.label}
+        heading={configured ? 'Choose a time.' : SCHEDULE_COPY.unconfigured.heading}
+        support={
+          configured
+            ? 'The official calendar below shows only times genuinely open in our Cal.com schedule. It opens in Kabul time and you can switch timezone inside the booker.'
+            : SCHEDULE_COPY.unconfigured.body
+        }
+        rule
+        className="pt-12 pb-20 lg:pt-16 lg:pb-28"
+      >
+        <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-14 lg:mt-16 lg:grid-cols-12">
+          <div className="lg:col-span-8" dir="ltr">
+            {configured ? (
+              <>
+                <div className="mb-8">
+                  <p className="u-eyebrow">{SCHEDULE_COPY.stepsLabel}</p>
+                  <ol className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-3">
+                    {SCHEDULE_COPY.steps.map((step, index) => (
+                      <li key={step} className="bg-canvas px-5 py-5">
+                        <span className="u-eyebrow tabular-nums text-muted-strong">
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+                        <p className="mt-3 text-[0.9375rem] leading-relaxed text-muted-strong">
+                          {step}
+                        </p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+                <ScheduleEmbed url={CAL_EMBED_URL} publicUrl={CAL_PUBLIC_URL} />
+              </>
+            ) : (
+              <div className="border-t border-line pt-10">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button to={ROUTES.contact} variant="accent" size="lg">
+                    Send an enquiry
+                  </Button>
+                  <Button href={CONTACT_DETAILS.emailHref} variant="outline" size="lg" icon={false}>
+                    Email us instead
+                  </Button>
+                </div>
+
+                <p className="mt-8 max-w-[52ch] text-[0.8125rem] leading-relaxed text-muted-strong">
+                  {SCHEDULE_COPY.unconfigured.note}
+                </p>
+              </div>
             )}
-          </span>
-        </footer>
-      </div>
-    </div>
+          </div>
+
+          <aside className="lg:col-span-3 lg:col-start-10">
+            <div className="lg:sticky lg:top-32">
+              <h3 className="u-eyebrow">{SCHEDULE_COPY.fieldsLabel}</h3>
+
+              <ul className="mt-6 border-t border-line">
+                {SCHEDULE_COPY.fields.map((item) => (
+                  <li
+                    key={item}
+                    className="flex gap-5 border-b border-line py-4 text-[0.9375rem] leading-relaxed text-muted-strong"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="mt-[0.55rem] h-[6px] w-[6px] shrink-0 bg-accent"
+                    />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <h3 className="u-eyebrow mt-12">{SCHEDULE_COPY.afterLabel}</h3>
+
+              <ul className="mt-6 border-t border-line">
+                {SCHEDULE_COPY.after.map((item) => (
+                  <li
+                    key={item}
+                    className="flex gap-5 border-b border-line py-4 text-[0.9375rem] leading-relaxed text-muted-strong"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="mt-[0.55rem] h-[6px] w-[6px] shrink-0 bg-accent"
+                    />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <p className="mt-8 text-[0.8125rem] leading-relaxed text-muted-strong">
+                Default timezone: <strong className="font-medium text-ink">Kabul, Afghanistan</strong>{' '}
+                (GMT+04:30). Change it with the selector inside the calendar.
+              </p>
+            </div>
+          </aside>
+        </div>
+      </SectionIntro>
+    </>
   )
 }

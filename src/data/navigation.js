@@ -17,7 +17,6 @@ export const ROUTES = {
   logistics: '/logistics',
   globalNetwork: '/global-network',
   schedule: '/schedule',
-  scheduleManage: '/schedule/manage',
   contact: '/contact',
   privacy: '/privacy',
   terms: '/terms',
@@ -146,12 +145,6 @@ export const PAGE_META = {
     title: 'Schedule a Meeting — Afghan Futian Trading Company',
     description:
       'Book a meeting with Afghan Futian Trading Company. Choose a date and time that suits you and receive confirmation and joining details by email.',
-  },
-  [ROUTES.scheduleManage]: {
-    title: 'Manage Your Meeting — Afghan Futian Trading Company',
-    description:
-      'Reschedule or cancel an Afghan Futian Trading Company meeting using the signed link from your booking confirmation.',
-    robots: 'noindex, nofollow',
   },
   [ROUTES.privacy]: {
     title: 'Privacy Notice — Afghan Futian Trading Company',

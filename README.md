@@ -414,16 +414,19 @@ real handler has no such constraint, and shares the real rules.
 ## Scheduling
 
 "Schedule a Meeting" — in the navbar, the overlay menu, the contact page and the
-closing call to action — leads to `/schedule`, a **native React booking flow**.
+closing call to action — leads to `/schedule`, which embeds **Cal.com's official
+booker** in a plain iframe. Cal.com owns the complete attendee flow: real
+availability, date and time selection, the details form, confirmation, Google
+Meet details, and the reschedule/cancel links in its confirmation email.
 
-Cal.com remains the scheduling engine, but the booker is no longer an iframe.
-The browser talks only to our own Vercel Functions:
+The following first-party endpoints are preserved for branded company mail,
+webhooks and management capabilities; the embedded booker does not call them:
 
 | Endpoint | Purpose |
 | --- | --- |
 | `GET /api/schedule/availability` | Real slots from Cal.com API v2, filtered by the 120-minute notice rule and grouped in the visitor's timezone. |
-| `POST /api/schedule/book` | Re-checks the exact slot, then creates a real Cal.com booking. A success screen is shown only after a UID comes back. |
-| `GET /api/schedule/manage` | Reads one booking using the signed link shown after booking and, when branded attendee mail is enabled, emailed to the attendee. |
+| `POST /api/schedule/book` | Re-checks the exact slot, then creates a real Cal.com booking. It reports success only after a provider UID comes back. |
+| `GET /api/schedule/manage` | Reads one booking using a signed capability, including links included in branded company templates. |
 | `POST /api/schedule/cancel` / `reschedule` | Cancels or moves that real booking after re-validating the token and the new slot. |
 | `POST /api/schedule/webhook` | Verified Cal.com lifecycle events, with provider-source markers so our own bookings are not double-notified. |
 | `GET /api/schedule/reminder` | Optional, secret-protected reconciliation fallback. Not scheduled by default. |
@@ -436,12 +439,11 @@ preserved handler in `server/handlers/`. The webhook keeps its public address
 and is rewritten to `api/webhook.js`, which verifies the exact raw bytes before
 parsing any event.
 
-`src/data/scheduling.js` holds the public event facts and the optional Cal.com
-escape-hatch link.
+`src/data/scheduling.js` holds the public Cal.com event URL and booker copy.
 `server/lib/schedulingServer.js` holds every secret and is imported **only** by
 server handlers and the three functions above. The browser bundle contains no
-API key, webhook secret or Resend key. The CSP no longer needs `frame-src`, so
-it is removed.
+API key, webhook secret or Resend key. The CSP allows only
+`frame-src https://cal.com`; no third-party script or inline style is allowed.
 
 These three functions are enough for the whole site, including the enquiry form
 and every schedule operation. Tests, helpers and internal handlers live under
@@ -452,27 +454,34 @@ and every schedule operation. Tests, helpers and internal handlers live under
 1. Connect the calendar that actually holds the company's availability. That
    connection is what makes the slots real; Cal.com will not offer a taken time.
 2. Confirm event type `7982708` (`afghanfutian/meeting`): 30 minutes, Google Meet,
-   free, cancellation and rescheduling enabled, minimum notice 120 minutes. In
-   Cal.com open **Event Types → meeting → Availability**, set the schedule time
-   zone to **(GMT+04:30) Kabul**, and save. Also check **Settings → My account →
-   General → Time zone** so the host's weekly hours are interpreted in Kabul.
-   The native form collects name, email, company, phone and purpose; send the
-   optional custom answers to Cal.com as `bookingFieldsResponses` if those
-   questions are configured there.
-3. Create a Cal.com API key (**Settings → Developer → API keys**) and set
-   `CAL_API_KEY` in Vercel. Set `CAL_EVENT_TYPE_ID=7982708` explicitly.
-4. Set `SCHEDULE_TOKEN_SECRET` to a long random string. It signs the cancel and
-   reschedule links in the confirmation email. Do not rotate it casually: old
-   links stop working when it changes.
-5. Set `VITE_CAL_LINK=https://cal.com/afghanfutian/meeting` if you want the
-   direct calendar link beside the native booker. It is public and requires a
-   rebuild; it is **not** used to fetch availability.
-6. Redeploy and open `/schedule`. The booking card defaults to **Kabul,
-   Afghanistan (GMT+04:30)**; visitors may change the timezone, and their choice
-   is used for the calendar, slot labels, booking, confirmation and management
-   pages. Slots are fetched at request time — there is no cache and no invented
-   availability. With `CAL_API_KEY` missing the UI shows an honest error and
-   links to the enquiry form.
+   free, cancellation and rescheduling enabled, minimum notice 120 minutes. Add
+   the booking questions in Cal.com: **Name** and **Email** are built in;
+   optional **Company / organisation** and **Anything else**, and required
+   **Purpose of the meeting**, are custom fields. Confirm the location is
+   **Google Meet**.
+3. Set the host availability timezone in Cal.com: **Event Types → meeting →
+   Availability**, choose the schedule, set its timezone to
+   **(GMT+04:30) Kabul**, and save. Also open **Settings → My account → General →
+   Time zone** and set it to **(GMT+04:30) Kabul**, otherwise weekly hours are
+   interpreted in the wrong zone. Optionally enable
+   **Event Types → meeting → Timezone lock** if every meeting must stay in
+   Kabul; leave it off to preserve the visitor's manual selector.
+4. Set `VITE_CAL_LINK=https://cal.com/afghanfutian/meeting` in Vercel. It is
+   public and baked into the bundle at build time, so changing it requires a
+   redeploy. With it unset, `/schedule` shows the honest "not connected" state.
+5. Create a Cal.com API key (**Settings → Developer → API keys**) and set
+   `CAL_API_KEY` in Vercel. Set `CAL_EVENT_TYPE_ID=7982708` explicitly. These are
+   required by the preserved branded-email webhook and management endpoints.
+6. Set `SCHEDULE_TOKEN_SECRET` to a long random string. It signs the management
+   capability used by the preserved endpoints and branded company notices. Do
+   not rotate it casually: old links stop working when it changes.
+7. Redeploy and open `/schedule`. The official Cal.com booker loads in the
+   iframe with `cal.tz=Asia%2FKabul`, Cal.com's current query key for the booker's
+   initial timezone, so it opens on **Kabul, Afghanistan (GMT+04:30)**. Its own
+   selector lets visitors change timezone. Cal.com owns availability, booking,
+   confirmation, Google Meet details and the reschedule/cancel links. Verify the
+   value reached production by opening the deployed `/assets/index-*.js` bundle
+   and searching for `afghanfutian/meeting`.
 
 ### Email ownership and duplicate prevention
 
@@ -519,11 +528,11 @@ fully white-label. Cal.com's own notification infrastructure and plain-text
 calendar invites remain in place until the operator upgrades and reconfigures
 the provider. The flag is deliberately not enabled by default.
 
-Cal.com's confirmation carries its own cancel and reschedule links. The success
-screen on this site also shows a signed link to `/schedule/manage`, so the
-visitor can save it without waiting for email. When branded attendee mail is
-enabled, that same signed link is included in our confirmation, reminder,
-reschedule and cancellation templates.
+Cal.com's confirmation carries its own cancel and reschedule links; those are
+the attendee-facing management flow for bookings made in the embedded booker.
+The preserved server endpoints and branded company templates still use signed
+capabilities for webhook notifications and direct API management. When branded
+attendee mail is enabled, those templates include the signed link too.
 
 `RESEND_API_KEY` is required for any scheduling email; without it the booking
 still succeeds but the response reports the mail failure. The sender defaults to
@@ -576,7 +585,7 @@ dashboard.
 | Variable | Kind | Required | Notes |
 | --- | --- | --- | --- |
 | `VITE_API_BASE_URL` | public, build-time | no | Leave unset with the bundled function (same origin). |
-| `VITE_CAL_LINK` | public, build-time | no | Optional direct calendar link beside the native booker. |
+| `VITE_CAL_LINK` | public, build-time | for the embed | Official Cal.com event rendered on `/schedule`; requires a rebuild. |
 | `RESEND_API_KEY` | secret, runtime | for email | Both contact and scheduling functions need it. |
 | `CONTACT_TO_EMAIL` | secret, runtime | no | Company inbox for both forms. Defaults to `contact@afghanfutian.com`. |
 | `CONTACT_FROM_EMAIL` | secret, runtime | no | Contact-form sender; must be verified in Resend. |
@@ -641,7 +650,7 @@ matches the project's stance on dependencies. The script scans `src/` and
 | --- | --- |
 | `src/lib/validation.test.js` | `validateField`, `validateForm`, `buildMailtoFallback` |
 | `src/lib/api.test.js` | payload shaping and every `ContactSubmitError` branch, with `fetch` stubbed |
-| `src/lib/scheduling.test.js` | timezone and bookable-slot helpers shared by browser and server |
+| `src/lib/scheduling.test.js` | timezone and bookable-slot helpers used by the preserved backend handlers |
 | `src/lib/schedulingSecrets.test.js` | no secret or server-only module leaks into the browser tree |
 | `server/contact.test.js` | the enquiry endpoint: method guard, honeypot, fill-time, validation, both email payloads, de-duplication, rate limiting, and refusal to report a failed send as success |
 | `server/handlers/*.test.js` | availability, booking, manage/cancel/reschedule, CORS and signed webhook behaviour |
@@ -702,7 +711,7 @@ exist, add them to `CONTACT_DETAILS` and mirror them in the same edit.
 - [ ] Replace `afghanfutian.com` in `index.html`, `robots.txt` and `sitemap.xml`
 - [ ] Add a `sitemap.xml` entry for any new route
 - [ ] Set `RESEND_API_KEY` (and a verified `CONTACT_FROM_EMAIL`) in the host's dashboard, then submit the live form and confirm both emails arrive
-- [ ] Create the Cal.com event type, set `VITE_CAL_LINK`, rebuild, and confirm a real booking lands on the calendar
+- [ ] Confirm the Cal.com event type and Kabul host timezone, set `VITE_CAL_LINK`, rebuild, and confirm the embedded booker loads and a real booking lands on the calendar
 - [ ] Leave `VITE_API_BASE_URL` unset for the bundled function — or, if the API is elsewhere, set it and add that origin to `connect-src` in `public/_headers` and `vercel.json`
 - [ ] Delete the deployment configs for hosts you are not using
 - [ ] Run `npm run check`
