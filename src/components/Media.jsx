@@ -48,11 +48,9 @@ export default function Media({
       {...props}
     >
       <img
-        src={imageUrl(src.id, priority ? 1600 : 1280)}
-        srcSet={imageSrcSet(src.id, widths)}
+        src={imageUrl(src.id, priority ? 1600 : 1280, { quality: src.quality })}
+        srcSet={imageSrcSet(src.id, widths, { quality: src.quality })}
         sizes={sizes}
-        width={src.width}
-        height={src.height}
         alt={resolvedAlt}
         aria-hidden={decorative ? 'true' : undefined}
         loading={priority ? 'eager' : 'lazy'}

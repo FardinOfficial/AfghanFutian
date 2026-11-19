@@ -28,11 +28,11 @@ export const INTRODUCTION = {
     { index: '03', label: 'Logistics', to: ROUTES.logistics },
   ],
   /**
-   * Visible honesty note. The photography is licensed, illustrative stock
-   * imagery; saying so in the interface is more defensible than implying these
-   * are the company's own facilities.
+   * Visible honesty note. The photography on this site is licensed placeholder
+   * material, and saying so in the interface is more defensible than implying
+   * these are the company's own facilities.
    */
-  mediaNote: 'Illustrative licensed photography — not Afghan Futian’s own operations or assets.',
+  mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
 }
 
 /** Section 02 — the capabilities index. */
@@ -101,7 +101,7 @@ export const NETWORK = {
       body: 'A route map. No lane, port, market or volume is shown here, because none has been confirmed by Afghan Futian.',
     },
   ],
-  mediaNote: 'Illustrative licensed photography — not Afghan Futian’s own operations or assets.',
+  mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
 }
 
 /** Section 04 — the five-stage process. */

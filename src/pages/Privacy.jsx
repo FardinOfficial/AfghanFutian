@@ -6,7 +6,7 @@ import { PRIVACY } from '@/data/legal'
  *
  * A draft, and marked as one. The content is written from what this codebase
  * actually does — the fields the contact form collects, the absence of cookies
- * and analytics, and the Google Fonts request every page load makes —
+ * and analytics, the Google Fonts and Unsplash requests every page load makes —
  * rather than from a template. Where a decision has not been made (a retention
  * period, the applicable jurisdiction), the notice says so.
  *

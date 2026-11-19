@@ -1,13 +1,17 @@
 /**
- * PHOTOGRAPHY REGISTRY — LOCALLY HOSTED, LICENSED ASSETS
+ * PHOTOGRAPHY REGISTRY — PLACEHOLDER ASSETS
  * ============================================================================
- * Every photograph is self-hosted under `public/images/{section}/` and emitted
- * as WebP variants at 640, 960, 1280, 1600 and 2000 px where the source
- * resolution allows. Nothing in this file points at a third-party CDN.
+ * ⚠️  Every image below is a *placeholder*, not licensed brand photography.
  *
- * The `id` on each entry is the path (relative to `/images/`) of the asset
- * *without* the `-{width}.webp` suffix — `imageUrl()` appends it. Full provenance,
- * licence and attribution for every file is recorded in `IMAGE-SOURCES.md`.
+ * They are served from the Unsplash CDN and are intentionally centralised in
+ * this single file so that replacing them with Afghan Futian's own art-directed
+ * photography is a one-file edit. Nothing else in the codebase hard-codes an
+ * image URL.
+ *
+ * Before launch:
+ *   1. Replace each `id` with a self-hosted asset in `src/assets/photography/`.
+ *   2. Rewrite `alt` so it describes what the final image actually shows.
+ *   3. Update `DEFAULT_OG_IMAGE` to a real 1200×630 social card in `/public`.
  *
  * IMPORTANT: no image here implies that Afghan Futian owns vessels, aircraft,
  * warehouses or vehicles. They are illustrative of the *category* of work
@@ -28,24 +32,43 @@
  *    high-key stock photograph, and nothing is a heavily saturated one.
  */
 
+const UNSPLASH_CDN = 'https://images.unsplash.com/photo-'
+
 /**
- * Default social-share card. Absolute URL because Open Graph consumers (Slack,
- * LinkedIn, WhatsApp, X) fetch it out of context and cannot resolve a relative
- * path. The file is generated from the hero photograph at 1200×630.
+ * Default social-share card.
+ *
+ * Must be an absolute URL, because Open Graph consumers (Slack, LinkedIn,
+ * WhatsApp, X) fetch it out of context and cannot resolve relative paths.
+ *
+ * This is a placeholder pointing at the CDN. Replace it with a designed
+ * 1200×630 card hosted at `/og-image.jpg` before launch, then change this
+ * constant to the absolute URL of that asset.
  */
-export const DEFAULT_OG_IMAGE = 'https://afghanfutian.com/og-image.jpg'
+export const DEFAULT_OG_IMAGE =
+  'https://images.unsplash.com/photo-1590496793907-4d66e2994b4d?auto=format&fit=crop&w=1200&h=630&q=70'
 
 /** Responsive widths used across the site. Keeps payloads honest. */
 export const IMAGE_WIDTHS = [640, 960, 1280, 1600, 2000]
 
 /**
- * Build the local URL for one image at a given width.
- * @param {string} id Path relative to /images/, without the width suffix
+ * Build a single CDN URL at a given width.
+ * @param {string} id Unsplash photo id (the part after `photo-`)
  * @param {number} width
- * @param {{ quality?: number, aspect?: string }} [_options] Kept for API parity
+ * @param {{ quality?: number, aspect?: string }} [options]
  */
-export function imageUrl(id, width, _options = {}) {
-  return `/images/${id}-${width}.webp`
+export function imageUrl(id, width, options = {}) {
+  const { quality = 72, aspect } = options
+  const params = new URLSearchParams({
+    auto: 'format',
+    fit: 'crop',
+    w: String(width),
+    q: String(quality),
+  })
+  if (aspect) {
+    params.set('ar', aspect)
+    params.set('crop', 'entropy')
+  }
+  return `${UNSPLASH_CDN}${id}?${params.toString()}`
 }
 
 /**
@@ -58,198 +81,130 @@ export function imageSrcSet(id, widths = IMAGE_WIDTHS, options = {}) {
   return widths.map((w) => `${imageUrl(id, w, options)} ${w}w`).join(', ')
 }
 
-/**
- * Intrinsic dimensions of each image's largest rendition, used for explicit
- * `width`/`height` attributes on the <img> so the browser can reserve space
- * before the bytes arrive (CLS prevention).
- */
-const DIMENSIONS = {
-  'home/container-terminal-aerial': [2000, 1333],
-  'global-network/ningbo-beilun-port-aerial': [2000, 730],
-  'home/shanghai-pudong-skyline': [2000, 1000],
-  'home/high-bay-warehouse-racking': [1280, 1971],
-  'home/china-production-line': [2000, 1500],
-  'home/kwai-tsing-container-terminal': [2000, 1500],
-  'home/factory-quality-inspection': [1600, 1138],
-  'home/ocean-cargo-ship': [1600, 1089],
-  'home/business-requirements-meeting': [2000, 1335],
-  'home/yiwu-trade-market-gate': [2000, 1500],
-  'home/pallet-rack-warehouse': [1600, 1247],
-  'home/yantian-port-cranes': [1600, 900],
-  'home/intermodal-rail-freight': [2000, 1333],
-  'home/container-terminal-night': [2000, 1333],
-  'about/kabul-market-scene': [1600, 1200],
-  'about/yiwu-trade-mart': [2000, 1329],
-  'sourcing/automated-warehouse': [1600, 804],
-  'sourcing/china-production-line-packing': [2000, 1500],
-  'supply-chain/automated-storage-system': [1600, 900],
-  'supply-chain/packing-line': [2000, 900],
-  'logistics/container-ship-koper': [2000, 1315],
-  'logistics/korean-air-cargo-747': [2000, 1289],
-  'global-network/shanghai-bund-night': [2000, 651],
-  'global-network/shenzhen-skyline': [2000, 1500],
-  'contact/intermodal-freight-train': [2000, 1333],
-  'about/busy-kabul-market': [2000, 1500],
-  'sourcing/china-factory-workshop': [2000, 1500],
-  'supply-chain/warehouse-robots': [1600, 1101],
-  'logistics/cargo-aircraft-liege': [2000, 1125],
-  'global-network/beijing-cbd-skyline': [2000, 1333],
-}
-
 /** Convenience shape consumed by the <Media> component. */
 function media(id, alt, options = {}) {
-  const [width, height] = DIMENSIONS[id] ?? [1600, 1067]
   return {
     id,
     alt,
-    width,
-    height,
     aspect: options.aspect,
     widths: options.widths ?? IMAGE_WIDTHS,
+    quality: options.quality ?? 72,
+    /** Flag surfaced in dev tooling so placeholders are never forgotten. */
+    isPlaceholder: true,
   }
 }
 
 export const MEDIA = {
   /* ---- Home · Hero ----------------------------------------------------- */
   heroPrimary: media(
-    'home/container-terminal-aerial',
-    'Aerial view of shipping containers and gantry cranes at a container terminal',
+    '1590496793907-4d66e2994b4d',
+    'Placeholder: a container ship being loaded by gantry cranes at an industrial port at dusk',
   ),
   heroPanel: media(
-    'global-network/ningbo-beilun-port-aerial',
-    'Aerial view of container berths at Beilun Port in Ningbo, China',
+    '1562892302-97faedd66f1c',
+    'Placeholder: an aerial view of stacked freight containers in a terminal',
   ),
 
   /* ---- Home · Introduction -------------------------------------------- */
   introductionPrimary: media(
-    'home/shanghai-pudong-skyline',
-    'Panoramic view of the Pudong skyline in Shanghai',
+    '1672279410716-c676739163e9',
+    'Placeholder: a dense city skyline at dusk, standing in for a global trading hub',
   ),
   introductionSecondary: media(
-    'home/high-bay-warehouse-racking',
-    'Tall racking inside a high-bay warehouse',
-    // Source thumbnail is 1280 px wide.
-    { widths: [640, 960, 1280] },
+    '1782948603191-065fb15e2e8e',
+    'Placeholder: tall racking filled with cardboard boxes along a warehouse aisle',
   ),
 
   /* ---- Home · Capabilities -------------------------------------------- */
   capabilitySourcing: media(
-    'home/china-production-line',
-    'Workers operating a food production line in Guangdong, China',
+    '1651525670114-2b8117390b28',
+    'Placeholder: workers on the floor of a manufacturing facility',
   ),
   capabilityTrade: media(
-    'home/kwai-tsing-container-terminal',
-    'Rows of shipping containers at the Kwai Tsing container terminal in Hong Kong',
+    '1678182451047-196f22a4143e',
+    'Placeholder: intermodal containers stacked several high, representing international trade',
   ),
   capabilitySupplyChain: media(
-    'home/factory-quality-inspection',
-    'Garment worker checking a T-shirt during quality control in a factory',
-    { widths: [640, 960, 1280, 1600] },
+    '1759272548449-7b689a81c8fb',
+    'Placeholder: two workers in hard hats reviewing plans beside stacked shipping containers',
   ),
   capabilityLogistics: media(
-    'home/ocean-cargo-ship',
-    'A large ocean-going cargo ship at sea',
-    { widths: [640, 960, 1280, 1600] },
+    '1604506522146-316c8bedd874',
+    'Placeholder: a cargo ship under way on open water beneath a cloudy sky',
   ),
 
   /* ---- Home · Process -------------------------------------------------- */
   processRequirement: media(
-    'home/business-requirements-meeting',
-    'Business professional taking notes during a meeting at a modern office desk',
+    '1601584115197-04ecc0da31d7',
+    'Placeholder: a haulage truck on an open road in daylight',
   ),
   processSourcing: media(
-    'home/yiwu-trade-market-gate',
-    'Entrance to District 3 of Yiwu International Trade Market in China',
+    '1664382953403-fc1ac77073a0',
+    'Placeholder: two people walking a warehouse aisle lined with blue shelving',
   ),
   processSupplyChain: media(
-    'home/pallet-rack-warehouse',
-    'Pallet racking and stored goods inside a modern warehouse',
-    { widths: [640, 960, 1280, 1600] },
+    '1772299121503-cd62a57e3a26',
+    'Placeholder: workers inspecting a large, empty industrial warehouse space',
   ),
   processExport: media(
-    'home/yantian-port-cranes',
-    'Container cranes and berths at Yantian port in Shenzhen',
-    { widths: [640, 960, 1280, 1600] },
+    '1784911546759-3eb217d08293',
+    'Placeholder: port gantry cranes standing by the water beside wind turbines',
   ),
   processDelivery: media(
-    'home/intermodal-rail-freight',
-    'Intermodal freight containers stacked on railway flat cars',
+    '1790522725924-0197147189f2',
+    'Placeholder: a freight train moving along its tracks under a warm sky at golden hour',
   ),
 
-  /* ---- Closing CTA · one per page ------------------------------------- */
+  /* ---- Home · Closing CTA --------------------------------------------- */
   closingCta: media(
-    'home/container-terminal-night',
-    'Container terminal lit up at night',
-  ),
-  closingCtaAbout: media(
-    'about/busy-kabul-market',
-    'Crowded market street in Kabul, Afghanistan',
-  ),
-  closingCtaSourcing: media(
-    'sourcing/china-factory-workshop',
-    'Production machinery on a factory floor in Guangdong, China',
-  ),
-  closingCtaSupplyChain: media(
-    'supply-chain/warehouse-robots',
-    'Robots moving goods in an automated warehouse',
-    { widths: [640, 960, 1280, 1600] },
-  ),
-  closingCtaLogistics: media(
-    'logistics/cargo-aircraft-liege',
-    'Cargo Boeing 747 parked on the apron at Liège Airport',
-  ),
-  closingCtaNetwork: media(
-    'global-network/beijing-cbd-skyline',
-    "Skyline of Beijing's central business district",
+    '1494412651409-8963ce7935a7',
+    'Placeholder: an aerial view across a yard of stacked cargo crates',
   ),
 
   /* ---- Inner pages ---------------------------------------------------- */
   aboutHero: media(
-    'about/kabul-market-scene',
-    'Stalls and shoppers at a busy market in Kabul',
-    { widths: [640, 960, 1280, 1600] },
+    '1675636781244-99e2e93e81cf',
+    'Placeholder: a working harbour with ships moored below a mountain range',
   ),
   aboutOverview: media(
-    'about/yiwu-trade-mart',
-    'Exterior of District 3 at Yiwu International Trade Mart in China',
+    '1782398138730-2949ea4f9382',
+    'Placeholder: an aerial view of shipping containers arranged in neat rows',
   ),
   sourcingHero: media(
-    'sourcing/automated-warehouse',
-    'Automated high-bay warehouse with stacker cranes',
-    { widths: [640, 960, 1280, 1600] },
+    '1627309366653-2dedc084cdf1',
+    'Placeholder: tall blue shelving units filled with cardboard boxes in a large warehouse',
   ),
   sourcingSequence: media(
-    'sourcing/china-production-line-packing',
-    'Production-line equipment inside a Guangdong food factory',
+    '1717386255773-1e3037c81788',
+    'Placeholder: industrial machinery inside a large production building',
   ),
   supplyChainHero: media(
-    'supply-chain/automated-storage-system',
-    'Automated storage and retrieval system in a distribution facility',
-    { widths: [640, 960, 1280, 1600] },
+    '1684695749267-233af13276d0',
+    'Placeholder: a warehouse interior filled with stacked boxes and pallets',
   ),
   supplyChainCoordination: media(
-    'supply-chain/packing-line',
-    'Packing area with conveyor lines and packaged goods in a factory',
+    '1586528116311-ad8dd3c8310d',
+    'Placeholder: stacked plastic crates waiting in a storage area',
   ),
   logisticsHero: media(
-    'logistics/container-ship-koper',
-    'Container ship MSC Harmony III berthed at the Port of Koper',
+    '1759272548457-12b8580bfca7',
+    'Placeholder: a cargo ship being loaded at a port, with cranes alongside',
   ),
   logisticsArrangement: media(
-    'logistics/korean-air-cargo-747',
-    'Korean Air cargo Boeing 747 parked at Amsterdam Schiphol Airport',
+    '1775449053619-89b5265f611a',
+    'Placeholder: a large freight aircraft standing on the apron',
   ),
   networkHero: media(
-    'global-network/shanghai-bund-night',
-    'The Shanghai skyline and Bund waterfront at night',
+    '1611323340350-bdcc0e6cfae5',
+    'Placeholder: a city skyline seen across water at night',
   ),
   networkHorizon: media(
-    'global-network/shenzhen-skyline',
-    'Modern high-rise skyline in Shenzhen, China',
+    '1611728337177-89dfbbdc7a3a',
+    'Placeholder: a city skyline lit up after dark',
   ),
   contactHero: media(
-    'contact/intermodal-freight-train',
-    'Freight train carrying intermodal containers in Pyhäsalmi, Finland',
+    '1592805144716-feeccccef5ac',
+    'Placeholder: a haulage truck on a highway beneath a warm evening sky',
   ),
 }
 

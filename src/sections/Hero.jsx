@@ -113,6 +113,7 @@ export default function Hero() {
         <div ref={imageRef} className="absolute inset-[-8%] will-change-transform">
           <Media
             src={MEDIA.heroPrimary}
+            alt="Placeholder: a container ship being loaded by gantry cranes at an industrial port at dusk"
             sizes="100vw"
             priority
             className="h-full w-full"

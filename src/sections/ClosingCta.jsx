@@ -37,7 +37,7 @@ import { gsap, useGSAP } from '@/lib/gsap'
  * nobody needs.
  */
 
-export default function ClosingCta({ media = MEDIA.closingCta }) {
+export default function ClosingCta() {
   const rootRef = useRef(null)
 
   const eyebrowRef = useRef(null)
@@ -89,7 +89,7 @@ export default function ClosingCta({ media = MEDIA.closingCta }) {
           className="absolute inset-x-0 -bottom-[9%] -top-[9%] will-change-transform"
         >
           <div ref={mediaScaleRef} className="h-full w-full">
-            <Media src={media} decorative sizes="100vw" className="h-full w-full" />
+            <Media src={MEDIA.closingCta} decorative sizes="100vw" className="h-full w-full" />
           </div>
         </div>
       </div>

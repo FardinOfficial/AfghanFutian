@@ -59,7 +59,7 @@ export const ABOUT = {
       },
     ],
     media: MEDIA.aboutOverview,
-    mediaNote: 'Illustrative licensed photography — not Afghan Futian’s own operations or assets.',
+    mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
   },
 
   ledger: {
@@ -155,7 +155,7 @@ export const SOURCING = {
       },
     ],
     media: MEDIA.sourcingSequence,
-    mediaNote: 'Illustrative licensed photography — not Afghan Futian’s own operations or assets.',
+    mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
   },
 
   brief: {
@@ -258,7 +258,7 @@ export const SUPPLY_CHAIN = {
       'When sourcing, production, documentation and movement sit with different companies, the buyer becomes the integration layer — chasing updates, reconciling versions and absorbing every gap between them.',
     body: 'Holding all four in one place does not remove the gaps; international trade is full of them. It means there is one party responsible for noticing them, and one version of events to work from.',
     media: MEDIA.supplyChainCoordination,
-    mediaNote: 'Illustrative licensed photography — not Afghan Futian’s own operations or assets.',
+    mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
   },
 
   limits: {
@@ -335,7 +335,7 @@ export const LOGISTICS = {
       },
     ],
     media: MEDIA.logisticsArrangement,
-    mediaNote: 'Illustrative licensed photography — not Afghan Futian’s own operations or assets.',
+    mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
   },
 
   limits: {
@@ -360,7 +360,7 @@ export const LOGISTICS = {
     ],
   },
 
-  mediaNote: 'Illustrative licensed photography — not Afghan Futian’s own operations or assets.',
+  mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
 
   next: {
     label: 'Global Network',
@@ -437,7 +437,7 @@ export const NETWORK_PAGE = {
     heading: 'It becomes a map when there is one to draw.',
     body: 'A network diagram is only as honest as the data behind it. When Afghan Futian confirms the destinations it serves and is willing to publish them, this page gains a real map — named markets, real lanes, and the volumes to go with them. Until then it stays a diagram, and it says so.',
     media: MEDIA.heroPanel,
-    mediaNote: 'Illustrative licensed photography — not Afghan Futian’s own operations or assets.',
+    mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
   },
 }
 

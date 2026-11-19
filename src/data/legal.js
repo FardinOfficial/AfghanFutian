@@ -19,8 +19,7 @@ import { CONTACT_DETAILS } from './navigation'
  * ----------------------------------------------------------------------------
  *  • Every statement here is checkable against the code in this repository.
  *    The form fields are read from `contact.js`; the third-party requests are
- *    the Google Fonts loads the site actually makes (photography is served
- *    from this site's own domain); the
+ *    the Google Fonts and Unsplash CDN loads the site actually makes; the
  *    absence of cookies, analytics and tracking is a fact about this codebase,
  *    not a promise about future conduct.
  *  • Where a decision has not been made — a retention period, a governing law,
@@ -107,7 +106,7 @@ export const PRIVACY = {
       index: '05',
       heading: 'Third-party requests the site makes',
       paragraphs: [
-        'The site loads its typefaces from Google Fonts. When a page loads, your browser requests those files directly from Google, which means your IP address and basic browser details are visible to them. Photography is served from this website’s own domain and does not contact a third-party image provider.',
+        'The site loads its typefaces from Google Fonts, and its placeholder photography from the Unsplash image CDN. When a page loads, your browser requests those files directly from those providers, which means your IP address and basic browser details are visible to them.',
         'This happens on every visit, whether or not you use a form. It is a consequence of how the site is currently built, and it is stated here rather than left unmentioned.',
         'The meeting booker does not load Cal.com code in your browser and does not embed its calendar. Your browser calls this website only; the server then calls Cal.com and Resend. Those providers receive the details needed to make the booking and send its mail, under their own privacy terms.',
         'The company that hosts this website also keeps standard server logs — such as IP address and requested page — as part of running the server. The host and its retention period have not been chosen yet.',
@@ -183,7 +182,7 @@ export const TERMS = {
       heading: 'Content is illustrative, and partly pending',
       paragraphs: [
         'Much of the content on this site describes method rather than confirmed fact. Where a figure, certification, market, route or owned asset would normally be stated and is not, it is because Afghan Futian has not confirmed it. The site says so on the page rather than filling the gap.',
-        'The photography is illustrative, licensed imagery. It is not a record of Afghan Futian’s own operations, premises or assets, and it does not imply that the company owns any vessel, aircraft, warehouse or vehicle shown.',
+        'The photography is illustrative placeholder imagery. It is not a record of Afghan Futian’s own operations, premises or assets, and it does not imply that the company owns any vessel, aircraft, warehouse or vehicle shown.',
       ],
     },
     {
@@ -201,7 +200,7 @@ export const TERMS = {
       heading: 'Intellectual property',
       paragraphs: [
         'The Afghan Futian name and any logo are the property of the company, and the written content of this site belongs to Afghan Futian.',
-        'The photographs are licensed stock images from open-licence sources such as Wikimedia Commons, used under the terms recorded in the repository’s IMAGE-SOURCES.md. They are not owned by Afghan Futian, and they do not depict the company’s own operations or assets.',
+        'The photographs are placeholders sourced from Unsplash and used under that service’s licence. They are not owned by Afghan Futian, and they will be replaced with licensed brand photography.',
       ],
     },
     {

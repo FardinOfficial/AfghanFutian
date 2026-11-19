@@ -22,7 +22,7 @@ import { useGSAP } from '@/lib/gsap'
  * is why the drift never exposes an edge at either extreme.
  *
  * Accessibility: `caption` is a real `<figcaption>`. When no caption is given the
- * image keeps its own `alt` from the registry, which describes the photograph.
+ * image keeps its own `alt` from the registry, which describes the placeholder.
  */
 
 const TONES = {
