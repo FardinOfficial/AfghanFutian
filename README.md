@@ -707,11 +707,12 @@ endpoints hosted separately (and `VITE_API_BASE_URL` pointed at them).
 
 Vercel publishes every `.js` file under `api/` as a function. Tests and helpers
 therefore live in `server/`, and **`.vercelignore` keeps any stray test out as a
-second line of defence**. The earlier layout had 14 files under `api/`: one
-contact function, six schedule handlers, a helper and six test files nested
-under `api/schedule/`. The old `api/*.test.js` ignore rule did not match nested
-files, so all 14 counted against the Hobby plan's limit of 12. Consolidation to
-three entry points removes that failure without changing any public URL.
+second line of defence**. The earlier layout had 14 deployable files under
+`api/`: `contact.js`, plus seven schedule handlers, five test files and one
+helper nested under `api/schedule/`. The old `api/*.test.js` ignore rule matched
+only the top-level `contact.test.js`, so all 14 counted against the Hobby plan's
+limit of 12. Consolidation to three entry points removes that failure without
+changing any public URL.
 
 | Host | Fallback | Headers | Function |
 | --- | --- | --- | --- |
