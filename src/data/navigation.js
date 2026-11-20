@@ -28,7 +28,7 @@ export const ROUTES = {
  */
 export const PRIMARY_NAV = [
   { label: 'Home', title: 'Home', to: ROUTES.home, index: '01' },
-  { label: 'About', title: 'About Us', to: ROUTES.about, index: '02' },
+  { label: 'About Us', title: 'About Us', to: ROUTES.about, index: '02' },
   { label: 'Sourcing', title: 'Sourcing', to: ROUTES.sourcing, index: '03' },
   { label: 'Supply Chain', title: 'Supply Chain', to: ROUTES.supplyChain, index: '04' },
   { label: 'Logistics', title: 'Logistics', to: ROUTES.logistics, index: '05' },

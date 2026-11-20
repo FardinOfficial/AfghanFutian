@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -31,6 +31,7 @@ import {
 import HOME from '@/data/home'
 
 import { localize } from './localize'
+import { runLocaleTransition } from './transition'
 import {
   HTML_ATTRIBUTES,
   OG_LOCALE,
@@ -54,6 +55,8 @@ export function useLocale() {
 
   const locale = i18n.resolvedLanguage ?? i18n.language ?? 'en'
   const activeLocale = ['en', 'ps', 'fa-AF'].includes(locale) ? locale : 'en'
+  const transitioningRef = useRef(false)
+  const [transitioning, setTransitioning] = useState(false)
 
   // Explicit URL prefixes override the stored preference. This also keeps the
   // language in step with browser back/forward navigation.
@@ -71,18 +74,43 @@ export function useLocale() {
   }, [activeLocale])
 
   const switchTo = useCallback(
-    (nextLocale) => {
+    async (nextLocale) => {
       if (!['en', 'ps', 'fa-AF'].includes(nextLocale) || nextLocale === activeLocale) return
+      // A second click while the curtain is down would stack preloaders and
+      // fight over the same URL. The first change wins; buttons are disabled
+      // for the duration of the transition.
+      if (transitioningRef.current) return
+
+      // Persist first: a refresh during the curtain keeps the chosen language.
       storeLocale(nextLocale)
-      i18n.changeLanguage(nextLocale)
-      navigate(switchedPath(pathname, search, hash, nextLocale))
+
+      const apply = () => {
+        i18n.changeLanguage(nextLocale)
+        navigate(switchedPath(pathname, search, hash, nextLocale))
+      }
+
+      transitioningRef.current = true
+      setTransitioning(true)
+      try {
+        await runLocaleTransition(apply)
+      } finally {
+        transitioningRef.current = false
+        setTransitioning(false)
+      }
     },
     [activeLocale, hash, i18n, navigate, pathname, search],
   )
 
   const pathFor = useCallback((path = '/') => localizedPath(path, activeLocale), [activeLocale])
 
-  return { locale: activeLocale, switchTo, pathFor, contentPath: stripLocale(pathname), ogLocale: OG_LOCALE[activeLocale] }
+  return {
+    locale: activeLocale,
+    switchTo,
+    transitioning,
+    pathFor,
+    contentPath: stripLocale(pathname),
+    ogLocale: OG_LOCALE[activeLocale],
+  }
 }
 
 /** Small helper shared by the data hooks. */

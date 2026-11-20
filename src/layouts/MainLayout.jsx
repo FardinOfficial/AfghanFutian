@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 
 import ErrorBoundary from '@/components/ErrorBoundary'
@@ -9,6 +9,7 @@ import ScrollProgress from '@/components/ScrollProgress'
 import ClosingCta from '@/sections/ClosingCta'
 import { ROUTES } from '@/data/navigation'
 import { useLocale } from '@/i18n/hooks'
+import { setLocaleTransitionHandler } from '@/i18n/transition'
 import { SmoothScrollProvider, useScrollReset } from '@/hooks/useSmoothScroll'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta'
 import { ScrollTrigger } from '@/lib/gsap'
@@ -40,8 +41,70 @@ export default function MainLayout() {
   const [showPreloader, setShowPreloader] = useState(
     () => !prefersReducedMotion() && !isIntroComplete(),
   )
+  /** Remounting with a fresh key replays the original preloader timeline. */
+  const [preloaderKey, setPreloaderKey] = useState(0)
+  /** Resolves once the new locale's text has rendered and its fonts are ready. */
+  const [fontGate, setFontGate] = useState(null)
+  const resolveGateRef = useRef(null)
+  /** Resolves only when the curtain has fully lifted (the switcher waits on it). */
+  const resolveHandoffRef = useRef(null)
 
   useDocumentMeta(pathname)
+
+  /**
+   * Reuse the opening curtain for language changes. The order matters: cover
+   * the viewport first, then apply the language/route/direction behind it, then
+   * let the preloader finish only once the translated type has settled. No new
+   * loading animation and no full page reload are involved.
+   */
+  useEffect(() => {
+    setLocaleTransitionHandler(async (apply) => {
+      if (prefersReducedMotion()) {
+        apply()
+        return
+      }
+
+      const gate = new Promise((resolve) => {
+        resolveGateRef.current = resolve
+      })
+      const handoff = new Promise((resolve) => {
+        resolveHandoffRef.current = resolve
+      })
+      setFontGate(gate)
+      setPreloaderKey((key) => key + 1)
+      setShowPreloader(true)
+
+      // Two frames guarantees the curtain has painted before any text or
+      // document direction changes, so no English or LTR layout can flash.
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+      apply()
+
+      // Give React a frame to render the translated copy, then wait for the
+      // fonts that copy needs. The preloader holds the curtain until both its
+      // own font wait and this gate have resolved.
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+      await document.fonts?.ready
+      resolveGateRef.current?.()
+      // The switcher stays disabled until the curtain is gone, so a second
+      // click cannot stack a new preloader over a half-lifted one. The timeout
+      // is only a safety net — the curtain's own ceiling is much shorter — so
+      // a stalled animation can never lock the control forever.
+      await Promise.race([
+        handoff,
+        new Promise((resolve) => setTimeout(resolve, 4000)),
+      ])
+    })
+
+    return () => setLocaleTransitionHandler(null)
+  }, [])
+
+  const handlePreloaderComplete = useCallback(() => {
+    setShowPreloader(false)
+    resolveGateRef.current?.()
+    resolveGateRef.current = null
+    resolveHandoffRef.current?.()
+    resolveHandoffRef.current = null
+  }, [])
 
   // Translated copy is usually a different length from the English source,
   // which changes section heights. Refresh the single ScrollTrigger registry
@@ -71,7 +134,9 @@ export default function MainLayout() {
     <SmoothScrollProvider>
       <ScrollManager />
 
-      {showPreloader && <Preloader onComplete={() => setShowPreloader(false)} />}
+      {showPreloader && (
+        <Preloader key={preloaderKey} ready={fontGate} onComplete={handlePreloaderComplete} />
+      )}
 
       <Navbar />
 

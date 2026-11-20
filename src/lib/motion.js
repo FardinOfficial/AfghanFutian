@@ -38,6 +38,13 @@ export function isDesktopViewport() {
  */
 export const BREAKPOINT_XL = '(min-width: 1280px)'
 
+/**
+ * The four-group desktop navbar (logo, links, language selector, actions) needs
+ * more room than the original three-group bar, so it starts at `2xl`. Below it
+ * the overlay menu keeps every control without squeezing any label.
+ */
+export const BREAKPOINT_2XL = '(min-width: 1536px)'
+
 /** Subscribe to a media query, returning an unsubscribe function. */
 export function onMediaChange(query, handler) {
   if (!canUseDOM) return () => {}

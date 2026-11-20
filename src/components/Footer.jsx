@@ -5,7 +5,7 @@ import { ArrowUp } from 'lucide-react'
 import Logo from '@/components/Logo'
 import SocialLinks from '@/components/SocialLinks'
 import { LocaleLink } from '@/i18n/LocaleLink'
-import { useCompany, useNavigation } from '@/i18n/hooks'
+import { useCompany, useLocale, useNavigation } from '@/i18n/hooks'
 import { addLineReveal } from '@/animations/textAnimations'
 import { drawRule, fadeRise } from '@/animations/scrollAnimations'
 import { gsap, useGSAP } from '@/lib/gsap'
@@ -32,17 +32,13 @@ export default function Footer() {
   const lenis = useLenis()
   const { t } = useTranslation()
   const tr = (key) => t(key, { ns: 'common' })
+  const { locale } = useLocale()
   const company = useCompany()
   const { CONTACT_DETAILS, FOOTER_COMPANY, FOOTER_SERVICES, LEGAL_LINKS } = useNavigation()
 
   useGSAP(
     () => {
       if (prefersReducedMotion()) return
-
-      // Brand statement
-      addLineReveal(gsap.timeline({
-        scrollTrigger: { trigger: '.footer-statement', start: 'top 88%', once: true },
-      }), rootRef.current.querySelector('.footer-statement'), { stagger: 0.09 })
 
       // Columns + rule
       fadeRise('.footer-col', { trigger: '.footer-columns', y: 26, stagger: 0.08 })
@@ -64,6 +60,24 @@ export default function Footer() {
     { scope: rootRef },
   )
 
+  // SplitText rewrites the statement's DOM, so a translated string cannot be
+  // reconciled into the old split nodes. Remounting the heading on a locale
+  // change and re-running only this reveal keeps the original animation while
+  // letting the new copy render correctly.
+  useGSAP(
+    () => {
+      if (prefersReducedMotion()) return
+      addLineReveal(
+        gsap.timeline({
+          scrollTrigger: { trigger: '.footer-statement', start: 'top 88%', once: true },
+        }),
+        rootRef.current.querySelector('.footer-statement'),
+        { stagger: 0.09 },
+      )
+    },
+    { dependencies: [locale], scope: rootRef },
+  )
+
   function scrollToTop() {
     if (lenis) lenis.scrollTo(0, { duration: 1.4 })
     else window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' })
@@ -78,7 +92,10 @@ export default function Footer() {
     >
       <div className="u-container pt-[clamp(4rem,9vh,7rem)]">
         {/* Brand statement */}
-        <h2 className="footer-statement font-display text-display-2 max-w-[22ch] font-medium uppercase">
+        <h2
+          key={locale}
+          className="footer-statement font-display text-display-2 max-w-[22ch] font-medium uppercase"
+        >
           {tr('Connecting Markets.')}
           <br />
           {tr('Moving the World.')}
@@ -98,7 +115,7 @@ export default function Footer() {
             </p>
           </div>
 
-          <nav aria-label="Services" className="footer-col lg:col-span-2">
+          <nav aria-label={tr('Services')} className="footer-col lg:col-span-2">
             <h3 className="u-eyebrow text-canvas-muted">{tr('Services')}</h3>
             <ul className="mt-5 space-y-3">
               {FOOTER_SERVICES.map((item) => (
@@ -114,7 +131,7 @@ export default function Footer() {
             </ul>
           </nav>
 
-          <nav aria-label="Company" className="footer-col lg:col-span-2">
+          <nav aria-label={tr('Company')} className="footer-col lg:col-span-2">
             <h3 className="u-eyebrow text-canvas-muted">{tr('Company')}</h3>
             <ul className="mt-5 space-y-3">
               {FOOTER_COMPANY.map((item) => (

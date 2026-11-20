@@ -8,9 +8,9 @@ import { useLocale } from '@/i18n/hooks'
  *
  * The three labels are deliberately fixed in every locale — they are the
  * languages' own names, not translations — so the control never moves under a
- * visitor's finger when the page direction changes. A single accent plate
- * slides between segments; it is measured from the active button so labels of
- * different widths stay correctly marked.
+ * visitor's finger when the page direction changes. It is an LTR island with
+ * three equal segments; a single brand-accent plate slides between them and is
+ * measured from the active button so labels of different widths stay marked.
  */
 const LANGUAGES = [
   { id: 'en', label: 'Eng' },
@@ -18,8 +18,8 @@ const LANGUAGES = [
   { id: 'fa-AF', label: 'دری' },
 ]
 
-export default function LanguageSwitcher({ tone = 'light', className = '' }) {
-  const { locale, switchTo } = useLocale()
+export default function LanguageSwitcher({ tone = 'light', className = '', onSwitch }) {
+  const { locale, switchTo, transitioning } = useLocale()
   const { t } = useTranslation()
   const dark = tone === 'dark'
   const activeRef = useRef(null)
@@ -30,6 +30,12 @@ export default function LanguageSwitcher({ tone = 'light', className = '' }) {
     if (!button) return
     setIndicator({ x: button.offsetLeft, width: button.offsetWidth })
   }, [locale])
+
+  const select = (id) => {
+    if (transitioning || id === locale) return
+    onSwitch?.()
+    switchTo(id)
+  }
 
   return (
     <div
@@ -55,7 +61,8 @@ export default function LanguageSwitcher({ tone = 'light', className = '' }) {
             type="button"
             lang={language.id}
             aria-pressed={active}
-            onClick={() => switchTo(language.id)}
+            disabled={transitioning}
+            onClick={() => select(language.id)}
             className={`u-locale-switch__option ${active ? 'is-active' : ''}`}
           >
             {language.label}

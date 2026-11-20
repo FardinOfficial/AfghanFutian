@@ -40,7 +40,7 @@ import { prefersReducedMotion } from '@/lib/motion'
 const CEILING_MS = 1500
 const CLIMB_TO = 90
 
-export default function Preloader({ onComplete }) {
+export default function Preloader({ onComplete, ready }) {
   const { t } = useTranslation()
   const rootRef = useRef(null)
   const counterRef = useRef(null)
@@ -73,16 +73,20 @@ export default function Preloader({ onComplete }) {
     let cancelled = false
 
     const fonts = document.fonts?.ready ?? Promise.resolve()
+    // On a language change the layout hands us a gate that only opens once the
+    // translated copy has rendered and its webfont has loaded. On the first
+    // load there is no gate, so this is identical to the original font wait.
+    const gate = ready ?? Promise.resolve()
     const ceiling = new Promise((resolve) => setTimeout(resolve, CEILING_MS))
 
-    Promise.race([fonts, ceiling]).then(() => {
+    Promise.race([Promise.all([fonts, gate]), ceiling]).then(() => {
       if (!cancelled) setAssetsReady(true)
     })
 
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [ready])
 
   /* ---- Reduced motion: skip entirely ---------------------------------- */
   useEffect(() => {
@@ -169,12 +173,16 @@ export default function Preloader({ onComplete }) {
   if (!shouldRender) return null
 
   return (
+    /* The preloader is a fixed cinematic overlay, not page content: keep its
+       composition identical in every language so switching locale never
+       mirrors the curtain. Only its copy is translated. */
     <div
       ref={rootRef}
       role="status"
       aria-live="polite"
       aria-label={t('Loading Afghan Futian', { ns: 'common' })}
-      className="fixed inset-0 z-[100] flex flex-col justify-between bg-ink px-[var(--spacing-gutter)] py-8 text-canvas will-change-[clip-path] sm:py-10"
+      dir="ltr"
+      className="fixed inset-0 z-[100] flex flex-col justify-between bg-ink px-[var(--spacing-gutter)] py-8 text-left text-canvas will-change-[clip-path] sm:py-10"
     >
       {/* Top rail */}
       <div className="flex items-start justify-between gap-6">

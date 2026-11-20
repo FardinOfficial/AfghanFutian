@@ -11,7 +11,7 @@ import { LocaleLink, LocaleNavLink } from '@/i18n/LocaleLink'
 import { useNavigation } from '@/i18n/hooks'
 import { EASE, gsap, useGSAP } from '@/lib/gsap'
 import { onIntroComplete } from '@/lib/intro'
-import { BREAKPOINT_XL, onMediaChange, prefersReducedMotion } from '@/lib/motion'
+import { BREAKPOINT_2XL, onMediaChange, prefersReducedMotion } from '@/lib/motion'
 import { useLenis } from '@/hooks/useSmoothScroll'
 import { useNavSentinel } from '@/hooks/useNavSentinel'
 
@@ -65,7 +65,7 @@ export default function Navbar() {
   const { pathname } = useLocation()
   const lenis = useLenis()
   const { t } = useTranslation()
-  const { NAVBAR_LINKS, PRIMARY_NAV, ROUTES, CONTACT_DETAILS } = useNavigation()
+  const { NAVBAR_LINKS, PRIMARY_NAV, ROUTES } = useNavigation()
   const tr = useCallback((key) => t(key, { ns: 'common' }), [t])
 
   /** True once the page's hero has scrolled up behind the bar. */
@@ -82,7 +82,7 @@ export default function Navbar() {
   /* ---- Never leave the overlay open past the breakpoint that hides it ---- */
   useEffect(() => {
     if (!menuOpen) return undefined
-    return onMediaChange(BREAKPOINT_XL, (isDesktop) => {
+    return onMediaChange(BREAKPOINT_2XL, (isDesktop) => {
       if (isDesktop) setMenuOpen(false)
     })
   }, [menuOpen])
@@ -217,7 +217,11 @@ export default function Navbar() {
             : 'border-b border-line bg-canvas/85 text-ink backdrop-blur-[14px]'
         }`}
       >
-        <div className="u-container flex h-[72px] items-center justify-between gap-6 xl:h-[84px]">
+        {/* Four groups on desktop — logo, links, language selector and actions —
+            spaced by justify-between so the gap on either side of the selector
+            is identical. `2xl` gives those groups room without shrinking any
+            label; below it only the logo and the menu toggle remain. */}
+        <div className="u-container flex h-[72px] items-center justify-between gap-6 2xl:h-[84px] 2xl:gap-8">
           <LocaleLink
             to={ROUTES.home}
             aria-label={t('Afghan Futian Trading Company — home', { ns: 'common' })}
@@ -229,11 +233,10 @@ export default function Navbar() {
             <Logo onDark={overHero} />
           </LocaleLink>
 
-          {/* Desktop navigation. Held back to `xl` rather than `lg`: five links
-              plus two calls to action need roughly 1155px of inner width and
-              the `lg` container offers ~932px, which wrapped the labels onto a
-              second line. See BREAKPOINT_XL in `src/lib/motion.js`. */}
-          <nav aria-label={tr('Primary')} className="hidden xl:block">
+          {/* Desktop navigation. Held back to `2xl`: five links, the selector
+              and two calls to action need room to breathe in every language.
+              See BREAKPOINT_2XL in `src/lib/motion.js`. */}
+          <nav aria-label={tr('Primary')} className="hidden shrink-0 2xl:block">
             <ul className="flex items-center gap-6">
               {NAVBAR_LINKS.map((item) => (
                 <li key={item.to}>
@@ -258,15 +261,20 @@ export default function Navbar() {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-3">
+          {/* The selector is a peer of the links and the actions, not a child
+              of either, so its two neighbouring gaps stay equal. */}
+          <div className="hidden shrink-0 2xl:block">
+            <LanguageSwitcher tone={overHero ? 'dark' : 'light'} />
+          </div>
+
+          <div className="flex shrink-0 items-center gap-3">
             {/* Hidden via a wrapper, not on the Button itself.
                 `Button`'s base classes always include `inline-flex`, and
                 Tailwind emits `.hidden` before `.inline-flex`, so
-                `className="hidden xl:inline-flex"` silently loses and the CTA
+                `className="hidden 2xl:inline-flex"` silently loses and the CTA
                 stays visible on phones. Hiding the wrapper sidesteps the
                 specificity tie entirely. */}
-            <div className="hidden items-center gap-3 xl:flex">
-              <LanguageSwitcher tone={overHero ? 'dark' : 'light'} />
+            <div className="hidden items-center gap-3 2xl:flex">
               <Button
                 to={ROUTES.schedule}
                 variant={overHero ? 'ghost' : 'outline'}
@@ -287,7 +295,7 @@ export default function Navbar() {
               aria-expanded={menuOpen}
               aria-controls="mobile-navigation"
               aria-label={tr(menuOpen ? 'Close menu' : 'Open menu')}
-              className={`flex h-11 w-11 items-center justify-center border transition-colors duration-500 xl:hidden ${
+              className={`flex h-11 w-11 items-center justify-center border transition-colors duration-500 2xl:hidden ${
                 overHero ? 'border-line-invert text-canvas' : 'border-line text-ink'
               }`}
             >
@@ -307,7 +315,7 @@ export default function Navbar() {
           aria-modal="true"
           aria-label={tr('Site navigation')}
           onClick={onBackdropClick}
-          className="fixed inset-0 z-[90] flex flex-col overflow-hidden bg-ink text-canvas xl:hidden"
+          className="fixed inset-0 z-[90] flex flex-col overflow-hidden bg-ink text-canvas 2xl:hidden"
         >
           <div className="u-container flex h-[72px] shrink-0 items-center justify-between">
             <Logo onDark />
@@ -359,36 +367,6 @@ export default function Navbar() {
               </Button>
               <div className="mt-5 flex justify-center">
                 <LanguageSwitcher tone="dark" />
-              </div>
-            </div>
-
-            <div className="menu-aside mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
-              <div>
-                <p className="u-eyebrow text-canvas-muted">{tr('Email')}</p>
-                <a
-                  href={CONTACT_DETAILS.emailHref}
-                  onClick={closeMenu}
-                  className="mt-2 block text-sm text-canvas/85"
-                >
-                  {CONTACT_DETAILS.email}
-                </a>
-              </div>
-              <div>
-                <p className="u-eyebrow text-canvas-muted">{tr('Telephone')}</p>
-                <ul className="mt-2 space-y-2">
-                  {CONTACT_DETAILS.phones.map((phone) => (
-                    <li key={phone.id}>
-                      <a
-                        href={phone.href}
-                        onClick={closeMenu}
-                        className="block text-sm text-canvas/85"
-                      >
-                        <span className="mr-2 text-canvas-muted">{phone.label}</span>
-                        {phone.display}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
               </div>
             </div>
 
