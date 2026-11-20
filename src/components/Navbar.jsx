@@ -6,7 +6,6 @@ import { Menu, X } from 'lucide-react'
 import Button from '@/components/Button'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import Logo from '@/components/Logo'
-import SocialLinks from '@/components/SocialLinks'
 import { LocaleLink, LocaleNavLink } from '@/i18n/LocaleLink'
 import { useNavigation } from '@/i18n/hooks'
 import { EASE, gsap, useGSAP } from '@/lib/gsap'
@@ -368,11 +367,6 @@ export default function Navbar() {
               <div className="mt-5 flex justify-center">
                 <LanguageSwitcher tone="dark" />
               </div>
-            </div>
-
-            <div className="menu-aside mt-6">
-              <p className="u-eyebrow text-canvas-muted">{tr('Elsewhere')}</p>
-              <SocialLinks tone="dark" className="mt-3" onNavigate={closeMenu} />
             </div>
           </div>
         </div>
