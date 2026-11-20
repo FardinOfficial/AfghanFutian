@@ -116,7 +116,7 @@ function ScrollProgress() {
       <div
         ref={barRef}
         data-scroll-progress
-        className={`h-full w-full scale-x-0 bg-accent will-change-transform ${
+        className={`h-full w-full scale-x-0 bg-[#12306B] will-change-transform ${
           isRtl ? 'origin-right' : 'origin-left'
         }`}
       />
