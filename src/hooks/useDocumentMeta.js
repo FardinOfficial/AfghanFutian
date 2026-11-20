@@ -1,36 +1,35 @@
 import { useEffect } from 'react'
 
 import { siteUrl } from '@/data/company.js'
-import { NOT_FOUND_META, PAGE_META } from '@/data/navigation'
+import { LOCALES, localizedPath, stripLocale } from '@/i18n/routing'
+import { useLocale, useNavigation } from '@/i18n/hooks'
 
 /**
- * Apply per-route document metadata.
+ * Apply per-route, per-language document metadata.
  *
  * A single-page app cannot rely on the server to swap <title> and <meta>, so
- * this hook keeps them in step with the active route. Open Graph tags are
- * updated too, which keeps shared links accurate when the site is served
- * client-side.
+ * this hook keeps them in step with the active route and locale. Open Graph,
+ * canonical, hreflang and language tags are updated too, which keeps shared
+ * links and search results accurate when the site is served client-side.
  *
- * Two details matter beyond the obvious tags:
- *
- *  • `og:url` is set per route. Leaving the homepage's `og:url` on every page
- *    makes social platforms attribute every shared link to the homepage, which
- *    is how a shared /sourcing link ends up previewing as the front door.
- *
- *  • A 404 is marked `noindex, nofollow` and its canonical is *removed*. The
- *    default canonical in `index.html` points at the homepage, so leaving it in
- *    place would tell a crawler that every missing URL is a duplicate of `/`.
- *
- * Note: crawlers that do not execute JavaScript still receive the defaults
- * baked into `index.html`. When the site is later rendered on a server, this
- * hook can be replaced by real head management without touching any page.
+ * A 404 is marked `noindex, nofollow` and its canonical is removed; the default
+ * canonical in `index.html` points at the homepage, so leaving it in place
+ * would tell a crawler that every missing URL is a duplicate of `/`.
  */
 export function useDocumentMeta(pathname) {
+  const { locale, ogLocale } = useLocale()
+  const { PAGE_META, NOT_FOUND_META } = useNavigation()
+  const contentPath = stripLocale(pathname) || '/'
+
   useEffect(() => {
-    // Known routes use their own metadata; anything else is a 404.
-    const known = Boolean(PAGE_META[pathname])
-    const meta = PAGE_META[pathname] ?? NOT_FOUND_META
+    const known = Boolean(PAGE_META[contentPath])
+    const meta = PAGE_META[contentPath] ?? NOT_FOUND_META
     if (!meta) return
+
+    const canonicalUrl = (targetLocale) => {
+      const path = localizedPath(contentPath, targetLocale)
+      return `${siteUrl(path)}${path === '/' ? '/' : ''}`
+    }
 
     document.title = meta.title
 
@@ -61,7 +60,8 @@ export function useDocumentMeta(pathname) {
     setNamed('twitter:description', meta.description)
     setProperty('og:title', meta.title)
     setProperty('og:description', meta.description)
-    setProperty('og:url', siteUrl(pathname))
+    setProperty('og:url', canonicalUrl(locale))
+    setProperty('og:locale', ogLocale)
     setNamed('robots', meta.robots ?? (known ? 'index, follow' : 'noindex, nofollow'))
 
     if (meta.image) {
@@ -69,17 +69,47 @@ export function useDocumentMeta(pathname) {
       setNamed('twitter:image', meta.image)
     }
 
+    // Alternates are rebuilt from scratch so no stale locale survives a switch.
+    document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((tag) => tag.remove())
+    const alternates = [
+      ...LOCALES.map((id) => ({
+        hreflang: id === 'fa-AF' ? 'fa-AF' : id,
+        href: canonicalUrl(id),
+      })),
+      { hreflang: 'x-default', href: canonicalUrl('en') },
+    ]
+    for (const { hreflang, href } of alternates) {
+      const tag = document.createElement('link')
+      tag.setAttribute('rel', 'alternate')
+      tag.setAttribute('hreflang', hreflang)
+      tag.setAttribute('href', href)
+      document.head.appendChild(tag)
+    }
+
     const existingCanonical = document.querySelector('link[rel="canonical"]')
 
     if (known && !String(meta.robots).includes('noindex')) {
       const canonical = existingCanonical ?? document.createElement('link')
       canonical.setAttribute('rel', 'canonical')
-      canonical.setAttribute('href', siteUrl(pathname))
+      canonical.setAttribute('href', canonicalUrl(locale))
       if (!existingCanonical) document.head.appendChild(canonical)
     } else {
       existingCanonical?.remove()
     }
-  }, [pathname])
+  }, [contentPath, locale, NOT_FOUND_META, ogLocale, PAGE_META])
+
+  // Keep the fallback structured data's description in step with the locale.
+  useEffect(() => {
+    const ld = document.querySelector('script[type="application/ld+json"]')
+    if (!ld) return
+    try {
+      const data = JSON.parse(ld.textContent)
+      data.inLanguage = locale
+      ld.textContent = JSON.stringify(data, null, 2)
+    } catch {
+      /* A malformed static block must not break the page. */
+    }
+  }, [contentPath, locale])
 }
 
 export default useDocumentMeta

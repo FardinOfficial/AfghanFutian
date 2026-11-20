@@ -2,8 +2,8 @@ import { useRef } from 'react'
 
 import Button from '@/components/Button'
 import Media from '@/components/Media'
-import { CLOSING_CTA } from '@/data/home'
 import { MEDIA } from '@/data/media'
+import { useHome } from '@/i18n/hooks'
 import { fadeRise, imageReveal, parallax } from '@/animations/scrollAnimations'
 import { addLineReveal } from '@/animations/textAnimations'
 import { gsap, useGSAP } from '@/lib/gsap'
@@ -38,6 +38,8 @@ import { gsap, useGSAP } from '@/lib/gsap'
  */
 
 export default function ClosingCta() {
+  const { CLOSING_CTA } = useHome()
+
   const rootRef = useRef(null)
 
   const eyebrowRef = useRef(null)

@@ -2,8 +2,7 @@ import { useRef } from 'react'
 
 import Button from '@/components/Button'
 import SectionLabel from '@/components/SectionLabel'
-import { WHY_INTRO } from '@/data/home'
-import { DIFFERENTIATORS } from '@/data/services'
+import { useHome, useServices } from '@/i18n/hooks'
 import { drawRule, fadeRise } from '@/animations/scrollAnimations'
 import { addLineReveal } from '@/animations/textAnimations'
 import { gsap, useGSAP } from '@/lib/gsap'
@@ -27,6 +26,9 @@ import { gsap, useGSAP } from '@/lib/gsap'
  */
 
 export default function WhyAfghanFutian() {
+  const { WHY_INTRO } = useHome()
+  const { DIFFERENTIATORS } = useServices()
+
   const rootRef = useRef(null)
 
   const headingRef = useRef(null)

@@ -1,5 +1,5 @@
 import LegalDoc from '@/components/LegalDoc'
-import { TERMS } from '@/data/legal'
+import { useLegal } from '@/i18n/hooks'
 
 /**
  * Terms of Use.
@@ -12,5 +12,6 @@ import { TERMS } from '@/data/legal'
  * The document itself lives in `data/legal.js`; this page is the route binding.
  */
 export default function Terms() {
+  const { TERMS } = useLegal()
   return <LegalDoc doc={TERMS} />
 }

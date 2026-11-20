@@ -465,6 +465,7 @@ export function toBookingView(booking = {}) {
     meetingUrl,
     createdAt: booking.createdAt || '',
     source: booking.metadata?.source || '',
+    locale: booking.locale || booking.metadata?.locale || '',
   }
 }
 

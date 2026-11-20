@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import Callout from '@/components/Callout'
 import ImagePlate from '@/components/ImagePlate'
 import IndexGrid from '@/components/IndexGrid'
@@ -6,7 +8,7 @@ import PageHero from '@/components/PageHero'
 import PlainTerms from '@/components/PlainTerms'
 import SectionIntro from '@/components/SectionIntro'
 import { MEDIA } from '@/data/media'
-import { SOURCING } from '@/data/pages'
+import { usePages } from '@/i18n/hooks'
 
 /**
  * Global Sourcing.
@@ -21,19 +23,25 @@ import { SOURCING } from '@/data/pages'
  * that takes several.
  */
 export default function Sourcing() {
+  const { t } = useTranslation()
+  const { SOURCING } = usePages()
+
   return (
     <>
       <PageHero
         index="03"
-        label="Global Sourcing"
-        title="We start where the suppliers are."
-        description="Product and supplier sourcing in China, coordinated from the buyer's requirement through to a confirmed arrangement."
+        label={t('Global Sourcing', { ns: 'common' })}
+        title={t('We start where the suppliers are.', { ns: 'common' })}
+        description={t(
+          "Product and supplier sourcing in China, coordinated from the buyer's requirement through to a confirmed arrangement.",
+          { ns: 'common' },
+        )}
         media={MEDIA.sourcingHero}
         meta={[
-          { label: 'Origin', value: 'China' },
-          { label: 'Input', value: 'Buyer requirement' },
-          { label: 'Output', value: 'Confirmed sourcing' },
-          { label: 'Verification', value: 'Not claimed' },
+          { label: t('Origin', { ns: 'common' }), value: t('China', { ns: 'common' }) },
+          { label: t('Input', { ns: 'common' }), value: t('Buyer requirement', { ns: 'common' }) },
+          { label: t('Output', { ns: 'common' }), value: t('Confirmed sourcing', { ns: 'common' }) },
+          { label: t('Verification', { ns: 'common' }), value: t('Not claimed', { ns: 'common' }) },
         ]}
       />
 

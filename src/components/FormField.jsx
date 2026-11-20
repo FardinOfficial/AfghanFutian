@@ -1,4 +1,5 @@
 import { forwardRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ChevronDown } from 'lucide-react'
 
 /**
@@ -27,6 +28,7 @@ const FormField = forwardRef(function FormField(
   { field, value, error, onChange, onBlur, disabled = false, idPrefix = 'contact' },
   ref,
 ) {
+  const { t } = useTranslation()
   const id = `${idPrefix}-${field.name}`
   const hintId = `${id}-hint`
   const errorId = `${id}-error`
@@ -56,7 +58,9 @@ const FormField = forwardRef(function FormField(
         className="u-eyebrow flex items-baseline justify-between gap-4 text-ink"
       >
         <span>{field.label}</span>
-        <span className="text-muted-strong">{field.required ? 'Required' : 'Optional'}</span>
+        <span className="text-muted-strong">
+          {t(field.required ? 'Required' : 'Optional', { ns: 'common' })}
+        </span>
       </label>
 
       <div className="relative mt-3">
@@ -82,19 +86,23 @@ const FormField = forwardRef(function FormField(
               }`}
             >
               <option value="" disabled>
-                {field.placeholder ?? 'Please choose'}
+                {field.placeholder ?? t('Please choose', { ns: 'common' })}
               </option>
-              {(field.options ?? []).map((option) => (
-                <option key={option} value={option} className="text-ink">
-                  {option}
-                </option>
-              ))}
+              {(field.options ?? []).map((option) => {
+                const value = typeof option === 'string' ? option : option?.value
+                const label = typeof option === 'string' ? option : option?.label
+                return (
+                  <option key={value} value={value} className="text-ink">
+                    {label}
+                  </option>
+                )
+              })}
             </select>
 
             <ChevronDown
               aria-hidden="true"
               strokeWidth={1.5}
-              className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-strong"
+              className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-strong rtl:right-auto rtl:left-4"
             />
           </>
         )}

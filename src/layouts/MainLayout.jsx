@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 
 import ErrorBoundary from '@/components/ErrorBoundary'
@@ -8,8 +8,10 @@ import Preloader from '@/components/Preloader'
 import ScrollProgress from '@/components/ScrollProgress'
 import ClosingCta from '@/sections/ClosingCta'
 import { ROUTES } from '@/data/navigation'
+import { useLocale } from '@/i18n/hooks'
 import { SmoothScrollProvider, useScrollReset } from '@/hooks/useSmoothScroll'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta'
+import { ScrollTrigger } from '@/lib/gsap'
 import { isIntroComplete } from '@/lib/intro'
 import { prefersReducedMotion } from '@/lib/motion'
 
@@ -33,6 +35,7 @@ import { prefersReducedMotion } from '@/lib/motion'
  */
 export default function MainLayout() {
   const { pathname } = useLocation()
+  const { contentPath, locale } = useLocale()
 
   const [showPreloader, setShowPreloader] = useState(
     () => !prefersReducedMotion() && !isIntroComplete(),
@@ -40,12 +43,29 @@ export default function MainLayout() {
 
   useDocumentMeta(pathname)
 
+  // Translated copy is usually a different length from the English source,
+  // which changes section heights. Refresh the single ScrollTrigger registry
+  // after the locale swap and again once the local webfonts have settled, so
+  // pinned sections and scrubbed animations keep their correct end positions.
+  useEffect(() => {
+    let cancelled = false
+    const refresh = () => {
+      if (!cancelled) ScrollTrigger.refresh()
+    }
+    const frame = requestAnimationFrame(refresh)
+    document.fonts?.ready.then(refresh)
+    return () => {
+      cancelled = true
+      cancelAnimationFrame(frame)
+    }
+  }, [locale])
+
   // The scheduling routes are focused transactions: the global closing enquiry
   // block would push the booking card below the fold, so it is suppressed there
   // while the navbar and footer remain untouched.
   const showClosingCta =
-    ![ROUTES.contact, ROUTES.privacy, ROUTES.terms].includes(pathname) &&
-    !pathname.startsWith(ROUTES.schedule)
+    ![ROUTES.contact, ROUTES.privacy, ROUTES.terms].includes(contentPath) &&
+    !contentPath.startsWith(ROUTES.schedule)
 
   return (
     <SmoothScrollProvider>
@@ -60,7 +80,9 @@ export default function MainLayout() {
             smooth scroll survive. Keying it on the pathname remounts it — with
             fresh state — on every navigation, so leaving a broken page always
             recovers. See ErrorBoundary. */}
-        <ErrorBoundary key={pathname}>
+        {/* Keyed on the page path without its locale prefix so switching
+            language keeps form state and component instances intact. */}
+        <ErrorBoundary key={contentPath}>
           <Outlet />
           {showClosingCta && <ClosingCta />}
         </ErrorBoundary>
@@ -82,7 +104,9 @@ export default function MainLayout() {
  * `pathname`, so a prop-based version would never see it.
  */
 function ScrollManager() {
-  const { pathname, hash } = useLocation()
-  useScrollReset(pathname, hash)
+  const { hash } = useLocation()
+  const { contentPath } = useLocale()
+  // Locale-only URL changes must not reset scroll; the page is the same.
+  useScrollReset(contentPath, hash)
   return null
 }

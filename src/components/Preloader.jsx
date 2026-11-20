@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { EASE, gsap, useGSAP } from '@/lib/gsap'
 import { markIntroComplete } from '@/lib/intro'
@@ -40,6 +41,7 @@ const CEILING_MS = 1500
 const CLIMB_TO = 90
 
 export default function Preloader({ onComplete }) {
+  const { t } = useTranslation()
   const rootRef = useRef(null)
   const counterRef = useRef(null)
   const barRef = useRef(null)
@@ -171,14 +173,16 @@ export default function Preloader({ onComplete }) {
       ref={rootRef}
       role="status"
       aria-live="polite"
-      aria-label="Loading Afghan Futian"
+      aria-label={t('Loading Afghan Futian', { ns: 'common' })}
       className="fixed inset-0 z-[100] flex flex-col justify-between bg-ink px-[var(--spacing-gutter)] py-8 text-canvas will-change-[clip-path] sm:py-10"
     >
       {/* Top rail */}
       <div className="flex items-start justify-between gap-6">
-        <p className="preloader-meta u-eyebrow text-canvas-muted">Global Sourcing &amp; Logistics</p>
+        <p className="preloader-meta u-eyebrow text-canvas-muted">
+          {t('Global Sourcing & Logistics', { ns: 'common' })}
+        </p>
         <p className="preloader-meta u-eyebrow hidden text-canvas-muted sm:block">
-          Connecting Markets. Moving the World.
+          {t('Connecting Markets. Moving the World.', { ns: 'common' })}
         </p>
       </div>
 
@@ -208,7 +212,9 @@ export default function Preloader({ onComplete }) {
           />
         </div>
         <div className="mt-5 flex items-end justify-between gap-6">
-          <p className="preloader-meta u-eyebrow text-canvas-muted">Preparing experience</p>
+          <p className="preloader-meta u-eyebrow text-canvas-muted">
+            {t('Preparing experience', { ns: 'common' })}
+          </p>
           <p
             ref={counterRef}
             className="preloader-meta font-display text-[0.9375rem] tabular-nums tracking-[0.08em] text-canvas"

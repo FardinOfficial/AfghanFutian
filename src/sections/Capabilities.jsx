@@ -1,11 +1,10 @@
 import { useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 
 import Media from '@/components/Media'
 import SectionLabel from '@/components/SectionLabel'
-import { CAPABILITIES_INTRO } from '@/data/home'
-import { CAPABILITIES } from '@/data/services'
+import { useHome, useServices } from '@/i18n/hooks'
+import { LocaleLink } from '@/i18n/LocaleLink'
 import { drawRule, fadeRise, imageReveal } from '@/animations/scrollAnimations'
 import { addLineReveal } from '@/animations/textAnimations'
 import { ScrollTrigger, gsap, useGSAP } from '@/lib/gsap'
@@ -36,6 +35,9 @@ import { ScrollTrigger, gsap, useGSAP } from '@/lib/gsap'
  */
 
 export default function Capabilities() {
+  const { CAPABILITIES_INTRO } = useHome()
+  const { CAPABILITIES } = useServices()
+
   const rootRef = useRef(null)
 
   const headingRef = useRef(null)
@@ -140,7 +142,7 @@ export default function Capabilities() {
               >
                 <span aria-hidden="true" className="cap-rule block h-px w-full origin-left bg-line" />
 
-                <Link
+                <LocaleLink
                   to={capability.to}
                   onFocus={() => setActive(index)}
                   className="group grid grid-cols-12 items-start gap-4 pb-8 pt-7 lg:pb-10 lg:pt-9"
@@ -170,7 +172,7 @@ export default function Capabilities() {
                     <ArrowUpRight
                       aria-hidden="true"
                       strokeWidth={1.5}
-                      className="h-5 w-5 text-muted-strong transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-ink"
+                      className="h-5 w-5 text-muted-strong transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-ink rtl:-scale-x-100"
                     />
                   </span>
 
@@ -188,7 +190,7 @@ export default function Capabilities() {
                       </div>
                     </div>
                   </div>
-                </Link>
+                </LocaleLink>
               </li>
             ))}
           </ol>

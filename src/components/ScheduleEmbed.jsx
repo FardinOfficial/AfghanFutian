@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ArrowUpRight, RotateCw } from 'lucide-react'
 
 import { CAL_ORIGINS } from '@/data/scheduling'
@@ -26,12 +27,19 @@ import { CAL_ORIGINS } from '@/data/scheduling'
  * `__iframeReady` message. If neither arrives in time, or the frame errors, the
  * visitor sees a real error state with a retry and a direct booking link — never
  * a blank rectangle that looks broken.
+ *
+ * Localization note: only this wrapper's copy is translated. The booker inside
+ * the iframe is Cal.com's own product; its labels follow Cal.com's locale rules
+ * and cannot be set from here without changing the embed's URL or injecting
+ * locale into it, which this component deliberately does not do.
  */
 const MIN_HEIGHT = 480
 const MAX_HEIGHT = 2400
 const LOAD_TIMEOUT_MS = 15_000
 
-export default function ScheduleEmbed({ url, publicUrl, title = 'Meeting booking calendar' }) {
+export default function ScheduleEmbed({ url, publicUrl, title }) {
+  const { t } = useTranslation()
+  const frameTitle = title ?? t('Meeting booking calendar', { ns: 'common' })
   const [status, setStatus] = useState('loading')
   const [height, setHeight] = useState(null)
   const [attempt, setAttempt] = useState(0)
@@ -81,7 +89,7 @@ export default function ScheduleEmbed({ url, publicUrl, title = 'Meeting booking
           key={attempt}
           ref={iframeRef}
           src={url}
-          title={title}
+          title={frameTitle}
           loading="eager"
           referrerPolicy="no-referrer-when-downgrade"
           onLoad={() => setStatus((current) => (current === 'error' ? current : 'ready'))}
@@ -96,9 +104,11 @@ export default function ScheduleEmbed({ url, publicUrl, title = 'Meeting booking
             aria-live="polite"
             className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-surface"
           >
-            <span className="u-eyebrow">Loading the calendar</span>
+            <span className="u-eyebrow">{t('Loading the calendar', { ns: 'common' })}</span>
             <span className="h-px w-20 animate-pulse bg-ink" aria-hidden="true" />
-            <span className="text-[0.8125rem] text-muted-strong">Fetching the open times…</span>
+            <span className="text-[0.8125rem] text-muted-strong">
+              {t('Fetching the open times…', { ns: 'common' })}
+            </span>
           </div>
         )}
 
@@ -107,10 +117,12 @@ export default function ScheduleEmbed({ url, publicUrl, title = 'Meeting booking
             role="alert"
             className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-surface px-6 text-center"
           >
-            <span className="u-eyebrow">Calendar unavailable</span>
+            <span className="u-eyebrow">{t('Calendar unavailable', { ns: 'common' })}</span>
             <p className="max-w-[38ch] text-[0.9375rem] leading-relaxed text-muted-strong">
-              The booking calendar could not be loaded here. You can try again, or open the same
-              booking page directly.
+              {t(
+                'The booking calendar could not be loaded here. You can try again, or open the same booking page directly.',
+                { ns: 'common' },
+              )}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <button
@@ -119,7 +131,7 @@ export default function ScheduleEmbed({ url, publicUrl, title = 'Meeting booking
                 className="inline-flex items-center gap-2 border border-ink px-5 py-3 font-sans text-[0.6875rem] font-medium uppercase tracking-[0.16em] text-ink transition-colors duration-300 hover:bg-ink hover:text-canvas focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
               >
                 <RotateCw aria-hidden="true" strokeWidth={1.6} className="h-3.5 w-3.5" />
-                Try again
+                {t('Try again', { ns: 'common' })}
               </button>
               {publicUrl && (
                 <a
@@ -128,7 +140,7 @@ export default function ScheduleEmbed({ url, publicUrl, title = 'Meeting booking
                   rel="noreferrer noopener"
                   className="u-link font-sans text-[0.6875rem] font-medium uppercase tracking-[0.16em] text-ink"
                 >
-                  Open booking page
+                  {t('Open booking page', { ns: 'common' })}
                   <ArrowUpRight aria-hidden="true" strokeWidth={1.6} className="h-3.5 w-3.5" />
                 </a>
               )}
@@ -140,7 +152,9 @@ export default function ScheduleEmbed({ url, publicUrl, title = 'Meeting booking
       {publicUrl && (
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-line px-5 py-4">
           <p className="text-[0.8125rem] leading-snug text-muted-strong">
-            The calendar opens in Kabul time. Change it with Cal.com's selector, or open it directly.
+            {t("The calendar opens in Kabul time. Change it with Cal.com's selector, or open it directly.", {
+              ns: 'common',
+            })}
           </p>
           <a
             href={publicUrl}
@@ -148,7 +162,7 @@ export default function ScheduleEmbed({ url, publicUrl, title = 'Meeting booking
             rel="noreferrer noopener"
             className="u-link font-sans text-[0.6875rem] font-medium uppercase tracking-[0.16em] text-ink"
           >
-            Open in a new tab
+            {t('Open in a new tab', { ns: 'common' })}
             <ArrowUpRight aria-hidden="true" strokeWidth={1.6} className="h-[0.8125rem] w-[0.8125rem]" />
           </a>
         </div>

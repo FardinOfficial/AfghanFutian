@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import Callout from '@/components/Callout'
 import ImagePlate from '@/components/ImagePlate'
 import IndexGrid from '@/components/IndexGrid'
@@ -6,8 +8,7 @@ import PageHero from '@/components/PageHero'
 import PlainTerms from '@/components/PlainTerms'
 import SectionIntro from '@/components/SectionIntro'
 import { MEDIA } from '@/data/media'
-import { ABOUT } from '@/data/pages'
-import { VALUES } from '@/data/services'
+import { usePages, useServices } from '@/i18n/hooks'
 
 /**
  * About Us.
@@ -27,19 +28,26 @@ import { VALUES } from '@/data/services'
  * third colour.
  */
 export default function AboutPage() {
+  const { t } = useTranslation()
+  const { ABOUT } = usePages()
+  const { VALUES } = useServices()
+
   return (
     <>
       <PageHero
         index="02"
-        label="About Us"
-        title="Trade is more than movement."
-        description="Afghan Futian is an international sourcing, trading and supply chain company working between China's supplier base and buyers around the world."
+        label={t('About Us', { ns: 'common' })}
+        title={t('Trade is more than movement.', { ns: 'common' })}
+        description={t(
+          "Afghan Futian is an international sourcing, trading and supply chain company working between China's supplier base and buyers around the world.",
+          { ns: 'common' },
+        )}
         media={MEDIA.aboutHero}
         meta={[
-          { label: 'Based in', value: 'China sourcing origin' },
-          { label: 'Focus', value: 'Sourcing & supply chain' },
-          { label: 'Reach', value: 'Worldwide buyers' },
-          { label: 'Status', value: 'Details pending' },
+          { label: t('Based in', { ns: 'common' }), value: t('China sourcing origin', { ns: 'common' }) },
+          { label: t('Focus', { ns: 'common' }), value: t('Sourcing & supply chain', { ns: 'common' }) },
+          { label: t('Reach', { ns: 'common' }), value: t('Worldwide buyers', { ns: 'common' }) },
+          { label: t('Status', { ns: 'common' }), value: t('Details pending', { ns: 'common' }) },
         ]}
       />
 

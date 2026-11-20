@@ -1,11 +1,12 @@
 import { useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import ImagePlate from '@/components/ImagePlate'
 import PageHero from '@/components/PageHero'
 import PlainTerms from '@/components/PlainTerms'
 import SectionIntro from '@/components/SectionIntro'
 import { MEDIA } from '@/data/media'
-import { NETWORK_PAGE } from '@/data/pages'
+import { usePages } from '@/i18n/hooks'
 import { drawRule, fadeRise } from '@/animations/scrollAnimations'
 import { gsap, useGSAP } from '@/lib/gsap'
 
@@ -88,19 +89,25 @@ function StationRail({ stations }) {
 }
 
 export default function GlobalNetworkPage() {
+  const { t } = useTranslation()
+  const { NETWORK_PAGE } = usePages()
+
   return (
     <>
       <PageHero
         index="06"
-        label="Global Network"
-        title="From China. Across the world."
-        description="An illustrative view of how a sourcing origin in China connects with buyers and markets internationally."
+        label={t('Global Network', { ns: 'common' })}
+        title={t('From China. Across the world.', { ns: 'common' })}
+        description={t(
+          'An illustrative view of how a sourcing origin in China connects with buyers and markets internationally.',
+          { ns: 'common' },
+        )}
         media={MEDIA.networkHero}
         meta={[
-          { label: 'Origin', value: 'China' },
-          { label: 'Routes', value: 'Illustrative' },
-          { label: 'Markets', value: 'Pending verification' },
-          { label: 'Data', value: 'Not yet confirmed' },
+          { label: t('Origin', { ns: 'common' }), value: t('China', { ns: 'common' }) },
+          { label: t('Routes', { ns: 'common' }), value: t('Illustrative', { ns: 'common' }) },
+          { label: t('Markets', { ns: 'common' }), value: t('Pending verification', { ns: 'common' }) },
+          { label: t('Data', { ns: 'common' }), value: t('Not yet confirmed', { ns: 'common' }) },
         ]}
       />
 

@@ -1,5 +1,5 @@
 import { ArrowUpRight } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import Button from '@/components/Button'
 import Callout from '@/components/Callout'
@@ -7,9 +7,9 @@ import ContactForm from '@/components/ContactForm'
 import PageHero from '@/components/PageHero'
 import SectionIntro from '@/components/SectionIntro'
 import SocialLinks from '@/components/SocialLinks'
-import { CLOSING_CTA } from '@/data/home'
 import { MEDIA } from '@/data/media'
-import { CONTACT_DETAILS, ROUTES } from '@/data/navigation'
+import { LocaleLink } from '@/i18n/LocaleLink'
+import { useHome, useNavigation } from '@/i18n/hooks'
 
 /**
  * Contact.
@@ -29,29 +29,36 @@ import { CONTACT_DETAILS, ROUTES } from '@/data/navigation'
  * submit button where the eye finishes.
  */
 export default function ContactPage() {
+  const { t } = useTranslation()
+  const { CLOSING_CTA } = useHome()
+  const { CONTACT_DETAILS, ROUTES } = useNavigation()
+
   return (
     <>
       <PageHero
         index="07"
-        label="Contact"
-        title="Start a conversation."
-        description="Have a sourcing requirement or an international business opportunity? Tell us what you need and we will respond."
+        label={t('Contact', { ns: 'common' })}
+        title={t('Start a conversation.', { ns: 'common' })}
+        description={t(
+          'Have a sourcing requirement or an international business opportunity? Tell us what you need and we will respond.',
+          { ns: 'common' },
+        )}
         media={MEDIA.contactHero}
       >
         <ul className="mt-9 space-y-5 border-t border-line-invert pt-7">
           <li>
-            <p className="u-eyebrow text-canvas-muted">Email</p>
+            <p className="u-eyebrow text-canvas-muted">{t('Email', { ns: 'common' })}</p>
             <a href={CONTACT_DETAILS.emailHref} className="u-link mt-2 text-sm text-canvas/85">
               {CONTACT_DETAILS.email}
             </a>
           </li>
           <li>
-            <p className="u-eyebrow text-canvas-muted">Telephone</p>
+            <p className="u-eyebrow text-canvas-muted">{t('Telephone', { ns: 'common' })}</p>
             <ul className="mt-2 space-y-2">
               {CONTACT_DETAILS.phones.map((phone) => (
                 <li key={phone.id}>
                   <a href={phone.href} className="u-link text-sm text-canvas/85">
-                    <span className="mr-2 text-canvas-muted">{phone.label}</span>
+                    <span className="mr-2 text-canvas-muted rtl:mr-0 rtl:ml-2">{phone.label}</span>
                     {phone.display}
                   </a>
                 </li>
@@ -59,13 +66,13 @@ export default function ContactPage() {
             </ul>
           </li>
           <li>
-            <p className="u-eyebrow text-canvas-muted">Prefer to talk</p>
-            <Link to={ROUTES.schedule} className="u-link mt-2 text-sm text-canvas/85">
-              Schedule a meeting
-            </Link>
+            <p className="u-eyebrow text-canvas-muted">{t('Prefer to talk', { ns: 'common' })}</p>
+            <LocaleLink to={ROUTES.schedule} className="u-link mt-2 text-sm text-canvas/85">
+              {t('Schedule a meeting', { ns: 'common' })}
+            </LocaleLink>
           </li>
           <li>
-            <p className="u-eyebrow text-canvas-muted">Elsewhere</p>
+            <p className="u-eyebrow text-canvas-muted">{t('Elsewhere', { ns: 'common' })}</p>
             <SocialLinks tone="dark" className="mt-3" />
           </li>
         </ul>
@@ -74,9 +81,12 @@ export default function ContactPage() {
       <SectionIntro
         id="contact-inquiry"
         index="01"
-        label="Business Inquiry"
-        heading="Tell us what you need moved."
-        support="A requirement is easier to answer than an introduction. The more of the shape you can give us — product, quantity, destination, timeline — the more useful the first reply will be."
+        label={t('Business Inquiry', { ns: 'common' })}
+        heading={t('Tell us what you need moved.', { ns: 'common' })}
+        support={t(
+          'A requirement is easier to answer than an introduction. The more of the shape you can give us — product, quantity, destination, timeline — the more useful the first reply will be.',
+          { ns: 'common' },
+        )}
         rule
       >
         <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-14 lg:mt-24 lg:grid-cols-12">
@@ -100,39 +110,42 @@ export default function ContactPage() {
                 ))}
               </ul>
 
-              <Callout label="If you would rather write" className="mt-12">
-                Email{' '}
+              <Callout label={t('If you would rather write', { ns: 'common' })} className="mt-12">
+                {t('Email', { ns: 'common' })}{' '}
                 <a href={CONTACT_DETAILS.emailHref} className="u-link text-ink">
                   {CONTACT_DETAILS.email}
                 </a>{' '}
-                directly, or call our China number{' '}
+                {t('directly, or call our China number', { ns: 'common' })}{' '}
                 <a href={CONTACT_DETAILS.phones[0].href} className="u-link text-ink">
                   {CONTACT_DETAILS.phones[0].display}
                 </a>{' '}
-                or our Afghanistan number{' '}
+                {t('or our Afghanistan number', { ns: 'common' })}{' '}
                 <a href={CONTACT_DETAILS.phones[1].href} className="u-link text-ink">
                   {CONTACT_DETAILS.phones[1].display}
                 </a>
-                . All three reach the same team as this form.
+                {t('. All three reach the same team as this form.', { ns: 'common' })}
               </Callout>
 
               <div className="mt-8 border-t border-line pt-8">
-                <h3 className="u-eyebrow">Prefer to talk it through</h3>
+                <h3 className="u-eyebrow">{t('Prefer to talk it through', { ns: 'common' })}</h3>
                 <p className="mt-4 max-w-[42ch] text-[0.9375rem] leading-relaxed text-muted-strong">
-                  Choose a time that suits you and we will confirm it by email. The
-                  calendar shows the times that are genuinely open.
+                  {t(
+                    'Choose a time that suits you and we will confirm it by email. The calendar shows the times that are genuinely open.',
+                    { ns: 'common' },
+                  )}
                 </p>
                 <div className="mt-6">
                   <Button to={ROUTES.schedule} variant="outline" size="lg" icon={false}>
-                    Schedule a Meeting
+                    {t('Schedule a Meeting', { ns: 'common' })}
                   </Button>
                 </div>
               </div>
 
-              <Callout label="About these details" className="mt-8">
-                We use what you send only to answer your enquiry. Nothing here is
-                added to a mailing list, and no figure is quoted until we have a
-                real requirement to quote against.
+              <Callout label={t('About these details', { ns: 'common' })} className="mt-8">
+                {t(
+                  'We use what you send only to answer your enquiry. Nothing here is added to a mailing list, and no figure is quoted until we have a real requirement to quote against.',
+                  { ns: 'common' },
+                )}
               </Callout>
             </div>
           </aside>
@@ -141,14 +154,16 @@ export default function ContactPage() {
         <div className="mt-20 border-t border-line pt-12 lg:mt-28">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="u-eyebrow">Where we are</p>
+              <p className="u-eyebrow">{t('Where we are', { ns: 'common' })}</p>
               <h3 className="mt-4 font-display text-display-3 font-medium">
-                Three locations. One team.
+                {t('Three locations. One team.', { ns: 'common' })}
               </h3>
             </div>
             <p className="max-w-[38ch] text-sm leading-relaxed text-muted-strong">
-              Our sourcing work starts in China and our Afghanistan presence spans Kabul and
-              Mandawi. Each address opens an area search — no unverified map pin is published.
+              {t(
+                'Our sourcing work starts in China and our Afghanistan presence spans Kabul and Mandawi. Each address opens an area search — no unverified map pin is published.',
+                { ns: 'common' },
+              )}
             </p>
           </div>
 
@@ -169,8 +184,12 @@ export default function ContactPage() {
                   rel="noreferrer noopener"
                   className="u-link mt-auto pt-8 font-sans text-[0.6875rem] font-medium uppercase tracking-[0.16em] text-ink"
                 >
-                  Search the area
-                  <ArrowUpRight aria-hidden="true" strokeWidth={1.6} className="h-3.5 w-3.5" />
+                  {t('Search the area', { ns: 'common' })}
+                  <ArrowUpRight
+                    aria-hidden="true"
+                    strokeWidth={1.6}
+                    className="h-3.5 w-3.5 rtl:-scale-x-100"
+                  />
                 </a>
               </article>
             ))}

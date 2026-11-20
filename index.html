@@ -12,6 +12,10 @@
     <meta name="theme-color" content="#F4F3EF" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://afghanfutian.com/" />
+    <link rel="alternate" hreflang="en" href="https://afghanfutian.com/" />
+    <link rel="alternate" hreflang="ps" href="https://afghanfutian.com/ps" />
+    <link rel="alternate" hreflang="fa-AF" href="https://afghanfutian.com/fa" />
+    <link rel="alternate" hreflang="x-default" href="https://afghanfutian.com/" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -22,6 +26,9 @@
       content="Global sourcing, supply chain and logistics solutions connecting China with opportunities worldwide."
     />
     <meta property="og:url" content="https://afghanfutian.com/" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ps_AF" />
+    <meta property="og:locale:alternate" content="fa_AF" />
     <meta property="og:image" content="https://images.unsplash.com/photo-1590496793907-4d66e2994b4d?auto=format&fit=crop&w=1200&h=630&q=70" />
     <meta property="og:image:alt" content="Afghan Futian Trading Company — international sourcing and logistics" />
 
@@ -34,14 +41,14 @@
     />
     <meta name="twitter:image" content="https://images.unsplash.com/photo-1590496793907-4d66e2994b4d?auto=format&fit=crop&w=1200&h=630&q=70" />
 
-    <!-- Typography: Space Grotesk (display) + Inter (body) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Only weights 400 and 500 are used anywhere in the interface. Asking for
-         the full family would download several weights that are never rendered. -->
+    <!-- Typography: local, OFL-licensed Vazirmatn (Latin + Arabic) with Noto
+         Sans Arabic as a Pashto glyph fallback. No external font requests. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@400;500&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/vazirmatn-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
 
     <!-- Photography is served from the Unsplash CDN. Warm up the connection early. -->
@@ -65,6 +72,7 @@
         "name": "Afghan Futian Trading Company",
         "alternateName": "Afghan Futian",
         "url": "https://afghanfutian.com/",
+        "inLanguage": "en",
         "description": "International sourcing, trading and supply chain company connecting China's supplier base with buyers worldwide.",
         "logo": "https://afghanfutian.com/favicon.png",
         "email": "contact@afghanfutian.com",

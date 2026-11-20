@@ -92,11 +92,11 @@ export const HONEYPOT_FIELD = 'website'
  * Kept separate so the shape can be asserted without performing a request.
  *
  * @param {Record<string, string>} values raw form values
- * @param {{ honeypot?: string, startedAt?: number | null }} [options]
+ * @param {{ honeypot?: string, startedAt?: number | null, locale?: string }} [options]
  */
 export function buildContactPayload(values, options = {}) {
   const clean = (key) => (values[key] ?? '').trim()
-  const { honeypot = '', startedAt = null } = options
+  const { honeypot = '', startedAt = null, locale } = options
 
   return {
     name: clean('name'),
@@ -112,7 +112,7 @@ export function buildContactPayload(values, options = {}) {
       // JSON.stringify drops undefined, so an absent start time is simply not
       // sent. The server then skips its timing check instead of guessing.
       startedAt: Number.isFinite(startedAt) ? new Date(startedAt).toISOString() : undefined,
-      locale: typeof navigator !== 'undefined' ? navigator.language : undefined,
+      locale: locale ?? (typeof navigator !== 'undefined' ? navigator.language : undefined),
       path: typeof window !== 'undefined' ? window.location.pathname : undefined,
     },
   }
@@ -122,7 +122,7 @@ export function buildContactPayload(values, options = {}) {
  * Submit a contact enquiry.
  *
  * @param {Record<string, string>} values raw form values
- * @param {{ honeypot?: string, startedAt?: number | null }} [options]
+ * @param {{ honeypot?: string, startedAt?: number | null, locale?: string }} [options]
  * @returns {Promise<{ id: string }>}
  * @throws {ContactSubmitError}
  */

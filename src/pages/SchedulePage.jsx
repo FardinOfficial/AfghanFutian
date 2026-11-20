@@ -1,16 +1,14 @@
-import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import Button from '@/components/Button'
 import PageHero from '@/components/PageHero'
 import ScheduleEmbed from '@/components/ScheduleEmbed'
 import SectionIntro from '@/components/SectionIntro'
-import { CONTACT_DETAILS, ROUTES } from '@/data/navigation'
-import {
-  CAL_EMBED_URL,
-  CAL_PUBLIC_URL,
-  IS_SCHEDULING_CONFIGURED,
-  SCHEDULE_COPY,
-} from '@/data/scheduling'
+import { LocaleLink } from '@/i18n/LocaleLink'
+import { useNavigation, useScheduling } from '@/i18n/hooks'
+// Machine value, not copy: the embed URL is injected into the iframe verbatim.
+// All human-facing scheduling copy comes from useScheduling() below.
+import { CAL_EMBED_URL } from '@/data/scheduling'
 
 /**
  * Schedule.
@@ -30,28 +28,39 @@ import {
  * the fixed navbar at every breakpoint.
  */
 export default function SchedulePage() {
+  const { t } = useTranslation()
+  const { CONTACT_DETAILS, ROUTES } = useNavigation()
+  const {
+    copy,
+    CAL_PUBLIC_URL,
+    IS_SCHEDULING_CONFIGURED,
+    fallbackEmail,
+    zoneLabel,
+  } = useScheduling()
   const configured = IS_SCHEDULING_CONFIGURED
 
   return (
     <>
       <PageHero
         index="08"
-        label={SCHEDULE_COPY.label}
-        title={SCHEDULE_COPY.heading}
-        description={SCHEDULE_COPY.support}
+        label={copy.label}
+        title={copy.heading}
+        description={copy.support}
       >
         <ul className="mt-9 space-y-5 border-t border-line-invert pt-7">
           <li>
-            <p className="u-eyebrow text-canvas-muted">Prefer to write</p>
+            <p className="u-eyebrow text-canvas-muted">{t('Prefer to write', { ns: 'common' })}</p>
             <a href={CONTACT_DETAILS.emailHref} className="u-link mt-2 text-sm text-canvas/85">
-              {CONTACT_DETAILS.email}
+              {fallbackEmail}
             </a>
           </li>
           <li>
-            <p className="u-eyebrow text-canvas-muted">Have a detailed requirement</p>
-            <Link to={ROUTES.contact} className="u-link mt-2 text-sm text-canvas/85">
-              Use the enquiry form
-            </Link>
+            <p className="u-eyebrow text-canvas-muted">
+              {t('Have a detailed requirement', { ns: 'common' })}
+            </p>
+            <LocaleLink to={ROUTES.contact} className="u-link mt-2 text-sm text-canvas/85">
+              {t('Use the enquiry form', { ns: 'common' })}
+            </LocaleLink>
           </li>
         </ul>
       </PageHero>
@@ -59,12 +68,15 @@ export default function SchedulePage() {
       <SectionIntro
         id="booking"
         index="01"
-        label={configured ? 'Booking' : SCHEDULE_COPY.unconfigured.label}
-        heading={configured ? 'Choose a time.' : SCHEDULE_COPY.unconfigured.heading}
+        label={configured ? t('Booking', { ns: 'common' }) : copy.unconfigured.label}
+        heading={configured ? t('Choose a time.', { ns: 'common' }) : copy.unconfigured.heading}
         support={
           configured
-            ? 'The official calendar below shows only times genuinely open in our Cal.com schedule. It opens in Kabul time and you can switch timezone inside the booker.'
-            : SCHEDULE_COPY.unconfigured.body
+            ? t(
+                'The official calendar below shows only times genuinely open in our Cal.com schedule. It opens in Kabul time and you can switch timezone inside the booker.',
+                { ns: 'common' },
+              )
+            : copy.unconfigured.body
         }
         rule
         className="pt-12 pb-20 lg:pt-16 lg:pb-28"
@@ -74,9 +86,9 @@ export default function SchedulePage() {
             {configured ? (
               <>
                 <div className="mb-8">
-                  <p className="u-eyebrow">{SCHEDULE_COPY.stepsLabel}</p>
+                  <p className="u-eyebrow">{copy.stepsLabel}</p>
                   <ol className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-3">
-                    {SCHEDULE_COPY.steps.map((step, index) => (
+                    {copy.steps.map((step, index) => (
                       <li key={step} className="bg-canvas px-5 py-5">
                         <span className="u-eyebrow tabular-nums text-muted-strong">
                           {String(index + 1).padStart(2, '0')}
@@ -94,15 +106,15 @@ export default function SchedulePage() {
               <div className="border-t border-line pt-10">
                 <div className="flex flex-wrap items-center gap-3">
                   <Button to={ROUTES.contact} variant="accent" size="lg">
-                    Send an enquiry
+                    {t('Send an enquiry', { ns: 'common' })}
                   </Button>
                   <Button href={CONTACT_DETAILS.emailHref} variant="outline" size="lg" icon={false}>
-                    Email us instead
+                    {t('Email us instead', { ns: 'common' })}
                   </Button>
                 </div>
 
                 <p className="mt-8 max-w-[52ch] text-[0.8125rem] leading-relaxed text-muted-strong">
-                  {SCHEDULE_COPY.unconfigured.note}
+                  {copy.unconfigured.note}
                 </p>
               </div>
             )}
@@ -110,10 +122,10 @@ export default function SchedulePage() {
 
           <aside className="lg:col-span-3 lg:col-start-10">
             <div className="lg:sticky lg:top-32">
-              <h3 className="u-eyebrow">{SCHEDULE_COPY.fieldsLabel}</h3>
+              <h3 className="u-eyebrow">{copy.fieldsLabel}</h3>
 
               <ul className="mt-6 border-t border-line">
-                {SCHEDULE_COPY.fields.map((item) => (
+                {copy.fields.map((item) => (
                   <li
                     key={item}
                     className="flex gap-5 border-b border-line py-4 text-[0.9375rem] leading-relaxed text-muted-strong"
@@ -127,10 +139,10 @@ export default function SchedulePage() {
                 ))}
               </ul>
 
-              <h3 className="u-eyebrow mt-12">{SCHEDULE_COPY.afterLabel}</h3>
+              <h3 className="u-eyebrow mt-12">{copy.afterLabel}</h3>
 
               <ul className="mt-6 border-t border-line">
-                {SCHEDULE_COPY.after.map((item) => (
+                {copy.after.map((item) => (
                   <li
                     key={item}
                     className="flex gap-5 border-b border-line py-4 text-[0.9375rem] leading-relaxed text-muted-strong"
@@ -145,8 +157,9 @@ export default function SchedulePage() {
               </ul>
 
               <p className="mt-8 text-[0.8125rem] leading-relaxed text-muted-strong">
-                Default timezone: <strong className="font-medium text-ink">Kabul, Afghanistan</strong>{' '}
-                (GMT+04:30). Change it with the selector inside the calendar.
+                {t('Default timezone:', { ns: 'common' })}{' '}
+                <strong className="font-medium text-ink">{zoneLabel}</strong>{' '}
+                (GMT+04:30). {t('Change it with the selector inside the calendar.', { ns: 'common' })}
               </p>
             </div>
           </aside>

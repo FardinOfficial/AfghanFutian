@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import SectionLabel from '@/components/SectionLabel'
-import { LEGAL_CONTACT, LEGAL_DRAFT } from '@/data/legal'
+import { useLegal } from '@/i18n/hooks'
 import { drawRule, fadeRise } from '@/animations/scrollAnimations'
 import { addLineReveal } from '@/animations/textAnimations'
 import { gsap, useGSAP } from '@/lib/gsap'
@@ -43,6 +43,8 @@ import { gsap, useGSAP } from '@/lib/gsap'
  * keyboard, with Lenis, and — via `scroll-margin-top` — without JavaScript.
  */
 export default function LegalDoc({ doc }) {
+  const { t } = useTranslation()
+  const { LEGAL_CONTACT, LEGAL_DRAFT } = useLegal()
   const rootRef = useRef(null)
   const headingRef = useRef(null)
   const introRef = useRef(null)
@@ -166,17 +168,20 @@ export default function LegalDoc({ doc }) {
         <div className="u-container">
           <div className="grid grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-8">
             <nav
-              aria-label="Contents"
+              aria-label={t('Contents', { ns: 'common' })}
               className="lg:col-span-3 lg:sticky lg:top-28 lg:self-start"
             >
-              <h2 className="u-eyebrow">Contents</h2>
+              <h2 className="u-eyebrow">{t('Contents', { ns: 'common' })}</h2>
               <ol className="mt-6 space-y-3.5 border-l border-line pl-5">
                 {doc.sections.map((section) => {
                   const active = section.id === activeId
                   return (
                     <li key={section.id}>
-                      <Link
-                        to={`#${section.id}`}
+                      {/* In-page anchor, not a route link: a plain hash keeps the
+                          reader on this document in every locale. LocaleLink
+                          would prefix the hash and land on a different page. */}
+                      <a
+                        href={`#${section.id}`}
                         aria-current={active ? 'true' : undefined}
                         className={`flex gap-3 text-sm leading-snug transition-colors duration-300 ${
                           active ? 'text-ink' : 'text-muted-strong hover:text-ink'
@@ -193,7 +198,7 @@ export default function LegalDoc({ doc }) {
                         <span className={active ? 'underline decoration-line underline-offset-4' : ''}>
                           {section.heading}
                         </span>
-                      </Link>
+                      </a>
                     </li>
                   )
                 })}

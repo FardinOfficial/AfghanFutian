@@ -1,16 +1,11 @@
 import { useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ArrowUp } from 'lucide-react'
-import { Link } from 'react-router-dom'
 
 import Logo from '@/components/Logo'
 import SocialLinks from '@/components/SocialLinks'
-import { COMPANY } from '@/data/company.js'
-import {
-  CONTACT_DETAILS,
-  FOOTER_COMPANY,
-  FOOTER_SERVICES,
-  LEGAL_LINKS,
-} from '@/data/navigation'
+import { LocaleLink } from '@/i18n/LocaleLink'
+import { useCompany, useNavigation } from '@/i18n/hooks'
 import { addLineReveal } from '@/animations/textAnimations'
 import { drawRule, fadeRise } from '@/animations/scrollAnimations'
 import { gsap, useGSAP } from '@/lib/gsap'
@@ -35,6 +30,10 @@ import { useLenis } from '@/hooks/useSmoothScroll'
 export default function Footer() {
   const rootRef = useRef(null)
   const lenis = useLenis()
+  const { t } = useTranslation()
+  const tr = (key) => t(key, { ns: 'common' })
+  const company = useCompany()
+  const { CONTACT_DETAILS, FOOTER_COMPANY, FOOTER_SERVICES, LEGAL_LINKS } = useNavigation()
 
   useGSAP(
     () => {
@@ -80,9 +79,9 @@ export default function Footer() {
       <div className="u-container pt-[clamp(4rem,9vh,7rem)]">
         {/* Brand statement */}
         <h2 className="footer-statement font-display text-display-2 max-w-[22ch] font-medium uppercase">
-          Connecting Markets.
+          {tr('Connecting Markets.')}
           <br />
-          Moving the World.
+          {tr('Moving the World.')}
         </h2>
 
         <div className="footer-rule mt-[clamp(3rem,6vh,4.5rem)] h-px w-full origin-left bg-line-invert" />
@@ -95,46 +94,44 @@ export default function Footer() {
           <div className="footer-col col-span-2 sm:col-span-1 lg:col-span-5 lg:pr-12">
             <Logo onDark />
             <p className="mt-5 max-w-[42ch] text-sm leading-relaxed text-canvas/60">
-              {COMPANY.legalName} is an international sourcing, trading and supply chain company.
-              We connect sourcing operations in China with buyers and business opportunities
-              worldwide.
+              {company.description}
             </p>
           </div>
 
           <nav aria-label="Services" className="footer-col lg:col-span-2">
-            <h3 className="u-eyebrow text-canvas-muted">Services</h3>
+            <h3 className="u-eyebrow text-canvas-muted">{tr('Services')}</h3>
             <ul className="mt-5 space-y-3">
               {FOOTER_SERVICES.map((item) => (
                 <li key={item.label}>
-                  <Link
+                  <LocaleLink
                     to={item.to}
                     className="u-link text-sm text-canvas/75 hover:text-canvas"
                   >
                     {item.label}
-                  </Link>
+                  </LocaleLink>
                 </li>
               ))}
             </ul>
           </nav>
 
           <nav aria-label="Company" className="footer-col lg:col-span-2">
-            <h3 className="u-eyebrow text-canvas-muted">Company</h3>
+            <h3 className="u-eyebrow text-canvas-muted">{tr('Company')}</h3>
             <ul className="mt-5 space-y-3">
               {FOOTER_COMPANY.map((item) => (
                 <li key={item.label}>
-                  <Link
+                  <LocaleLink
                     to={item.to}
                     className="u-link text-sm text-canvas/75 hover:text-canvas"
                   >
                     {item.label}
-                  </Link>
+                  </LocaleLink>
                 </li>
               ))}
             </ul>
           </nav>
 
           <div className="footer-col col-span-2 sm:col-span-1 lg:col-span-3">
-            <h3 className="u-eyebrow text-canvas-muted">Contact</h3>
+            <h3 className="u-eyebrow text-canvas-muted">{tr('Contact')}</h3>
             <ul className="mt-5 space-y-3 text-sm text-canvas/75">
               <li>
                 <a href={CONTACT_DETAILS.emailHref} className="u-link hover:text-canvas">
@@ -173,18 +170,18 @@ export default function Footer() {
         <div className="flex flex-col gap-4 border-t border-line-invert py-7 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
             <p className="text-[0.6875rem] uppercase tracking-[0.14em] text-canvas-muted">
-              © {year} {COMPANY.legalName}. All rights reserved.
+              © {year} {company.legalName}. {tr('All rights reserved.')}
             </p>
 
             <ul className="flex items-center gap-6">
               {LEGAL_LINKS.map((item) => (
                 <li key={item.label}>
-                  <Link
+                  <LocaleLink
                     to={item.to}
                     className="u-link text-[0.6875rem] uppercase tracking-[0.14em] text-canvas/70 hover:text-canvas"
                   >
                     {item.label}
-                  </Link>
+                  </LocaleLink>
                 </li>
               ))}
             </ul>
@@ -196,7 +193,7 @@ export default function Footer() {
               onClick={scrollToTop}
               className="group/up inline-flex items-center gap-2 text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-canvas/70 transition-colors duration-500 hover:text-accent"
             >
-              Back to top
+              {tr('Back to top')}
               <ArrowUp
                 size={13}
                 strokeWidth={1.6}

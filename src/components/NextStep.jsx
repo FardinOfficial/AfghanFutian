@@ -1,7 +1,8 @@
 import { useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { ArrowUpRight } from 'lucide-react'
 
+import { LocaleLink } from '@/i18n/LocaleLink'
 import { drawRule, fadeRise } from '@/animations/scrollAnimations'
 import { useGSAP } from '@/lib/gsap'
 
@@ -19,11 +20,15 @@ import { useGSAP } from '@/lib/gsap'
  * still participates in the document outline properly.
  */
 
-export default function NextStep({ label, to, description, eyebrow = 'Next stage' }) {
+export default function NextStep({ label, to, description, eyebrow }) {
+  const { t } = useTranslation()
   const rootRef = useRef(null)
   const ruleRef = useRef(null)
   const contentRef = useRef(null)
   const headingId = 'next-step-heading'
+  // Resolved here rather than as a default parameter so the fallback eyebrow is
+  // translated in the active locale. Callers that pass `eyebrow` keep their value.
+  const resolvedEyebrow = eyebrow ?? t('Next stage', { ns: 'common' })
 
   useGSAP(
     () => {
@@ -41,14 +46,14 @@ export default function NextStep({ label, to, description, eyebrow = 'Next stage
         <div ref={ruleRef} className="h-px w-full origin-left bg-line" />
 
         <div ref={contentRef} className="group relative py-12 lg:py-16">
-          <Link
+          <LocaleLink
             to={to}
             aria-labelledby={headingId}
             className="absolute inset-0 z-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
           />
 
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-8">
-            <p className="u-eyebrow lg:col-span-2">{eyebrow}</p>
+            <p className="u-eyebrow lg:col-span-2">{resolvedEyebrow}</p>
 
             <div className="lg:col-span-8">
               <h2
@@ -69,7 +74,7 @@ export default function NextStep({ label, to, description, eyebrow = 'Next stage
                 <ArrowUpRight
                   aria-hidden="true"
                   strokeWidth={1.4}
-                  className="h-5 w-5 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px] group-hover:text-accent"
+                  className="h-5 w-5 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px] group-hover:text-accent rtl:-scale-x-100 rtl:group-hover:-translate-x-[3px]"
                 />
               </span>
             </div>

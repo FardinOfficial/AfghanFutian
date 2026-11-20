@@ -1,6 +1,7 @@
 import { forwardRef } from 'react'
-import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
+
+import { LocaleLink } from '@/i18n/LocaleLink'
 
 /**
  * The site's only button primitive.
@@ -108,7 +109,7 @@ const Button = forwardRef(function Button(
         <ArrowUpRight
           aria-hidden="true"
           strokeWidth={1.6}
-          className={`relative h-[0.9375rem] w-[0.9375rem] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/btn:translate-x-[3px] group-hover/btn:-translate-y-[3px] ${theme.label}`}
+          className={`relative h-[0.9375rem] w-[0.9375rem] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/btn:translate-x-[3px] group-hover/btn:-translate-y-[3px] rtl:-scale-x-100 ${theme.label}`}
         />
       )}
     </>
@@ -116,9 +117,9 @@ const Button = forwardRef(function Button(
 
   if (to) {
     return (
-      <Link ref={ref} to={to} className={classes} {...props}>
+      <LocaleLink ref={ref} to={to} className={classes} {...props}>
         {content}
-      </Link>
+      </LocaleLink>
     )
   }
 

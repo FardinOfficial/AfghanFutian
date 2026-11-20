@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import ImagePlate from '@/components/ImagePlate'
 import IndexGrid from '@/components/IndexGrid'
 import NextStep from '@/components/NextStep'
@@ -5,7 +7,7 @@ import PageHero from '@/components/PageHero'
 import PlainTerms from '@/components/PlainTerms'
 import SectionIntro from '@/components/SectionIntro'
 import { MEDIA } from '@/data/media'
-import { LOGISTICS } from '@/data/pages'
+import { usePages } from '@/i18n/hooks'
 
 /**
  * Logistics.
@@ -27,19 +29,25 @@ import { LOGISTICS } from '@/data/pages'
  * canvas (next step) → ink (CTA).
  */
 export default function Logistics() {
+  const { t } = useTranslation()
+  const { LOGISTICS } = usePages()
+
   return (
     <>
       <PageHero
         index="05"
-        label="Logistics"
-        title="Movement, arranged around the destination."
-        description="International cargo and transportation coordination, planned with logistics partners and matched to where the goods must land."
+        label={t('Logistics', { ns: 'common' })}
+        title={t('Movement, arranged around the destination.', { ns: 'common' })}
+        description={t(
+          'International cargo and transportation coordination, planned with logistics partners and matched to where the goods must land.',
+          { ns: 'common' },
+        )}
         media={MEDIA.logisticsHero}
         meta={[
-          { label: 'Mode', value: 'To be confirmed' },
-          { label: 'Ownership', value: 'Partner-operated' },
-          { label: 'Planning', value: 'Destination-led' },
-          { label: 'Tracking', value: 'Supported' },
+          { label: t('Mode', { ns: 'common' }), value: t('To be confirmed', { ns: 'common' }) },
+          { label: t('Ownership', { ns: 'common' }), value: t('Partner-operated', { ns: 'common' }) },
+          { label: t('Planning', { ns: 'common' }), value: t('Destination-led', { ns: 'common' }) },
+          { label: t('Tracking', { ns: 'common' }), value: t('Supported', { ns: 'common' }) },
         ]}
       />
 

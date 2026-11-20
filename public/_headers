@@ -26,11 +26,12 @@
   #                                loaded from a third-party script host, so this
   #                                stays strict. The JSON-LD block in index.html
   #                                is a data block, not a script, and is exempt.
-  #   style-src  …fonts.googleapis The stylesheet is a linked bundle; the only
-  #                                third party is the Google Fonts stylesheet.
-  #                                No `'unsafe-inline'` is needed because React
-  #                                and GSAP write styles through the CSSOM, which
-  #                                CSP does not govern.
+  #   style-src 'self'             The stylesheet is a linked bundle. Fonts are
+  #                                served from this origin, so there is no
+  #                                external stylesheet allowance. No
+  #                                `'unsafe-inline'` is needed because React and
+  #                                GSAP write styles through the CSSOM, which CSP
+  #                                does not govern.
   #   img-src    …images.unsplash Photography comes from the Unsplash CDN, and
   #                                `data:` covers the inline SVG grain texture.
   #   connect-src 'self'           The enquiry form posts to this origin.
@@ -41,7 +42,7 @@
   # ⚠️  If you set VITE_API_BASE_URL to a different origin, you MUST add that
   #     origin to `connect-src` here (and in vercel.json) or submissions will be
   #     blocked by the browser.
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; img-src 'self' data: https://images.unsplash.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; frame-src https://cal.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://images.unsplash.com; font-src 'self'; connect-src 'self'; frame-src https://cal.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
 
 # Vite fingerprints every file under /assets/, so the bytes behind a given URL
 # can never change. Cache them for a year.

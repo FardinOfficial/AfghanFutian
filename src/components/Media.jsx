@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { imageSrcSet, imageUrl } from '@/data/media'
 
@@ -30,13 +31,19 @@ export default function Media({
   ...props
 }) {
   const [loaded, setLoaded] = useState(false)
+  const { t } = useTranslation()
 
   if (!src) return null
 
   const ratio = aspect ?? src.aspect
   const widths = src.widths ?? undefined
 
-  const resolvedAlt = decorative ? '' : alt || src.alt
+  // Every alt string is an English source key in the `media` namespace. This
+  // keeps descriptions accurate in all three languages without touching the
+  // image registry or the CDN URLs.
+  const resolvedAlt = decorative
+    ? ''
+    : t(alt || src.alt || '', { ns: 'media' })
 
   return (
     <div

@@ -1,4 +1,6 @@
-import { SOCIAL_LINKS } from '@/data/navigation'
+import { useTranslation } from 'react-i18next'
+
+import { useNavigation } from '@/i18n/hooks'
 
 /**
  * SocialLinks.
@@ -14,6 +16,8 @@ import { SOCIAL_LINKS } from '@/data/navigation'
  * @param {{ tone?: 'light' | 'dark', className?: string, onNavigate?: () => void }} props
  */
 export default function SocialLinks({ tone = 'light', className = '', onNavigate }) {
+  const { t } = useTranslation()
+  const { SOCIAL_LINKS } = useNavigation()
   const isDark = tone === 'dark'
 
   return (
@@ -28,7 +32,7 @@ export default function SocialLinks({ tone = 'light', className = '', onNavigate
                 href={social.href}
                 target="_blank"
                 rel="noreferrer noopener"
-                aria-label={`${social.label} — opens in a new tab`}
+                aria-label={`${social.label} ${t('— opens in a new tab', { ns: 'common' })}`}
                 onClick={onNavigate}
                 className={`u-link text-sm transition-opacity duration-300 ${
                   isDark ? 'text-canvas/75 hover:text-canvas' : 'text-ink-70 hover:text-ink'

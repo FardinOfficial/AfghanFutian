@@ -10,6 +10,10 @@ terms of use). It is built to be *handed over*: every piece of prose, every imag
 and every contact detail lives in one file per concern, so replacing placeholder
 content is a targeted edit rather than a hunt.
 
+The site ships in English, Pashto and Afghan Dari. See
+[I18N.md](I18N.md) for URL patterns, dictionaries, RTL, fonts, the Cal.com
+limitation and the remaining native-speaker review items.
+
 > **Status:** design, content, animation, form and SEO work is complete. The
 > enquiry form and the meeting-booking page are wired to real services — a
 > Vercel Function sending through Resend, and a Cal.com embed — and both are
@@ -34,6 +38,7 @@ content is a targeted edit rather than a hunt.
 | Animation | GSAP 3 + `@gsap/react` | `useGSAP` handles cleanup; no animation leaks |
 | Scroll | Lenis | Smooth scroll, driven by the GSAP ticker |
 | Icons | `lucide-react` | Tree-shaken; only the icons actually used ship |
+| Localisation | `i18next` + `react-i18next` | English, Pashto and Afghan Dari from one page implementation |
 | Enquiry email | Resend, via a Vercel Function | Server-side key, no database, one file |
 | Scheduling | Cal.com, in a plain `<iframe>` | Real availability without a third-party script in the page |
 | Lint | oxlint | Fast, and the template default |
@@ -220,7 +225,7 @@ under `@theme`, and consumed through Tailwind utilities (`bg-canvas`, `text-ink`
 canvas #F4F3EF   ink #141414   surface #E9E9E3   accent #D5FF55
 muted  #777970   (large text only)   muted-strong #66665F   (small text)
 line   rgb(20 20 20 / 0.14)
-display 'Space Grotesk'   body 'Inter'   — only weights 400 and 500 are used
+display/body 'Vazirmatn'   Arabic fallback 'Noto Sans Arabic'   — local OFL WOFF2
 ```
 
 `#777970` is the specified secondary text colour, but it only reaches 4.07:1 on
@@ -622,8 +627,8 @@ draft rather than silence, or a generic template copied from elsewhere.
 Two rules govern the copy, and they are the same rules as the rest of the site:
 
 - **Every statement is checkable against the code.** The fields the form collects
-  come from `contact.js`; the third-party requests described are the Google Fonts
-  and Unsplash CDN loads every page actually makes; the absence of cookies,
+  come from `contact.js`; the only third-party asset request described is the
+  Unsplash CDN photography a page actually makes (fonts are served locally); the absence of cookies,
   analytics and tracking is a fact about this codebase.
 - **Undecided things are written as undecided.** No retention period, no
   governing law and no registered entity have been invented. Each is named as
@@ -709,7 +714,8 @@ exist, add them to `CONTACT_DETAILS` and mirror them in the same edit.
 - [ ] Have `src/data/legal.js` reviewed by a lawyer, fill in the retention period, governing law and registered entity, then remove the draft banner
 - [ ] Update the email in the `<noscript>` block of `index.html` to match `CONTACT_DETAILS.email`
 - [ ] Replace `afghanfutian.com` in `index.html`, `robots.txt` and `sitemap.xml`
-- [ ] Add a `sitemap.xml` entry for any new route
+- [ ] Add a `sitemap.xml` entry for any new route, with `hreflang` alternates for `en`, `ps`, `fa-AF` and `x-default`
+- [ ] Have the Pashto and Afghan Dari copy reviewed by native speakers (see [I18N.md](I18N.md))
 - [ ] Set `RESEND_API_KEY` (and a verified `CONTACT_FROM_EMAIL`) in the host's dashboard, then submit the live form and confirm both emails arrive
 - [ ] Confirm the Cal.com event type and Kabul host timezone, set `VITE_CAL_LINK`, rebuild, and confirm the embedded booker loads and a real booking lands on the calendar
 - [ ] Leave `VITE_API_BASE_URL` unset for the bundled function — or, if the API is elsewhere, set it and add that origin to `connect-src` in `public/_headers` and `vercel.json`
@@ -771,7 +777,7 @@ two in step.** They set:
 The CSP is strict where it matters (`script-src 'self'` — no inline scripts are
 shipped) and needs no `'unsafe-inline'` for styles, because React and GSAP write
 styles through the CSSOM, which CSP does not govern. It was verified against the
-production build in a browser: zero console violations, fonts and Unsplash
+production build in a browser: zero console violations, local fonts and Unsplash
 photography still load. The one relaxation for scheduling is
 `frame-src https://cal.com`, which is why the Cal.com embed is an iframe rather
 than a script.

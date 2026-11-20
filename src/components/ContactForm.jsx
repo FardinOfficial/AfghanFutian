@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Button from '@/components/Button'
 import FormField from '@/components/FormField'
-import { CONTACT_FORM_COPY, CONTACT_FORM_FIELDS } from '@/data/contact'
-import { CONTACT_DETAILS } from '@/data/navigation'
+import { useContact, useLocale, useNavigation } from '@/i18n/hooks'
 import { HONEYPOT_FIELD, submitContactForm } from '@/lib/api'
+import { messageForCode } from '@/lib/errorCodes'
 import { buildMailtoFallback, validateField, validateForm } from '@/lib/validation'
 
 /**
@@ -38,6 +39,24 @@ import { buildMailtoFallback, validateField, validateForm } from '@/lib/validati
  * An enquiry is never lost to a broken endpoint.
  */
 export default function ContactForm() {
+  const { t } = useTranslation()
+  const { locale } = useLocale()
+  const { CONTACT_FORM_COPY, CONTACT_FORM_FIELDS } = useContact()
+  const { CONTACT_DETAILS } = useNavigation()
+
+  // Validation messages coming from the pure helpers are English source keys.
+  // Server field errors are stable codes. Both are resolved in the active locale.
+  const localizeMessage = useCallback(
+    (message, field) => {
+      if (!message) return message
+      const usesMax = message === 'max-length' || /under \{\{count\}\}/.test(message)
+      return messageForCode(message, t, {
+        count: usesMax ? field?.maxLength : field?.minLength,
+      })
+    },
+    [t],
+  )
+
   const [values, setValues] = useState(() =>
     Object.fromEntries(CONTACT_FORM_FIELDS.map((field) => [field.name, ''])),
   )
@@ -80,12 +99,12 @@ export default function ContactForm() {
 
   const fieldsByName = useMemo(
     () => Object.fromEntries(CONTACT_FORM_FIELDS.map((field) => [field.name, field])),
-    [],
+    [CONTACT_FORM_FIELDS],
   )
 
   const mailtoHref = useMemo(
     () => buildMailtoFallback(CONTACT_FORM_FIELDS, values, CONTACT_DETAILS.email),
-    [values],
+    [CONTACT_DETAILS.email, CONTACT_FORM_FIELDS, values],
   )
 
   const errorEntries = Object.entries(errors)
@@ -99,7 +118,7 @@ export default function ContactForm() {
     // has been told about them.
     setErrors((prev) => {
       if (!prev[name]) return prev
-      const message = validateField(fieldsByName[name], value)
+      const message = localizeMessage(validateField(fieldsByName[name], value), fieldsByName[name])
       if (!message) {
         const next = { ...prev }
         delete next[name]
@@ -113,7 +132,10 @@ export default function ContactForm() {
     noteStart()
     setTouched((prev) => ({ ...prev, [name]: true }))
 
-    const message = validateField(fieldsByName[name], values[name])
+    const message = localizeMessage(
+      validateField(fieldsByName[name], values[name]),
+      fieldsByName[name],
+    )
     setErrors((prev) => {
       if (!message) {
         if (!prev[name]) return prev
@@ -142,7 +164,13 @@ export default function ContactForm() {
   const handleSubmit = async (event) => {
     event.preventDefault()
 
-    const { errors: nextErrors, valid } = validateForm(CONTACT_FORM_FIELDS, values)
+    const { errors: rawErrors, valid } = validateForm(CONTACT_FORM_FIELDS, values)
+    const nextErrors = Object.fromEntries(
+      Object.entries(rawErrors).map(([name, message]) => [
+        name,
+        localizeMessage(message, fieldsByName[name]),
+      ]),
+    )
 
     setTouched(Object.fromEntries(CONTACT_FORM_FIELDS.map((field) => [field.name, true])))
     setErrors(nextErrors)
@@ -161,7 +189,11 @@ export default function ContactForm() {
       // The server owns the honeypot decision. Sending the field instead of
       // short-circuiting to success here means a browser-autofilled hidden
       // input can never produce a green tick for an unsent enquiry.
-      await submitContactForm(values, { honeypot, startedAt: startedAtRef.current })
+      await submitContactForm(values, {
+        honeypot,
+        startedAt: startedAtRef.current,
+        locale,
+      })
       setStatus('success')
       queueFocus('success')
     } catch (error) {
@@ -169,7 +201,15 @@ export default function ContactForm() {
       setFailure(error)
 
       if (error?.kind === 'validation' && error.fieldErrors) {
-        setErrors((prev) => ({ ...prev, ...error.fieldErrors }))
+        setErrors((prev) => ({
+          ...prev,
+          ...Object.fromEntries(
+            Object.entries(error.fieldErrors).map(([name, message]) => [
+              name,
+              localizeMessage(message, fieldsByName[name]),
+            ]),
+          ),
+        }))
         queueFocus('summary')
       } else {
         queueFocus('failure')
@@ -186,7 +226,7 @@ export default function ContactForm() {
         role="status"
         className="border-t border-line pt-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
       >
-        <p className="u-eyebrow">Sent</p>
+        <p className="u-eyebrow">{t('Sent', { ns: 'common' })}</p>
         <h3 className="mt-6 font-display text-display-3 font-medium uppercase">
           {CONTACT_FORM_COPY.successTitle}
         </h3>
@@ -257,7 +297,7 @@ export default function ContactForm() {
         >
           <p className="u-eyebrow">{CONTACT_FORM_COPY.errorTitle}</p>
           <p className="mt-3 text-[0.9375rem] leading-relaxed text-muted-strong">
-            {failure.message} {CONTACT_FORM_COPY.errorBody}
+            {messageForCode(failure.message, t)} {CONTACT_FORM_COPY.errorBody}
           </p>
           <div className="mt-5">
             <Button href={mailtoHref} variant="outline">

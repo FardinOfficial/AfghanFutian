@@ -1,9 +1,14 @@
+import { useTranslation } from 'react-i18next'
+
 import Button from '@/components/Button'
 import SectionLabel from '@/components/SectionLabel'
-import { ROUTES } from '@/data/navigation'
+import { useNavigation } from '@/i18n/hooks'
 
 /** 404 — kept in the site's editorial voice rather than a default error page. */
 export default function NotFound() {
+  const { t } = useTranslation()
+  const { ROUTES } = useNavigation()
+
   return (
     <section
       data-nav-sentinel
@@ -11,23 +16,26 @@ export default function NotFound() {
     >
       <div className="u-container py-32">
         <SectionLabel index="404" tone="dark">
-          Page Not Found
+          {t('Page Not Found', { ns: 'common' })}
         </SectionLabel>
 
         <h1 className="mt-10 max-w-[16ch] font-display text-display-1 font-medium uppercase">
-          This route does not exist.
+          {t('This route does not exist.', { ns: 'common' })}
         </h1>
 
         <p className="u-lead mt-8 max-w-[44ch] text-canvas/70">
-          The page you were looking for has moved or was never here. Let us get you back on track.
+          {t(
+            'The page you were looking for has moved or was never here. Let us get you back on track.',
+            { ns: 'common' },
+          )}
         </p>
 
         <div className="mt-11 flex flex-wrap gap-3">
           <Button to={ROUTES.home} variant="accent" size="lg">
-            Return Home
+            {t('Return Home', { ns: 'common' })}
           </Button>
           <Button to={ROUTES.contact} variant="ghost" size="lg">
-            Contact Our Team
+            {t('Contact Our Team', { ns: 'common' })}
           </Button>
         </div>
       </div>

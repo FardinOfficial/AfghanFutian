@@ -2,8 +2,7 @@ import { useRef, useState } from 'react'
 
 import Media from '@/components/Media'
 import SectionLabel from '@/components/SectionLabel'
-import { PROCESS_INTRO } from '@/data/home'
-import { PROCESS_STEPS } from '@/data/services'
+import { useHome, useServices } from '@/i18n/hooks'
 import { drawRule, fadeRise, imageReveal } from '@/animations/scrollAnimations'
 import { addLineReveal } from '@/animations/textAnimations'
 import { ScrollTrigger, gsap, useGSAP } from '@/lib/gsap'
@@ -35,6 +34,9 @@ import { ScrollTrigger, gsap, useGSAP } from '@/lib/gsap'
  */
 
 export default function Process() {
+  const { PROCESS_INTRO } = useHome()
+  const { PROCESS_STEPS } = useServices()
+
   const rootRef = useRef(null)
 
   const headingRef = useRef(null)

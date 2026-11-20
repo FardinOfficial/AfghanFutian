@@ -1,11 +1,11 @@
 import { useRef } from 'react'
-import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 
 import Media from '@/components/Media'
 import SectionLabel from '@/components/SectionLabel'
-import { INTRODUCTION } from '@/data/home'
 import { MEDIA } from '@/data/media'
+import { useHome } from '@/i18n/hooks'
+import { LocaleLink } from '@/i18n/LocaleLink'
 import { drawRule, fadeRise, imageReveal, parallax } from '@/animations/scrollAnimations'
 import { addLineReveal } from '@/animations/textAnimations'
 import { gsap, useGSAP } from '@/lib/gsap'
@@ -38,6 +38,8 @@ import { gsap, useGSAP } from '@/lib/gsap'
  */
 
 export default function Introduction() {
+  const { INTRODUCTION } = useHome()
+
   const rootRef = useRef(null)
 
   const labelRef = useRef(null)
@@ -174,7 +176,7 @@ export default function Introduction() {
                 key={anchor.label}
                 className="border-b border-line sm:border-b-0 sm:border-r sm:px-6 sm:first:pl-0 sm:last:border-r-0 sm:last:pr-0"
               >
-                <Link
+                <LocaleLink
                   to={anchor.to}
                   className="intro-anchor group flex w-full items-center justify-between gap-4 py-6"
                 >
@@ -187,9 +189,9 @@ export default function Introduction() {
                   <ArrowUpRight
                     aria-hidden="true"
                     strokeWidth={1.6}
-                    className="h-4 w-4 shrink-0 text-muted-strong transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px] group-hover:text-ink"
+                    className="h-4 w-4 shrink-0 text-muted-strong transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px] group-hover:text-ink rtl:-scale-x-100"
                   />
-                </Link>
+                </LocaleLink>
               </li>
             ))}
           </ul>

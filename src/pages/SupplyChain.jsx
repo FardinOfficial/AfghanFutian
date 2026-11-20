@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import ImagePlate from '@/components/ImagePlate'
 import NextStep from '@/components/NextStep'
 import PageHero from '@/components/PageHero'
@@ -5,7 +7,7 @@ import PlainTerms from '@/components/PlainTerms'
 import SectionIntro from '@/components/SectionIntro'
 import SectionRail from '@/components/SectionRail'
 import { MEDIA } from '@/data/media'
-import { SUPPLY_CHAIN } from '@/data/pages'
+import { usePages } from '@/i18n/hooks'
 
 /**
  * Supply Chain.
@@ -30,19 +32,25 @@ import { SUPPLY_CHAIN } from '@/data/pages'
  * surface → canvas (next step) → ink (CTA).
  */
 export default function SupplyChain() {
+  const { t } = useTranslation()
+  const { SUPPLY_CHAIN } = usePages()
+
   return (
     <>
       <PageHero
         index="04"
-        label="Supply Chain"
-        title="One thread from requirement to export."
-        description="Coordination across sourcing, production timelines, documentation and handover — so nothing is lost between one stage and the next."
+        label={t('Supply Chain', { ns: 'common' })}
+        title={t('One thread from requirement to export.', { ns: 'common' })}
+        description={t(
+          'Coordination across sourcing, production timelines, documentation and handover — so nothing is lost between one stage and the next.',
+          { ns: 'common' },
+        )}
         media={MEDIA.supplyChainHero}
         meta={[
-          { label: 'Scope', value: 'Sourcing to export' },
-          { label: 'Coordination', value: 'Single point' },
-          { label: 'Assets', value: 'Partner-operated' },
-          { label: 'Status', value: 'Details pending' },
+          { label: t('Scope', { ns: 'common' }), value: t('Sourcing to export', { ns: 'common' }) },
+          { label: t('Coordination', { ns: 'common' }), value: t('Single point', { ns: 'common' }) },
+          { label: t('Assets', { ns: 'common' }), value: t('Partner-operated', { ns: 'common' }) },
+          { label: t('Status', { ns: 'common' }), value: t('Details pending', { ns: 'common' }) },
         ]}
       />
 

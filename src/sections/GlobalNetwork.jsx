@@ -2,8 +2,8 @@ import { useRef } from 'react'
 
 import Media from '@/components/Media'
 import SectionLabel from '@/components/SectionLabel'
-import { NETWORK } from '@/data/home'
 import { MEDIA } from '@/data/media'
+import { useHome } from '@/i18n/hooks'
 import { drawRule, fadeRise, imageReveal, parallax } from '@/animations/scrollAnimations'
 import { addLineReveal } from '@/animations/textAnimations'
 import { gsap, useGSAP } from '@/lib/gsap'
@@ -35,6 +35,8 @@ import { gsap, useGSAP } from '@/lib/gsap'
  */
 
 export default function GlobalNetwork() {
+  const { NETWORK } = useHome()
+
   const rootRef = useRef(null)
 
   const headingRef = useRef(null)

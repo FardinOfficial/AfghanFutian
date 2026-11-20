@@ -1,7 +1,8 @@
 import { createHash } from 'node:crypto'
 
 import { CONTACT_FORM_FIELDS } from '../src/data/contact.js'
-import { validateForm } from '../src/lib/validation.js'
+import { emailCopy, emailDirection, emailLocale, fill } from '../src/i18n/serverCopy.js'
+import { validateFormCodes } from '../src/lib/validation.js'
 
 /**
  * POST /api/contact — the enquiry endpoint.
@@ -275,7 +276,7 @@ export default async function handler(req, res) {
 
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST, OPTIONS')
-    return send(res, 405, { ok: false, errors: { message: 'Method not allowed.' } })
+    return send(res, 405, { ok: false, code: 'method-not-allowed', errors: { message: 'method-not-allowed' } })
   }
 
   const apiKey = process.env.RESEND_API_KEY
@@ -285,10 +286,8 @@ export default async function handler(req, res) {
     console.error('[contact] RESEND_API_KEY is not set — nothing was sent')
     return send(res, 503, {
       ok: false,
-      errors: {
-        message:
-          'The email service is not configured on this deployment. Please email us directly in the meantime.',
-      },
+      code: 'not-configured',
+      errors: { message: 'not-configured' },
     })
   }
 
@@ -297,13 +296,13 @@ export default async function handler(req, res) {
     body = await parseJsonBody(req)
   } catch (error) {
     if (error?.message === 'too-large') {
-      return send(res, 413, { ok: false, errors: { message: 'That message is too large.' } })
+      return send(res, 413, { ok: false, code: 'too-large', errors: { message: 'too-large' } })
     }
-    return send(res, 400, { ok: false, errors: { message: 'Malformed request body.' } })
+    return send(res, 400, { ok: false, code: 'malformed', errors: { message: 'malformed' } })
   }
 
   if (!body || typeof body !== 'object') {
-    return send(res, 400, { ok: false, errors: { message: 'Malformed request body.' } })
+    return send(res, 400, { ok: false, code: 'malformed', errors: { message: 'malformed' } })
   }
 
   /* ---- 1. Silent bot checks --------------------------------------------- */
@@ -345,9 +344,9 @@ export default async function handler(req, res) {
     message: clean(body.message, 2000),
   }
 
-  const { errors, valid } = validateForm(CONTACT_FORM_FIELDS, values)
+  const { errors, valid } = validateFormCodes(CONTACT_FORM_FIELDS, values)
   if (!valid) {
-    return send(res, 400, { ok: false, errors })
+    return send(res, 400, { ok: false, code: 'validation', errors })
   }
 
   /* ---- 3. Rate limit and de-duplicate ------------------------------------ */
@@ -361,7 +360,8 @@ export default async function handler(req, res) {
     log('drop reason=rate-limited')
     return send(res, 429, {
       ok: false,
-      errors: { message: 'Too many enquiries from this connection. Please try again shortly.' },
+      code: 'server-rate-limited',
+      errors: { message: 'server-rate-limited' },
     })
   }
 
@@ -386,47 +386,62 @@ export default async function handler(req, res) {
 
   const submitted = new Date(now).toUTCString()
 
+  // The visitor's language travels with the enquiry so both the company
+  // notification and the acknowledgement use the same dictionary as the site.
+  const copy = emailCopy(meta.locale)
+  const c = (key, vars) => fill(copy[key] ?? key, vars)
+  const dir = emailDirection(meta.locale)
+  const htmlAttrs = `dir="${dir}" lang="${emailLocale(meta.locale)}"`
+  const pageFooter = `Page ${meta.path || '—'} · Locale ${meta.locale || '—'} · Client ${sha256(
+    client,
+  ).slice(0, 12)}`
+
   const notification = {
     from: FROM_EMAIL(),
     to: [TO_EMAIL()],
     reply_to: values.email,
-    subject: `New enquiry — ${values.service} — ${values.name}`,
+    subject: c('New enquiry — {{service}} — {{name}}', {
+      service: values.service,
+      name: values.name,
+    }),
     text: [
-      'A new enquiry was submitted on afghanfutian.com.',
+      c('A new enquiry was submitted on afghanfutian.com.'),
       '',
-      `Name:        ${values.name}`,
-      `Email:       ${values.email}`,
-      `Company:     ${values.company || '—'}`,
-      `Telephone:   ${values.phone || '—'}`,
-      `Country:     ${values.country || '—'}`,
-      `Service:     ${values.service}`,
-      `Submitted:   ${submitted}`,
+      `${c('Name')}:        ${values.name}`,
+      `${c('Email')}:       ${values.email}`,
+      `${c('Company')}:     ${values.company || '—'}`,
+      `${c('Telephone')}:   ${values.phone || '—'}`,
+      `${c('Country')}:     ${values.country || '—'}`,
+      `${c('Service')}:     ${values.service}`,
+      `${c('Submitted')}:   ${submitted}`,
       '',
-      'Message:',
+      `${c('Message')}:`,
       values.message,
       '',
-      `— Page: ${meta.path || '—'} · Locale: ${meta.locale || '—'}`,
+      `— ${pageFooter}`,
       `— Client: ${sha256(client).slice(0, 12)}`,
       `— User agent: ${meta.userAgent || '—'}`,
     ].join('\n'),
-    html: `<div style="font-family:Inter,Helvetica,Arial,sans-serif;max-width:640px">
-      <p style="font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#777970">Afghan Futian — new enquiry</p>
+    html: `<div ${htmlAttrs} style="font-family:Arial,Helvetica,sans-serif;max-width:640px">
+      <p style="font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#777970">${escapeHtml(
+        c('Afghan Futian — new enquiry'),
+      )}</p>
       <table style="border-collapse:collapse;margin-top:18px">${rows([
-        ['Name', values.name],
-        ['Email', values.email],
-        ['Company', values.company],
-        ['Telephone', values.phone],
-        ['Country', values.country],
-        ['Service', values.service],
-        ['Submitted', submitted],
+        [c('Name'), values.name],
+        [c('Email'), values.email],
+        [c('Company'), values.company],
+        [c('Telephone'), values.phone],
+        [c('Country'), values.country],
+        [c('Service'), values.service],
+        [c('Submitted'), submitted],
       ])}</table>
-      <p style="margin-top:22px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#777970">Message</p>
+      <p style="margin-top:22px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#777970">${escapeHtml(
+        c('Message'),
+      )}</p>
       <p style="white-space:pre-wrap;font-size:15px;line-height:1.65;color:#141414">${escapeHtml(
         values.message,
       )}</p>
-      <p style="margin-top:26px;font-size:12px;color:#777970">Page ${escapeHtml(
-        meta.path || '—',
-      )} · Locale ${escapeHtml(meta.locale || '—')} · Client ${sha256(client).slice(0, 12)}</p>
+      <p style="margin-top:26px;font-size:12px;color:#777970" dir="ltr">${escapeHtml(pageFooter)}</p>
     </div>`,
   }
 
@@ -434,42 +449,50 @@ export default async function handler(req, res) {
     from: FROM_EMAIL(),
     to: [values.email],
     reply_to: TO_EMAIL(),
-    subject: 'We have your enquiry — Afghan Futian',
+    subject: c('We have your enquiry — Afghan Futian'),
     text: [
-      `Dear ${values.name},`,
+      c('Dear {{name}},', { name: values.name }),
       '',
-      'Thank you for getting in touch. Your enquiry has reached us and we will come back to you at this address.',
+      c('Thank you for getting in touch. Your enquiry has reached us and we will come back to you at this address.'),
       '',
-      'For your records, this is what you sent:',
+      c('For your records, this is what you sent:'),
       '',
-      `Service:  ${values.service}`,
-      `Company:  ${values.company || '—'}`,
-      `Country:  ${values.country || '—'}`,
+      `${c('Service')}:  ${values.service}`,
+      `${c('Company')}:  ${values.company || '—'}`,
+      `${c('Country')}:  ${values.country || '—'}`,
       '',
       values.message,
       '',
-      `Submitted ${submitted}.`,
+      c('Submitted {{date}}.', { date: submitted }),
       '',
-      'Afghan Futian',
+      c('Afghan Futian'),
       TO_EMAIL(),
     ].join('\n'),
-    html: `<div style="font-family:Inter,Helvetica,Arial,sans-serif;max-width:640px">
-      <p style="font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#777970">Afghan Futian</p>
-      <h1 style="font-size:22px;color:#141414;margin:14px 0 0">Thank you — your enquiry has reached us.</h1>
-      <p style="font-size:15px;line-height:1.65;color:#141414">Dear ${escapeHtml(
-        values.name,
-      )}, we will come back to you at this address. For your records, this is what you sent.</p>
+    html: `<div ${htmlAttrs} style="font-family:Arial,Helvetica,sans-serif;max-width:640px">
+      <p style="font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#777970">${escapeHtml(
+        c('Afghan Futian'),
+      )}</p>
+      <h1 style="font-size:22px;color:#141414;margin:14px 0 0">${escapeHtml(
+        c('Thank you — your enquiry has reached us.'),
+      )}</h1>
+      <p style="font-size:15px;line-height:1.65;color:#141414">${escapeHtml(
+        c('Dear {{name}},', { name: values.name }),
+      )} ${escapeHtml(
+        c('Thank you for getting in touch. Your enquiry has reached us and we will come back to you at this address.'),
+      )}</p>
       <table style="border-collapse:collapse;margin-top:18px">${rows([
-        ['Service', values.service],
-        ['Company', values.company],
-        ['Country', values.country],
-        ['Submitted', submitted],
+        [c('Service'), values.service],
+        [c('Company'), values.company],
+        [c('Country'), values.country],
+        [c('Submitted'), submitted],
       ])}</table>
-      <p style="margin-top:22px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#777970">Message</p>
+      <p style="margin-top:22px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#777970">${escapeHtml(
+        c('Message'),
+      )}</p>
       <p style="white-space:pre-wrap;font-size:15px;line-height:1.65;color:#141414">${escapeHtml(
         values.message,
       )}</p>
-      <p style="margin-top:26px;font-size:13px;color:#777970">Afghan Futian · ${escapeHtml(
+      <p style="margin-top:26px;font-size:13px;color:#777970">${escapeHtml(c('Afghan Futian'))} · ${escapeHtml(
         TO_EMAIL(),
       )}</p>
     </div>`,
@@ -488,9 +511,8 @@ export default async function handler(req, res) {
     // The enquiry never reached the company. Do not tell the visitor it did.
     return send(res, 502, {
       ok: false,
-      errors: {
-        message: 'We could not hand your enquiry to our mail service. Please email us directly.',
-      },
+      code: 'mail-failed',
+      errors: { message: 'mail-failed' },
     })
   }
 

@@ -19,7 +19,7 @@ import { CONTACT_DETAILS } from './navigation'
  * ----------------------------------------------------------------------------
  *  • Every statement here is checkable against the code in this repository.
  *    The form fields are read from `contact.js`; the third-party requests are
- *    the Google Fonts and Unsplash CDN loads the site actually makes; the
+ *    the Unsplash CDN loads the site actually makes; the
  *    absence of cookies, analytics and tracking is a fact about this codebase,
  *    not a promise about future conduct.
  *  • Where a decision has not been made — a retention period, a governing law,
@@ -106,7 +106,7 @@ export const PRIVACY = {
       index: '05',
       heading: 'Third-party requests the site makes',
       paragraphs: [
-        'The site loads its typefaces from Google Fonts, and its placeholder photography from the Unsplash image CDN. When a page loads, your browser requests those files directly from those providers, which means your IP address and basic browser details are visible to them.',
+        'The site serves its typefaces from this website, and its placeholder photography from the Unsplash image CDN. When a page loads, your browser requests the photography directly from Unsplash, which means your IP address and basic browser details are visible to that provider.',
         'This happens on every visit, whether or not you use a form. It is a consequence of how the site is currently built, and it is stated here rather than left unmentioned.',
         'The meeting booker does not load Cal.com code in your browser and does not embed its calendar. Your browser calls this website only; the server then calls Cal.com and Resend. Those providers receive the details needed to make the booking and send its mail, under their own privacy terms.',
         'The company that hosts this website also keeps standard server logs — such as IP address and requested page — as part of running the server. The host and its retention period have not been chosen yet.',

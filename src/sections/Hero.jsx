@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Button from '@/components/Button'
 import Media from '@/components/Media'
-import { MEDIA } from '@/data/media'
-import { ROUTES } from '@/data/navigation'
+import { useMedia, useNavigation } from '@/i18n/hooks'
 import { buildHeroIntro, buildHeroParallax } from '@/animations/heroAnimations'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { isIntroComplete, onIntroComplete } from '@/lib/intro'
@@ -25,14 +25,19 @@ import { prefersReducedMotion } from '@/lib/motion'
  * transparent here and solid everywhere after.
  */
 
-/** Small factual meta rail — no invented figures. */
-const HERO_META = [
-  { label: 'Sourcing origin', value: 'China' },
-  { label: 'Coordination', value: 'Supply chain' },
-  { label: 'Reach', value: 'Worldwide' },
-]
-
 export default function Hero() {
+  const { t } = useTranslation()
+  const tr = (key) => t(key, { ns: 'common' })
+  const media = useMedia()
+  const { ROUTES } = useNavigation()
+
+  /** Small factual meta rail — no invented figures. */
+  const HERO_META = [
+    { label: tr('Sourcing origin'), value: tr('China') },
+    { label: tr('Coordination'), value: tr('Supply chain') },
+    { label: tr('Reach'), value: tr('Worldwide') },
+  ]
+
   const rootRef = useRef(null)
   const imageWrapRef = useRef(null)
   const imageRef = useRef(null)
@@ -112,8 +117,8 @@ export default function Hero() {
         {/* Oversized so parallax never exposes an edge. */}
         <div ref={imageRef} className="absolute inset-[-8%] will-change-transform">
           <Media
-            src={MEDIA.heroPrimary}
-            alt="Placeholder: a container ship being loaded by gantry cranes at an industrial port at dusk"
+            src={media.heroPrimary}
+            alt={media.heroPrimary.alt}
             sizes="100vw"
             priority
             className="h-full w-full"
@@ -143,7 +148,7 @@ export default function Hero() {
         <div className="flex items-start gap-8">
           <div ref={eyebrowRef} className="flex items-center gap-3">
             <span aria-hidden="true" className="h-[7px] w-[7px] shrink-0 bg-accent" />
-            <p className="u-eyebrow text-canvas/75">International Sourcing &amp; Logistics</p>
+            <p className="u-eyebrow text-canvas/75">{tr('International Sourcing & Logistics')}</p>
           </div>
         </div>
 
@@ -155,11 +160,11 @@ export default function Hero() {
             className="max-w-[16ch] font-display text-hero font-medium uppercase"
           >
             <span className="line-mask">
-              <span className="line-inner">The World Moves.</span>
+              <span className="line-inner">{tr('The World Moves.')}</span>
             </span>
             <span className="line-mask">
               <span className="line-inner">
-                We Connect It<span className="text-accent">.</span>
+                {tr('We Connect It')}<span className="text-accent">.</span>
               </span>
             </span>
           </h1>
@@ -169,8 +174,7 @@ export default function Hero() {
               ref={descriptionRef}
               className="u-lead max-w-[44ch] text-canvas/70 lg:col-span-5"
             >
-              Global sourcing and supply chain solutions, connecting China with opportunities
-              worldwide.
+              {tr('Global sourcing and supply chain solutions, connecting China with opportunities worldwide.')}
             </p>
 
             <div
@@ -178,10 +182,10 @@ export default function Hero() {
               className="flex flex-wrap items-center gap-3 lg:col-span-6 lg:col-start-7 lg:justify-end"
             >
               <Button to={ROUTES.sourcing} variant="accent" size="lg">
-                Explore Our Services
+                {tr('Explore Our Services')}
               </Button>
               <Button to={ROUTES.contact} variant="ghost" size="lg">
-                Start a Conversation
+                {tr('Start a Conversation')}
               </Button>
             </div>
           </div>
@@ -199,7 +203,7 @@ export default function Hero() {
               >
                 <span ref={cueDotRef} className="absolute inset-x-0 top-0 h-3 bg-accent" />
               </span>
-              <span className="u-eyebrow text-canvas-muted">Scroll</span>
+              <span className="u-eyebrow text-canvas-muted">{tr('Scroll')}</span>
             </div>
 
             <dl className="hidden items-end gap-8 sm:flex lg:gap-14">

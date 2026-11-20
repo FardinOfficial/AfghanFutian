@@ -1,5 +1,5 @@
 import LegalDoc from '@/components/LegalDoc'
-import { PRIVACY } from '@/data/legal'
+import { useLegal } from '@/i18n/hooks'
 
 /**
  * Privacy Notice.
@@ -13,5 +13,6 @@ import { PRIVACY } from '@/data/legal'
  * The document itself lives in `data/legal.js`; this page is the route binding.
  */
 export default function Privacy() {
+  const { PRIVACY } = useLegal()
   return <LegalDoc doc={PRIVACY} />
 }

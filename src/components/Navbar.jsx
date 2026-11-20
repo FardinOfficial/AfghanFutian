@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { useLocation } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 
 import Button from '@/components/Button'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 import Logo from '@/components/Logo'
 import SocialLinks from '@/components/SocialLinks'
-import { NAVBAR_LINKS, PRIMARY_NAV, ROUTES, CONTACT_DETAILS } from '@/data/navigation'
+import { LocaleLink, LocaleNavLink } from '@/i18n/LocaleLink'
+import { useNavigation } from '@/i18n/hooks'
 import { EASE, gsap, useGSAP } from '@/lib/gsap'
 import { onIntroComplete } from '@/lib/intro'
 import { BREAKPOINT_XL, onMediaChange, prefersReducedMotion } from '@/lib/motion'
@@ -61,6 +64,9 @@ export default function Navbar() {
 
   const { pathname } = useLocation()
   const lenis = useLenis()
+  const { t } = useTranslation()
+  const { NAVBAR_LINKS, PRIMARY_NAV, ROUTES, CONTACT_DETAILS } = useNavigation()
+  const tr = useCallback((key) => t(key, { ns: 'common' }), [t])
 
   /** True once the page's hero has scrolled up behind the bar. */
   const solid = useNavSentinel()
@@ -200,7 +206,7 @@ export default function Navbar() {
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[110] focus:bg-ink focus:px-5 focus:py-3 focus:font-sans focus:text-xs focus:uppercase focus:tracking-[0.16em] focus:text-canvas"
       >
-        Skip to content
+        {tr('Skip to content')}
       </a>
 
       <header
@@ -212,26 +218,26 @@ export default function Navbar() {
         }`}
       >
         <div className="u-container flex h-[72px] items-center justify-between gap-6 xl:h-[84px]">
-          <Link
+          <LocaleLink
             to={ROUTES.home}
-            aria-label="Afghan Futian Trading Company — home"
+            aria-label={t('Afghan Futian Trading Company — home', { ns: 'common' })}
             className="shrink-0"
             onClick={() => menuOpen && closeMenu()}
           >
             {/* The mark swaps tone with the bar: light over the hero's dark
                 photograph, dark once the bar goes solid. */}
             <Logo onDark={overHero} />
-          </Link>
+          </LocaleLink>
 
           {/* Desktop navigation. Held back to `xl` rather than `lg`: five links
               plus two calls to action need roughly 1155px of inner width and
               the `lg` container offers ~932px, which wrapped the labels onto a
               second line. See BREAKPOINT_XL in `src/lib/motion.js`. */}
-          <nav aria-label="Primary" className="hidden xl:block">
+          <nav aria-label={tr('Primary')} className="hidden xl:block">
             <ul className="flex items-center gap-6">
               {NAVBAR_LINKS.map((item) => (
                 <li key={item.to}>
-                  <NavLink
+                  <LocaleNavLink
                     to={item.to}
                     className={({ isActive }) =>
                       `u-link font-sans text-[0.8125rem] tracking-[0.01em] transition-colors duration-300 [--u-link-underline:var(--color-accent)] ${
@@ -246,7 +252,7 @@ export default function Navbar() {
                     }
                   >
                     {item.label}
-                  </NavLink>
+                  </LocaleNavLink>
                 </li>
               ))}
             </ul>
@@ -260,15 +266,16 @@ export default function Navbar() {
                 stays visible on phones. Hiding the wrapper sidesteps the
                 specificity tie entirely. */}
             <div className="hidden items-center gap-3 xl:flex">
+              <LanguageSwitcher tone={overHero ? 'dark' : 'light'} />
               <Button
                 to={ROUTES.schedule}
                 variant={overHero ? 'ghost' : 'outline'}
                 icon={false}
               >
-                Schedule a Meeting
+                {tr('Schedule a Meeting')}
               </Button>
               <Button to={ROUTES.contact} variant={overHero ? 'ghost' : 'solid'}>
-                Start a Conversation
+                {tr('Start a Conversation')}
               </Button>
             </div>
 
@@ -279,7 +286,7 @@ export default function Navbar() {
               onClick={() => (menuOpen ? closeMenu() : setMenuOpen(true))}
               aria-expanded={menuOpen}
               aria-controls="mobile-navigation"
-              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-label={tr(menuOpen ? 'Close menu' : 'Open menu')}
               className={`flex h-11 w-11 items-center justify-center border transition-colors duration-500 xl:hidden ${
                 overHero ? 'border-line-invert text-canvas' : 'border-line text-ink'
               }`}
@@ -298,7 +305,7 @@ export default function Navbar() {
           ref={overlayRef}
           role="dialog"
           aria-modal="true"
-          aria-label="Site navigation"
+          aria-label={tr('Site navigation')}
           onClick={onBackdropClick}
           className="fixed inset-0 z-[90] flex flex-col overflow-hidden bg-ink text-canvas xl:hidden"
         >
@@ -307,7 +314,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={closeMenu}
-              aria-label="Close menu"
+              aria-label={tr('Close menu')}
               className="flex h-11 w-11 items-center justify-center border border-line-invert text-canvas"
             >
               <X size={17} strokeWidth={1.5} />
@@ -315,14 +322,14 @@ export default function Navbar() {
           </div>
 
           <nav
-            aria-label="Mobile"
+            aria-label={tr('Mobile')}
             onClick={onBackdropClick}
             className="u-container flex min-h-0 flex-1 flex-col justify-center overflow-y-auto py-8"
           >
             <ul>
               {PRIMARY_NAV.map((item, index) => (
                 <li key={item.to} className="line-mask border-b border-line-invert">
-                  <Link
+                  <LocaleLink
                     ref={index === 0 ? firstLinkRef : undefined}
                     to={item.to}
                     onClick={closeMenu}
@@ -332,7 +339,7 @@ export default function Navbar() {
                     <span className="font-display text-display-3 font-medium uppercase">
                       {item.title}
                     </span>
-                  </Link>
+                  </LocaleLink>
                 </li>
               ))}
             </ul>
@@ -348,13 +355,16 @@ export default function Navbar() {
                 onClick={closeMenu}
                 className="w-full"
               >
-                Schedule a Meeting
+                {tr('Schedule a Meeting')}
               </Button>
+              <div className="mt-5 flex justify-center">
+                <LanguageSwitcher tone="dark" />
+              </div>
             </div>
 
             <div className="menu-aside mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div>
-                <p className="u-eyebrow text-canvas-muted">Email</p>
+                <p className="u-eyebrow text-canvas-muted">{tr('Email')}</p>
                 <a
                   href={CONTACT_DETAILS.emailHref}
                   onClick={closeMenu}
@@ -364,7 +374,7 @@ export default function Navbar() {
                 </a>
               </div>
               <div>
-                <p className="u-eyebrow text-canvas-muted">Telephone</p>
+                <p className="u-eyebrow text-canvas-muted">{tr('Telephone')}</p>
                 <ul className="mt-2 space-y-2">
                   {CONTACT_DETAILS.phones.map((phone) => (
                     <li key={phone.id}>
@@ -383,7 +393,7 @@ export default function Navbar() {
             </div>
 
             <div className="menu-aside mt-6">
-              <p className="u-eyebrow text-canvas-muted">Elsewhere</p>
+              <p className="u-eyebrow text-canvas-muted">{tr('Elsewhere')}</p>
               <SocialLinks tone="dark" className="mt-3" onNavigate={closeMenu} />
             </div>
           </div>
