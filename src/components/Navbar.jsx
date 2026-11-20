@@ -275,10 +275,15 @@ export default function Navbar() {
                 to={ROUTES.schedule}
                 variant={overHero ? 'ghost' : 'outline'}
                 icon={false}
+                className="rounded-xl"
               >
                 {tr('Schedule a Meeting')}
               </Button>
-              <Button to={ROUTES.contact} variant={overHero ? 'ghost' : 'solid'}>
+              <Button
+                to={ROUTES.contact}
+                variant={overHero ? 'ghost' : 'solid'}
+                className="rounded-xl"
+              >
                 {tr('Start a Conversation')}
               </Button>
             </div>
@@ -291,7 +296,7 @@ export default function Navbar() {
               aria-expanded={menuOpen}
               aria-controls="mobile-navigation"
               aria-label={tr(menuOpen ? 'Close menu' : 'Open menu')}
-              className={`flex h-11 w-11 items-center justify-center border transition-colors duration-500 2xl:hidden ${
+              className={`flex h-11 w-11 items-center justify-center rounded-xl border transition-colors duration-500 2xl:hidden ${
                 overHero ? 'border-line-invert text-canvas' : 'border-line text-ink'
               }`}
             >
@@ -357,7 +362,7 @@ export default function Navbar() {
                 size="lg"
                 icon={false}
                 onClick={closeMenu}
-                className="w-full"
+                className="w-full rounded-xl"
               >
                 {tr('Schedule a Meeting')}
               </Button>
