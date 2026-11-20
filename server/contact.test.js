@@ -93,7 +93,7 @@ function enquiry(overrides = {}) {
     company: 'Rahimi Trading',
     phone: '+93 700 000 000',
     country: 'Afghanistan',
-    service: 'Global Sourcing',
+    service: 'Product sourcing',
     message: `Enquiry ${sequence}: we would like to source 4,000 units of stainless steel kitchenware for spring delivery.`,
     meta: {
       submittedAt: new Date(Date.now() - 60_000).toISOString(),
@@ -314,7 +314,7 @@ test('sends a notification to the company and a confirmation to the visitor', as
   assert.equal(notify.headers.Authorization, 'Bearer test-key')
   assert.deepEqual(notify.body.to, ['contact@afghanfutian.com'])
   assert.equal(notify.body.reply_to, 'amina@example.com', 'reply goes to the visitor')
-  assert.match(notify.body.subject, /Global Sourcing/)
+  assert.match(notify.body.subject, /Product sourcing/)
   assert.match(notify.body.text, /Amina Rahimi/)
 
   assert.deepEqual(confirm.body.to, ['amina@example.com'])

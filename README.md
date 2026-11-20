@@ -1,7 +1,8 @@
 # Afghan Futian — Website
 
-Marketing site for **Afghan Futian**, an international sourcing, trading and supply
-chain company working between China's supplier base and buyers worldwide.
+Marketing site for **Afghan Futian**, a trading company that sources products in
+China and coordinates trade documents and cargo movement for buyers in Afghanistan
+and other agreed markets.
 
 The site is a single-page application with ten routed pages plus a 404: a
 cinematic scroll narrative on the homepage, an editorial content page for each

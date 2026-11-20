@@ -102,10 +102,14 @@ export default function ContactForm() {
     [CONTACT_FORM_FIELDS],
   )
 
-  const mailtoHref = useMemo(
-    () => buildMailtoFallback(CONTACT_FORM_FIELDS, values, CONTACT_DETAILS.email),
-    [CONTACT_DETAILS.email, CONTACT_FORM_FIELDS, values],
-  )
+  const mailtoHref = useMemo(() => {
+    const serviceLabel = fieldsByName.service?.options?.find(
+      (option) => option.value === values.service,
+    )?.label
+    const mailValues = serviceLabel ? { ...values, service: serviceLabel } : values
+    const translate = (key, options) => t(key, { ns: 'common', ...options })
+    return buildMailtoFallback(CONTACT_FORM_FIELDS, mailValues, CONTACT_DETAILS.email, translate)
+  }, [CONTACT_DETAILS.email, CONTACT_FORM_FIELDS, fieldsByName, t, values])
 
   const errorEntries = Object.entries(errors)
   const showSummary = errorEntries.length > 0

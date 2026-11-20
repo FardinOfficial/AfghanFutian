@@ -37,17 +37,17 @@ export default function Logistics() {
       <PageHero
         index="05"
         label={t('Logistics', { ns: 'common' })}
-        title={t('Movement, arranged around the destination.', { ns: 'common' })}
+        title={t('Cargo, planned to the destination.', { ns: 'common' })}
         description={t(
-          'International cargo and transportation coordination, planned with logistics partners and matched to where the goods must land.',
+          'Transport turns an order into a physical movement. We arrange it with logistics partners and plan backwards from the delivery location.',
           { ns: 'common' },
         )}
         media={MEDIA.logisticsHero}
         meta={[
-          { label: t('Mode', { ns: 'common' }), value: t('To be confirmed', { ns: 'common' }) },
-          { label: t('Ownership', { ns: 'common' }), value: t('Partner-operated', { ns: 'common' }) },
-          { label: t('Planning', { ns: 'common' }), value: t('Destination-led', { ns: 'common' }) },
-          { label: t('Tracking', { ns: 'common' }), value: t('Supported', { ns: 'common' }) },
+          { label: t('Service', { ns: 'common' }), value: t('Per cargo', { ns: 'common' }) },
+          { label: t('Operator', { ns: 'common' }), value: t('Logistics partners', { ns: 'common' }) },
+          { label: t('Planning', { ns: 'common' }), value: t('Destination first', { ns: 'common' }) },
+          { label: t('Updates', { ns: 'common' }), value: t('Progress reports', { ns: 'common' }) },
         ]}
       />
 

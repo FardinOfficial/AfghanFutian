@@ -405,7 +405,7 @@ export default async function handler(req, res) {
       name: values.name,
     }),
     text: [
-      c('A new enquiry was submitted on afghanfutian.com.'),
+      c('A new enquiry was submitted through afghanfutian.com.'),
       '',
       `${c('Name')}:        ${values.name}`,
       `${c('Email')}:       ${values.email}`,
@@ -453,9 +453,9 @@ export default async function handler(req, res) {
     text: [
       c('Dear {{name}},', { name: values.name }),
       '',
-      c('Thank you for getting in touch. Your enquiry has reached us and we will come back to you at this address.'),
+      c('Thank you for contacting Afghan Futian. We have your requirement and will reply to this email address.'),
       '',
-      c('For your records, this is what you sent:'),
+      c('For your records, here is what you sent:'),
       '',
       `${c('Service')}:  ${values.service}`,
       `${c('Company')}:  ${values.company || '—'}`,
@@ -478,7 +478,7 @@ export default async function handler(req, res) {
       <p style="font-size:15px;line-height:1.65;color:#141414">${escapeHtml(
         c('Dear {{name}},', { name: values.name }),
       )} ${escapeHtml(
-        c('Thank you for getting in touch. Your enquiry has reached us and we will come back to you at this address.'),
+        c('Thank you for contacting Afghan Futian. We have your requirement and will reply to this email address.'),
       )}</p>
       <table style="border-collapse:collapse;margin-top:18px">${rows([
         [c('Service'), values.service],

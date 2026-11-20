@@ -18,12 +18,12 @@ import { CONTACT_DETAILS, ROUTES } from './navigation'
 export const INTRODUCTION = {
   index: '01',
   label: 'Introduction',
-  heading: 'Sourcing, coordination and movement, held together as one operation.',
-  lead: 'Afghan Futian connects buyers with suppliers in China, then coordinates everything between them — the sourcing conversation, the production timeline, the export arrangement and the movement of goods toward their destination.',
-  body: 'We are not a marketplace, and we are not a directory of suppliers. We work on individual requirements, in the order they actually occur, and we stay with them until the goods reach the destination.',
+  heading: 'Yiwu sourcing, coordinated through to delivery.',
+  lead: 'Afghan Futian connects buyers with suppliers in China and coordinates the work between them: product and supplier research, order details, export documents and cargo movement.',
+  body: 'Each enquiry is handled on its own terms. We agree the specification and destination first, then arrange the steps needed to get the goods there.',
   /** Compact wayfinding into the three service pages. */
   anchors: [
-    { index: '01', label: 'Global Sourcing', to: ROUTES.sourcing },
+    { index: '01', label: 'Product sourcing', to: ROUTES.sourcing },
     { index: '02', label: 'Supply Chain', to: ROUTES.supplyChain },
     { index: '03', label: 'Logistics', to: ROUTES.logistics },
   ],
@@ -32,16 +32,16 @@ export const INTRODUCTION = {
    * material, and saying so in the interface is more defensible than implying
    * these are the company's own facilities.
    */
-  mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
+  mediaNote: 'Illustrative photography. Final brand photography is pending.',
 }
 
 /** Section 02 — the capabilities index. */
 export const CAPABILITIES_INTRO = {
   index: '02',
   label: 'Capabilities',
-  heading: 'Four capabilities. One continuous chain.',
+  heading: 'Four services, one trade requirement.',
   support:
-    'Sourcing, trade, supply chain and logistics are not four separate products. They are consecutive stages of the same requirement, and we coordinate them as one.',
+    'Sourcing, trade, supply chain and logistics are consecutive stages of one order. Afghan Futian coordinates them as one operation.',
   /** Caption shown beneath the desktop preview panel. */
   panelCaption: 'Capability in focus',
 }
@@ -61,56 +61,56 @@ export const CAPABILITIES_INTRO = {
 export const NETWORK = {
   index: '03',
   label: 'Global Network',
-  heading: 'One origin, coordinated outward.',
+  heading: 'From Yiwu, coordinated to the destination.',
   support:
-    'Afghan Futian works from a sourcing origin in China and coordinates from there. What follows describes the shape of that operation — not a claim about specific lanes.',
+    'Our sourcing work starts in China. Afghan Futian coordinates the order from there; destinations are agreed with each buyer.',
   stations: [
     {
       index: '01',
-      role: 'Sourcing origin',
+      role: 'Sourcing base',
       place: 'China',
-      detail: 'Where suppliers, production and export consolidation take place.',
+      detail: 'Supplier research, product matching and export preparation begin here.',
       status: 'confirmed',
-      statusLabel: 'Confirmed origin',
+      statusLabel: 'Published base',
     },
     {
       index: '02',
       role: 'Coordination',
       place: 'Afghan Futian',
-      detail: 'One point of contact across sourcing, timeline, documentation and movement.',
+      detail: 'One contact for specifications, supplier replies, documents and cargo updates.',
       status: 'confirmed',
       statusLabel: 'Single coordinator',
     },
     {
       index: '03',
       role: 'Destinations',
-      place: 'Worldwide',
-      detail: 'Buyer markets, reached according to each individual requirement.',
+      place: 'Agreed separately',
+      detail: 'Afghanistan and other agreed buyer markets, quoted by cargo and destination.',
       status: 'pending',
-      statusLabel: 'Pending verification',
+      statusLabel: 'Not yet published',
     },
   ],
   /** The honesty pair: what the diagram shows, and what it deliberately omits. */
   ledger: [
     {
       label: 'What this shows',
-      body: 'The structure of the operation: a sourcing origin, one coordination point, and destinations reached according to each requirement.',
+      body: 'A sourcing base, one coordination point and destinations agreed per order.',
     },
     {
       label: 'What this is not',
-      body: 'A route map. No lane, port, market or volume is shown here, because none has been confirmed by Afghan Futian.',
+      body: 'A route map. Lanes, ports and volumes appear only when confirmed.',
     },
   ],
-  mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
+  mediaNote: 'Illustrative photography. Final brand photography is pending.',
 }
 
 /** Section 04 — the five-stage process. */
 export const PROCESS_INTRO = {
   index: '04',
   label: 'Process',
-  heading: 'Five stages, in the order they happen.',
+  heading: 'Five steps from brief to arrival.',
   support:
-    'Every requirement moves through the same sequence — from first brief to final delivery. Knowing which stage you are in, and what it depends on, is most of the work.',
+    'Every enquiry follows a clear sequence. Knowing the current stage and what it depends on keeps the order moving.',
   /** Label above the desktop progress rail. */
   progressLabel: 'Stages',
 }
@@ -119,10 +119,10 @@ export const PROCESS_INTRO = {
 export const WHY_INTRO = {
   index: '05',
   label: 'Why Afghan Futian',
-  heading: 'Four commitments behind every requirement.',
+  heading: 'Four working commitments.',
   support:
-    'These describe how we work, not what we have achieved. Where a statement would need evidence we cannot yet show, it has been left out.',
-  note: 'No performance statistics are published until they can be verified.',
+    'These describe how an enquiry is handled. We do not use unverified performance claims.',
+  note: 'Our public descriptions focus on method, not on unverified performance figures.',
   link: { label: 'How we work', to: ROUTES.about },
 }
 
@@ -140,21 +140,21 @@ export const WHY_INTRO = {
  */
 export const CLOSING_CTA = {
   label: 'Next step',
-  heading: 'Tell us what you need to move.',
+  heading: 'Send us the requirement.',
   support:
-    'Bring us a requirement — a product, a quantity, a destination. If it can be sourced and moved, we will tell you how. If it cannot, we will tell you that instead.',
-  primary: { label: 'Start a Conversation', to: ROUTES.contact },
+    'Share the product, quantity, destination and timing. We will confirm what we can source and how the goods can move — or tell you if the request falls outside our scope.',
+  primary: { label: 'Discuss Your Requirement', to: ROUTES.contact },
   secondary: { label: 'Email Afghan Futian', href: CONTACT_DETAILS.emailHref },
   /** A second, lighter route in — for a reader who would rather talk than write. */
   schedule: { label: 'Schedule a Meeting', to: ROUTES.schedule },
   /** Not a guarantee — a checklist. It exists to make the first reply useful. */
   brief: {
-    label: 'What helps us respond',
+    label: 'Include in your first message',
     items: [
-      'The product, and its specification',
-      'Quantities and target pricing',
-      'Where the goods must land',
-      'The timeline you are working to',
+      'Product and specification',
+      'Quantity and target price',
+      'Delivery location',
+      'Required timeline',
     ],
   },
 }

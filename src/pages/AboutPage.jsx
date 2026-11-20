@@ -37,17 +37,17 @@ export default function AboutPage() {
       <PageHero
         index="02"
         label={t('About Us', { ns: 'common' })}
-        title={t('Trade is more than movement.', { ns: 'common' })}
+        title={t('From supplier to destination.', { ns: 'common' })}
         description={t(
-          "Afghan Futian is an international sourcing, trading and supply chain company working between China's supplier base and buyers around the world.",
+          "Afghan Futian is a trading company working between China’s supplier base and buyers in Afghanistan and other markets. We handle each requirement from the first brief through sourcing, documentation and movement.",
           { ns: 'common' },
         )}
         media={MEDIA.aboutHero}
         meta={[
-          { label: t('Based in', { ns: 'common' }), value: t('China sourcing origin', { ns: 'common' }) },
-          { label: t('Focus', { ns: 'common' }), value: t('Sourcing & supply chain', { ns: 'common' }) },
-          { label: t('Reach', { ns: 'common' }), value: t('Worldwide buyers', { ns: 'common' }) },
-          { label: t('Status', { ns: 'common' }), value: t('Details pending', { ns: 'common' }) },
+          { label: t('Listed in', { ns: 'common' }), value: t('Yiwu, China', { ns: 'common' }) },
+          { label: t('Focus', { ns: 'common' }), value: t('Sourcing & trade', { ns: 'common' }) },
+          { label: t('Buyers', { ns: 'common' }), value: t('Afghanistan & other markets', { ns: 'common' }) },
+          { label: t('Approach', { ns: 'common' }), value: t('Per requirement', { ns: 'common' }) },
         ]}
       />
 

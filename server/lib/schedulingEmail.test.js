@@ -61,7 +61,7 @@ test('Pashto emails translate the subject, heading and labels and render RTL', (
   assert.ok((message.html.match(/dir="rtl"/g) ?? []).length >= 3, 'html and content wrapper must be RTL')
   assert.match(message.html, /ستاسو ناسته ټاکل شوې ده\./)
   assert.match(message.html, /نوم/)
-  assert.match(message.html, /نیټه/)
+  assert.match(message.html, /نېټه/)
   assert.match(message.html, /د Google Meet سره یوځای شئ/)
   assert.match(message.text, /ستاسو ناسته ټاکل شوې ده\./)
   assert.match(message.text, /نوم: Amina Rahimi/)

@@ -28,14 +28,14 @@ import { SERVICE_OPTIONS } from './serviceOptions.js'
 export const CONTACT_FORM_FIELDS = [
   {
     name: 'name',
-    label: 'Full name',
+    label: 'Your name',
     type: 'text',
     required: true,
     autoComplete: 'name',
     maxLength: 80,
     minLength: 2,
-    requiredMessage: 'Please tell us who we are speaking with.',
-    minLengthMessage: 'Please enter your full name.',
+    requiredMessage: 'Please enter your name.',
+    minLengthMessage: 'Please use your full name.',
   },
   {
     name: 'company',
@@ -43,7 +43,7 @@ export const CONTACT_FORM_FIELDS = [
     type: 'text',
     autoComplete: 'organization',
     maxLength: 120,
-    hint: 'Optional, but it helps us understand the context.',
+    hint: 'Optional. It helps us understand the enquiry.',
   },
   {
     name: 'email',
@@ -53,16 +53,16 @@ export const CONTACT_FORM_FIELDS = [
     autoComplete: 'email',
     inputMode: 'email',
     maxLength: 254,
-    requiredMessage: 'We need an address to reply to.',
+    requiredMessage: 'We need an email address to reply to.',
   },
   {
     name: 'phone',
-    label: 'Telephone',
+    label: 'Phone number',
     type: 'tel',
     autoComplete: 'tel',
     inputMode: 'tel',
     maxLength: 40,
-    hint: 'Optional. Include the country code if you can.',
+    hint: 'Optional. Include the country code if available.',
   },
   {
     name: 'country',
@@ -70,16 +70,16 @@ export const CONTACT_FORM_FIELDS = [
     type: 'text',
     autoComplete: 'country-name',
     maxLength: 80,
-    hint: 'Optional. Where the goods must land, if that is already known.',
+    hint: 'Optional. Where the goods should arrive, if known.',
   },
   {
     name: 'service',
-    label: 'Service of interest',
+    label: 'What do you need?',
     type: 'select',
     required: true,
     options: SERVICE_OPTIONS,
-    requiredMessage: 'Please choose the closest match.',
-    placeholder: 'Select a service',
+    requiredMessage: 'Please choose the closest option.',
+    placeholder: 'Choose the closest option',
   },
   {
     name: 'message',
@@ -90,30 +90,30 @@ export const CONTACT_FORM_FIELDS = [
     minLength: 20,
     rows: 7,
     requiredMessage: 'Please describe what you need.',
-    minLengthMessage: 'A little more detail will help us reply properly — 20 characters or so.',
-    hint: 'The product, quantities, target pricing, destination and timeline are the most useful things to include.',
+    minLengthMessage: 'Please add a little more detail — about 20 characters.',
+    hint: 'Include the product, quantity, target price, delivery location and timeline.',
   },
 ]
 
 export const CONTACT_FORM_COPY = {
-  submitLabel: 'Send Enquiry',
+  submitLabel: 'Send enquiry',
   submittingLabel: 'Sending',
 
   /** Shown at the top of the form after a failed submit, and focused. */
-  summaryTitle: 'Some details need another look.',
-  summaryIntro: 'Nothing has been sent yet. Please correct the following:',
+  summaryTitle: 'Check these details.',
+  summaryIntro: 'Nothing has been sent yet. Please correct:',
 
   successTitle: 'Enquiry received.',
   successBody:
-    'Thank you — your enquiry is with us. We will come back to you at the address you gave, and we will tell you plainly if what you need is outside what we can arrange.',
+    'Thank you. We have your requirement and will reply to the email address you gave. If we cannot arrange it, we will say so.',
   successAgain: 'Send another enquiry',
 
-  errorTitle: 'That did not send.',
+  errorTitle: 'We could not send it.',
   errorBody:
-    'Your details are still in the form. You can try again, or send the same message by email instead — nothing you have written will be lost.',
+    'Your answers are still here. Try again or use the email link — nothing you typed will be lost.',
 
   /** The fallback link label when submission fails. */
-  fallbackLabel: 'Send it by email instead',
+  fallbackLabel: 'Send it by email',
   retryLabel: 'Try again',
 
   honeypotLabel: 'Leave this field empty',
@@ -123,7 +123,7 @@ export const CONTACT_FORM_COPY = {
    * with it, and does not promise a policy document that does not exist yet.
    */
   dataNote:
-    'We use these details only to answer your enquiry. They are not sold, and not added to a mailing list.',
+    'We use these details only to answer your enquiry. They are not added to a mailing list.',
 }
 
 export default { CONTACT_FORM_FIELDS, CONTACT_FORM_COPY }

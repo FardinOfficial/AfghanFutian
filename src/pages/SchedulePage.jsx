@@ -49,14 +49,14 @@ export default function SchedulePage() {
       >
         <ul className="mt-9 space-y-5 border-t border-line-invert pt-7">
           <li>
-            <p className="u-eyebrow text-canvas-muted">{t('Prefer to write', { ns: 'common' })}</p>
+            <p className="u-eyebrow text-canvas-muted">{t('Write to us', { ns: 'common' })}</p>
             <a href={CONTACT_DETAILS.emailHref} className="u-link mt-2 text-sm text-canvas/85">
               {fallbackEmail}
             </a>
           </li>
           <li>
             <p className="u-eyebrow text-canvas-muted">
-              {t('Have a detailed requirement', { ns: 'common' })}
+              {t('Have a detailed brief', { ns: 'common' })}
             </p>
             <LocaleLink to={ROUTES.contact} className="u-link mt-2 text-sm text-canvas/85">
               {t('Use the enquiry form', { ns: 'common' })}
@@ -73,7 +73,7 @@ export default function SchedulePage() {
         support={
           configured
             ? t(
-                'The official calendar below shows only times genuinely open in our Cal.com schedule. It opens in Kabul time and you can switch timezone inside the booker.',
+                'The official calendar shows only open times in our Cal.com schedule. It opens in Kabul time; change the timezone inside the booker if needed.',
                 { ns: 'common' },
               )
             : copy.unconfigured.body

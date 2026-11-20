@@ -104,10 +104,10 @@ export default function ScheduleEmbed({ url, publicUrl, title }) {
             aria-live="polite"
             className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-surface"
           >
-            <span className="u-eyebrow">{t('Loading the calendar', { ns: 'common' })}</span>
+            <span className="u-eyebrow">{t('Opening the calendar', { ns: 'common' })}</span>
             <span className="h-px w-20 animate-pulse bg-ink" aria-hidden="true" />
             <span className="text-[0.8125rem] text-muted-strong">
-              {t('Fetching the open times…', { ns: 'common' })}
+              {t('Reading available times…', { ns: 'common' })}
             </span>
           </div>
         )}
@@ -117,10 +117,10 @@ export default function ScheduleEmbed({ url, publicUrl, title }) {
             role="alert"
             className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-surface px-6 text-center"
           >
-            <span className="u-eyebrow">{t('Calendar unavailable', { ns: 'common' })}</span>
+            <span className="u-eyebrow">{t('Calendar could not load', { ns: 'common' })}</span>
             <p className="max-w-[38ch] text-[0.9375rem] leading-relaxed text-muted-strong">
               {t(
-                'The booking calendar could not be loaded here. You can try again, or open the same booking page directly.',
+                'The calendar did not open here. Try again or use the direct booking link.',
                 { ns: 'common' },
               )}
             </p>
@@ -152,7 +152,7 @@ export default function ScheduleEmbed({ url, publicUrl, title }) {
       {publicUrl && (
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-line px-5 py-4">
           <p className="text-[0.8125rem] leading-snug text-muted-strong">
-            {t("The calendar opens in Kabul time. Change it with Cal.com's selector, or open it directly.", {
+            {t("Times are shown in Kabul first. Change the timezone in the booker or open the direct link.", {
               ns: 'common',
             })}
           </p>

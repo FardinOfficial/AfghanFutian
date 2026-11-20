@@ -29,10 +29,10 @@ const machineStrings = [
 describe('localize', () => {
   it('translates human-facing strings using the supplied namespace', () => {
     const { t, calls } = translationMock()
-    assert.equal(localize('The World Moves.', 'common', t), 'common:The World Moves.')
+    assert.equal(localize('From Yiwu.', 'common', t), 'common:From Yiwu.')
     assert.equal(localize('Explore Our Services', 'home', t), 'home:Explore Our Services')
     assert.deepEqual(calls, [
-      ['The World Moves.', 'common'],
+      ['From Yiwu.', 'common'],
       ['Explore Our Services', 'home'],
     ])
   })
@@ -55,7 +55,7 @@ describe('localize', () => {
       type: 'hero',
       status: 'ready',
       index: 2,
-      title: 'The World Moves.',
+      title: 'From Yiwu.',
       phone: '+93 700 123 456',
       email: 'hello@example.com',
       website: 'https://example.com',
@@ -69,7 +69,7 @@ describe('localize', () => {
         emailHref: 'mailto:hello@example.com',
         label: 'Contact Our Team',
       },
-      items: [{ title: 'Global Sourcing', to: '/services' }, 'Explore Our Services'],
+      items: [{ title: 'Product sourcing', to: '/services' }, 'Explore Our Services'],
       nested: { group: { heading: 'Start a Conversation' } },
       count: 3,
       enabled: true,
@@ -88,7 +88,7 @@ describe('localize', () => {
       type: 'hero',
       status: 'ready',
       index: 2,
-      title: 'home:The World Moves.',
+      title: 'home:From Yiwu.',
       phone: '+93 700 123 456',
       email: 'hello@example.com',
       website: 'https://example.com',
@@ -103,7 +103,7 @@ describe('localize', () => {
         label: 'home:Contact Our Team',
       },
       items: [
-        { title: 'home:Global Sourcing', to: '/services' },
+        { title: 'home:Product sourcing', to: '/services' },
         'home:Explore Our Services',
       ],
       nested: { group: { heading: 'home:Start a Conversation' } },
@@ -117,9 +117,9 @@ describe('localize', () => {
       'Connecting Markets.',
       'Contact Our Team',
       'Explore Our Services',
-      'Global Sourcing',
+      'From Yiwu.',
+      'Product sourcing',
       'Start a Conversation',
-      'The World Moves.',
       'Warehouse in Kabul',
     ])
     assert.ok(calls.some(([key, ns]) => key === 'Warehouse in Kabul' && ns === 'media'))

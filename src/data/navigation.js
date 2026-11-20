@@ -45,8 +45,8 @@ export const NAVBAR_LINKS = PRIMARY_NAV.filter((item) =>
 
 /** Services column in the footer. */
 export const FOOTER_SERVICES = [
-  { label: 'Global Sourcing', to: ROUTES.sourcing },
-  { label: 'International Trade', to: ROUTES.sourcing },
+  { label: 'Product sourcing', to: ROUTES.sourcing },
+  { label: 'Trade coordination', to: ROUTES.sourcing },
   { label: 'Supply Chain', to: ROUTES.supplyChain },
   { label: 'Logistics', to: ROUTES.logistics },
   { label: 'Global Network', to: ROUTES.globalNetwork },
@@ -108,43 +108,43 @@ export const PAGE_META = {
   [ROUTES.home]: {
     title: 'Afghan Futian Trading Company — Connecting Markets. Moving the World.',
     description:
-      'Global sourcing, supply chain and logistics solutions from Afghan Futian Trading Company, connecting China with opportunities worldwide.',
+      'Source products in China with Afghan Futian Trading Company. We coordinate trade documents, supply chain steps and cargo movement for buyers in Afghanistan and international markets.',
     image: DEFAULT_OG_IMAGE,
   },
   [ROUTES.about]: {
     title: 'About Us — Afghan Futian Trading Company',
     description:
-      'Learn how Afghan Futian Trading Company connects sourcing operations in China with international buyers through coordinated supply chain and logistics.',
+      'Learn how Afghan Futian Trading Company sources from China and coordinates supplier communication, documentation and cargo movement for buyers in Afghanistan and abroad.',
   },
   [ROUTES.sourcing]: {
-    title: 'Global Sourcing — Afghan Futian Trading Company',
+    title: 'Product sourcing from China — Afghan Futian Trading Company',
     description:
-      'Product and supplier sourcing in China, coordinated end to end for international buyers by Afghan Futian Trading Company.',
+      'Product and supplier sourcing in Yiwu, China, with quotations and samples assessed against your brief before an order moves forward.',
   },
   [ROUTES.supplyChain]: {
     title: 'Supply Chain — Afghan Futian Trading Company',
     description:
-      'Supply chain coordination that carries a requirement from first sourcing conversation through to export.',
+      'Order details, production timelines, documents and handover coordinated from supplier confirmation through export.',
   },
   [ROUTES.logistics]: {
     title: 'Logistics — Afghan Futian Trading Company',
     description:
-      'International cargo and transportation coordination, arranged around your destination and timeline.',
+      'Cargo coordination with logistics partners, planned around the destination, cargo type and delivery window.',
   },
   [ROUTES.globalNetwork]: {
     title: 'Global Network — Afghan Futian Trading Company',
     description:
-      'An illustrative view of how Afghan Futian Trading Company connects its China sourcing origin with markets worldwide.',
+      'See how sourcing in Yiwu, coordination through Afghan Futian and per-enquiry destinations fit together. No unverified routes are published.',
   },
   [ROUTES.contact]: {
     title: 'Contact — Afghan Futian Trading Company',
     description:
-      'Start a conversation with Afghan Futian Trading Company about your sourcing requirement or international business opportunity.',
+      'Send a product, quantity and destination to Afghan Futian Trading Company and get a clear answer on sourcing and cargo options.',
   },
   [ROUTES.schedule]: {
     title: 'Schedule a Meeting — Afghan Futian Trading Company',
     description:
-      'Book a meeting with Afghan Futian Trading Company. Choose a date and time that suits you and receive confirmation and joining details by email.',
+      'Book a sourcing call with Afghan Futian Trading Company. Choose an open time and receive confirmation and joining details by email.',
   },
   [ROUTES.privacy]: {
     title: 'Privacy Notice — Afghan Futian Trading Company',

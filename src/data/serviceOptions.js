@@ -19,11 +19,11 @@
  * `src/data/services.js` re-exports it, so nothing else has to know it moved.
  */
 export const SERVICE_OPTIONS = [
-  'Global Sourcing',
-  'International Trade',
-  'Supply Chain Coordination',
-  'Logistics & Transportation',
-  'General Enquiry',
+  'Product sourcing',
+  'Trade coordination',
+  'Supply chain coordination',
+  'Cargo & logistics',
+  'General enquiry',
 ]
 
 export default { SERVICE_OPTIONS }

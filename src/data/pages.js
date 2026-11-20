@@ -30,60 +30,60 @@ export const ABOUT = {
   who: {
     index: '01',
     label: 'The Company',
-    heading: 'An operation, not a directory.',
-    support: 'Afghan Futian is an international sourcing, trading and supply chain company. We work between China’s supplier base and buyers elsewhere in the world, on individual requirements, in the order those requirements actually occur.',
-    body: 'We are not a marketplace and we are not a list of suppliers. A buyer brings us a requirement; we work out what it needs, find where it can come from, and then stay with it — through production, export and movement — until the goods reach their destination.',
+    heading: 'From supplier to destination.',
+    support: 'Afghan Futian is a trading company working between China’s supplier base and buyers in Afghanistan and other markets. We handle each requirement from the first brief through sourcing, documentation and movement.',
+    body: 'A buyer brings us a product and destination. We clarify the specification, identify suppliers in China and coordinate the steps that take the order through production, export and cargo movement.',
   },
 
   model: {
     index: '02',
     label: 'How We Work',
-    heading: 'Three parts, held together.',
+    heading: 'One coordinated workflow.',
     support:
-      'Sourcing, coordination and movement are usually handled by separate companies, and the buyer carries the seams between them. We hold all three, which is what makes a single conversation possible.',
+      'Sourcing, coordination and movement are often handled by separate parties. Afghan Futian holds the thread across all three so the buyer works from one set of dates, documents and updates.',
     items: [
       {
         index: '01',
         title: 'Sourcing',
-        body: 'Starting from the buyer’s requirement rather than a catalogue: clarifying the specification, identifying suppliers in China whose capability matches it, and coordinating the conversation between both sides.',
+        body: 'Starting from the buyer’s brief: confirming the specification, identifying suppliers in China and coordinating replies and samples.',
       },
       {
         index: '02',
         title: 'Coordination',
-        body: 'One point of contact across production timelines, order details, documentation and handover, so nothing is lost in the gap between one stage and the next.',
+        body: 'One contact for order details, production dates, documents and handover, with changes reported as they happen.',
       },
       {
         index: '03',
         title: 'Movement',
-        body: 'Export formalities and transportation arranged with logistics partners, planned around where the goods must land rather than around a fixed schedule of our own.',
+        body: 'Export preparation and carrier booking coordinated with logistics partners around the agreed destination.',
       },
     ],
     media: MEDIA.aboutOverview,
-    mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
+    mediaNote: 'Illustrative photography. Final brand photography is pending.',
   },
 
   ledger: {
     index: '03',
-    label: 'In Plain Terms',
-    heading: 'What we do not claim.',
+    label: 'Service Boundaries',
+    heading: 'Clear limits, no assumptions.',
     support:
-      'A company page is the easiest place on a website to overstate. These are the claims we have deliberately left off ours, and why.',
+      'These points define the boundary between Afghan Futian’s coordination and the work performed by suppliers or logistics partners.',
     items: [
       {
-        label: 'We do not publish statistics',
-        body: 'No shipment volumes, no client counts, no years of operation. Until Afghan Futian confirms figures it is willing to stand behind, the site carries none.',
+        label: 'No unverified figures',
+        body: 'We do not publish shipment volumes, client counts or years of operation because none has been supplied for publication.',
       },
       {
-        label: 'We do not claim owned assets',
-        body: 'Afghan Futian does not present itself as owning vessels, aircraft, warehouses or fleets. Transportation and warehousing are arranged with partners and described as such.',
+        label: 'Partner-operated carriage',
+        body: 'Carriers, warehouses and consolidation facilities are provided by partners and described as such.',
       },
       {
-        label: 'We do not list certifications',
-        body: 'No audit, inspection or certification programme is advertised here, because none has been confirmed. Where quality work happens, it happens through the supplier relationship.',
+        label: 'No inspection claim',
+        body: 'Factory audits, laboratory testing and certification are not advertised as Afghan Futian services.',
       },
       {
-        label: 'We do not invent a network',
-        body: 'Destinations are reached according to each requirement, so there is no fixed lane map to publish. The Global Network page explains the shape of the operation instead.',
+        label: 'Per-enquiry destinations',
+        body: 'Movement is quoted by cargo and destination. No fixed route map is published.',
       },
     ],
   },
@@ -91,107 +91,107 @@ export const ABOUT = {
   values: {
     index: '04',
     label: 'Values',
-    heading: 'What we hold to.',
+    heading: 'How we work.',
     support:
-      'Four commitments that govern how a requirement is handled — not aspirations, and not marketing.',
+      'Four working commitments that govern how an enquiry is handled.',
   },
 
   team: {
     label: 'Team',
-    body: 'Team profiles are published only when Afghan Futian confirms the people and their roles. Rather than fill this space with stock portraits, it is left empty.',
+    body: 'Team profiles will be published only when Afghan Futian confirms the people and their roles.',
   },
 
   next: {
     eyebrow: 'Where it starts',
-    label: 'Global Sourcing',
+    label: 'Product sourcing',
     to: ROUTES.sourcing,
-    description: 'The first stage of every requirement, and the one that decides how the rest of it goes.',
+    description: 'The first stage of an order: confirming what to source, from whom and on what terms.',
   },
 }
 
 /* ============================================================================
-   GLOBAL SOURCING
+   PRODUCT SOURCING
    ========================================================================= */
 
 export const SOURCING = {
   overview: {
     index: '01',
     label: 'Overview',
-    heading: 'We start where the suppliers are.',
-    support: 'Sourcing is the first stage of every requirement, and the one that decides how the rest of it goes. We work from the buyer’s brief backwards, in China, until there is something concrete to decide on.',
-    body: 'That means asking the unglamorous questions first — specification, tolerance, quantity, packaging, target price, destination — because a requirement that is vague at this stage becomes expensive at every stage after it.',
+    heading: 'Sourcing from Yiwu.',
+    support: 'From our base in Yiwu, we work back from the buyer’s brief until there is a concrete supplier, price and sample position to assess.',
+    body: 'We confirm specification, tolerance, quantity, packaging, target price and destination first. A vague brief at this stage creates avoidable cost at every later stage.',
   },
 
   sequence: {
     index: '02',
     label: 'The Sequence',
-    heading: 'Four moves, in order.',
+    heading: 'Four steps, in order.',
     support:
-      'Sourcing is not a search box. It is a sequence of narrowing decisions, and each one depends on the one before it.',
+      'Sourcing narrows an enquiry through four decisions, each based on the one before it.',
     items: [
       {
         index: '01',
         title: 'Define the requirement',
-        body: 'Specification, quantity, target pricing, packaging, destination and timeline. We would rather ask now than correct later.',
-        meta: 'Brief · Specification · Target',
+        body: 'Specification, quantity, target price, packaging, destination and timeline. We confirm these before contacting suppliers.',
+        meta: 'Brief · Quantity · Destination',
       },
       {
         index: '02',
         title: 'Identify suppliers in China',
-        body: 'We approach suppliers whose stated capability matches the confirmed requirement, and put the requirement to them in the same terms it was given to us.',
-        meta: 'Supplier outreach · Capability match',
+        body: 'We approach suppliers whose stated capability matches the brief and pass the requirement to them in the same terms.',
+        meta: 'Yiwu · Supplier outreach · Capability',
       },
       {
         index: '03',
         title: 'Compare on substance',
-        body: 'Quotations and samples are compared against the brief — not against each other in isolation. The cheapest answer to the wrong question is still the wrong answer.',
+        body: 'Quotations and samples are assessed against the original brief, not only against one another.',
         meta: 'Samples · Quotation · Comparison',
       },
       {
         index: '04',
         title: 'Confirm a direction',
-        body: 'Once a supplier and an arrangement are agreed with the buyer, the requirement moves into coordination: timelines, order details and documentation.',
-        meta: 'Agreement · Handover to coordination',
+        body: 'Once the buyer agrees a supplier and price, the requirement moves into order coordination and documentation.',
+        meta: 'Agreement · Order coordination',
       },
     ],
     media: MEDIA.sourcingSequence,
-    mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
+    mediaNote: 'Illustrative photography. Final brand photography is pending.',
   },
 
   brief: {
     index: '03',
     label: 'What We Need From You',
-    heading: 'Six things that make sourcing faster.',
+    heading: 'Six details that speed up sourcing.',
     support:
-      'None of these are mandatory, and we will work without them. But an enquiry that carries them usually reaches a decision in one exchange rather than several.',
+      'None is mandatory, but an enquiry that includes them usually reaches a supplier decision in fewer exchanges.',
     items: [
-      'The product, and as much of its specification as you have',
-      'Quantities, and whether they are one-off or repeating',
-      'Target pricing, or the range you are working within',
-      'Where the goods must land, and by when',
-      'Packaging, labelling or market requirements the goods must satisfy',
-      'Anything the product must not be — materials, origins, processes',
+      'Product and as much specification as you have',
+      'Quantity, and whether it is one-off or repeating',
+      'Target price or working range',
+      'Delivery location and required date',
+      'Packaging, labelling or market requirements',
+      'Excluded materials, origins or processes',
     ],
-    note: 'If you have a drawing, a photograph, a sample or a competitor’s product, send it. A reference is worth a paragraph of description.',
+    note: 'A drawing, photograph, sample or reference product is worth more than a long written description.',
   },
 
   limits: {
     index: '04',
-    label: 'In Plain Terms',
-    heading: 'What this is not.',
-    support: 'Sourcing is often sold with promises attached. Here is what ours does not include.',
+    label: 'Sourcing Boundaries',
+    heading: 'How sourcing is scoped.',
+    support: 'These boundaries keep enquiries aligned with the work we can quote and arrange.',
     items: [
       {
-        label: 'Not a marketplace',
-        body: 'You do not browse a catalogue and place an order. Every requirement is worked individually, which is slower at the start and considerably faster afterwards.',
+        label: 'Individual handling',
+        body: 'There is no self-service catalogue. Each enquiry is handled individually from brief to supplier response.',
       },
       {
-        label: 'Not an inspection service',
-        body: 'We do not advertise factory audits, laboratory testing or certification, because none has been confirmed. Where quality is verified, it is through the supplier relationship and stated as such.',
+        label: 'No inspection promise',
+        body: 'Factory audits, laboratory testing and certification are not advertised as Afghan Futian services.',
       },
       {
-        label: 'Not a price list',
-        body: 'Cost depends on specification, quantity and destination. We would rather quote against a real requirement than publish a number that fits none of them.',
+        label: 'Prices follow the brief',
+        body: 'Cost depends on specification, quantity and destination. We quote once the requirement is clear.',
       },
     ],
   },
@@ -199,7 +199,7 @@ export const SOURCING = {
   next: {
     label: 'Supply Chain',
     to: ROUTES.supplyChain,
-    description: 'What happens once a supplier and an arrangement are confirmed.',
+    description: 'What happens after a supplier and price are agreed.',
   },
 }
 
@@ -211,40 +211,40 @@ export const SUPPLY_CHAIN = {
   overview: {
     index: '01',
     label: 'Overview',
-    heading: 'Coordination is the product.',
-    support: 'A confirmed supplier is not a finished job. Between the agreement and the shipped goods sits a stretch of work that is mostly invisible — timelines, order details, documentation and handover — and it is where requirements most often go wrong.',
-    body: 'We hold that stretch. One thread runs from the requirement through production and export, and the buyer follows that thread instead of chasing several parties along it.',
+    heading: 'One thread to export.',
+    support: 'A confirmed supplier is not a finished order. Dates, order details, documents and handover must stay aligned before goods can move.',
+    body: 'Afghan Futian holds that thread. The buyer follows one set of updates instead of chasing separate parties.',
   },
 
   thread: {
     index: '02',
     label: 'The Thread',
-    heading: 'What is actually coordinated.',
+    heading: 'What stays aligned.',
     support:
-      'These are the four things that move between a supplier and a buyer, and the four things we keep in step.',
+      'Four moving parts sit between supplier and buyer. We keep them in step.',
     items: [
       {
         index: '01',
         title: 'Production timelines',
-        body: 'Agreed dates are tracked against reality, and slippage is reported when it happens rather than when the shipment is due.',
-        meta: 'Dates · Progress · Slippage',
+        body: 'Agreed dates are tracked against progress, and delays are reported when they are known.',
+        meta: 'Dates · Progress · Delays',
       },
       {
         index: '02',
         title: 'Order details',
-        body: 'Specification, quantity, packaging and labelling stay consistent between what the buyer approved and what the supplier produces.',
+        body: 'Specification, quantity, packaging and labelling stay consistent with what the buyer approved.',
         meta: 'Specification · Quantity · Packaging',
       },
       {
         index: '03',
         title: 'Documentation',
-        body: 'The paperwork a shipment needs to leave and to arrive is gathered as the order progresses, not scrambled together at the port.',
+        body: 'Export and destination documents are gathered as the order progresses, not at the last moment.',
         meta: 'Commercial · Export · Destination',
       },
       {
         index: '04',
         title: 'Handover',
-        body: 'The point where goods leave the supplier and enter movement is the point most easily lost. We treat it as a stage in its own right.',
+        body: 'The release of goods from supplier to carrier is treated as a distinct stage, with responsibility clearly recorded.',
         meta: 'Consolidation · Release · Movement',
       },
     ],
@@ -253,31 +253,31 @@ export const SUPPLY_CHAIN = {
   singlePoint: {
     index: '03',
     label: 'Why It Matters',
-    heading: 'One conversation instead of five.',
+    heading: 'One accountable contact.',
     support:
-      'When sourcing, production, documentation and movement sit with different companies, the buyer becomes the integration layer — chasing updates, reconciling versions and absorbing every gap between them.',
-    body: 'Holding all four in one place does not remove the gaps; international trade is full of them. It means there is one party responsible for noticing them, and one version of events to work from.',
+      'When sourcing, production, documents and movement sit with different companies, the buyer is left joining the gaps.',
+    body: 'Holding the thread in one place gives the buyer one version of dates and documents, and one party responsible for spotting changes.',
     media: MEDIA.supplyChainCoordination,
-    mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
+    mediaNote: 'Illustrative photography. Final brand photography is pending.',
   },
 
   limits: {
     index: '04',
-    label: 'In Plain Terms',
-    heading: 'What we do not promise.',
-    support: 'Coordination is a commitment about attention, not a guarantee about outcomes.',
+    label: 'Responsibilities',
+    heading: 'Where responsibility sits.',
+    support: 'Coordination means close attention and clear reporting, not control over every outside event.',
     items: [
       {
-        label: 'No guaranteed lead times',
-        body: 'Production and transit depend on the supplier, the season and the destination. We track and report against agreed dates; we do not override them.',
+        label: 'Dates are tracked, not guaranteed',
+        body: 'Production and transit depend on the supplier, season and destination. We report against agreed dates.',
       },
       {
-        label: 'No owned warehousing',
-        body: 'Consolidation and storage are arranged with partners where a requirement needs them. Afghan Futian does not present partner facilities as its own.',
+        label: 'Partner facilities',
+        body: 'Consolidation and storage are arranged with partners where a requirement needs them.',
       },
       {
-        label: 'No silent problems',
-        body: 'The one thing we do commit to is telling you when something changes. A problem reported early is a problem that can still be managed.',
+        label: 'Changes reported early',
+        body: 'We tell the buyer when a date or detail changes, while there is still time to respond.',
       },
     ],
   },
@@ -285,7 +285,7 @@ export const SUPPLY_CHAIN = {
   next: {
     label: 'Logistics',
     to: ROUTES.logistics,
-    description: 'How coordinated goods are arranged to move, and to arrive.',
+    description: 'How the goods are booked and moved.',
   },
 }
 
@@ -297,75 +297,75 @@ export const LOGISTICS = {
   overview: {
     index: '01',
     label: 'Overview',
-    heading: 'Movement, arranged around the destination.',
-    support: 'Transportation is where a requirement stops being a plan and becomes a physical thing in a physical place. We arrange and coordinate that movement with logistics partners, and we plan it backwards from where the goods must land.',
-    body: 'Afghan Futian does not own vessels, aircraft, warehouses or fleets. What we do is choose, book and coordinate — matching mode, route and schedule to the destination and the deadline, then keeping the buyer informed while it happens.',
+    heading: 'Cargo, planned to the destination.',
+    support: 'Transport turns an order into a physical movement. We arrange it with logistics partners and plan backwards from the delivery location.',
+    body: 'Afghan Futian does not operate carriers or warehouses. We select and coordinate partner services, match them to the cargo and destination, and keep the buyer informed.',
   },
 
   arrangement: {
     index: '02',
     label: 'How Movement Is Arranged',
-    heading: 'Four decisions, taken together.',
+    heading: 'Four decisions, made together.',
     support:
-      'Transportation looks like a choice of mode. In practice it is four interlocking decisions, and taking them separately is how shipments end up expensive or late.',
+      'Transport is a set of linked choices. Destination, service, export paperwork and communication have to work as one.',
     items: [
       {
         index: '01',
         title: 'Destination first',
-        body: 'Where the goods must land, and by when, decides almost everything else — including which mode is even worth pricing.',
+        body: 'The delivery location and required date determine which transport options are worth pricing.',
         meta: 'Destination · Deadline',
       },
       {
         index: '02',
         title: 'Mode selection',
-        body: 'Sea, air, rail or road, chosen with our logistics partners against the trade-off between cost, transit time and cargo.',
-        meta: 'Sea · Air · Rail · Road',
+        body: 'We compare available transport options with logistics partners against cost, transit time and the nature of the cargo.',
+        meta: 'Cost · Transit · Cargo',
       },
       {
         index: '03',
         title: 'Export formalities',
-        body: 'The export side of the movement is coordinated so the cargo is cleared to leave rather than held at the point of departure.',
+        body: 'Export documents and release steps are coordinated so the cargo can leave on schedule.',
         meta: 'Export · Clearance · Release',
       },
       {
         index: '04',
         title: 'Tracking and communication',
-        body: 'Shipment progress is followed and reported, so the buyer learns about a delay from us rather than from a delivery that did not arrive.',
+        body: 'Progress is followed and reported, so a delay is known before it becomes a missed delivery.',
         meta: 'Tracking · Updates · Arrival',
       },
     ],
     media: MEDIA.logisticsArrangement,
-    mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
+    mediaNote: 'Illustrative photography. Final brand photography is pending.',
   },
 
   limits: {
     index: '03',
-    label: 'In Plain Terms',
-    heading: 'What we do not own.',
+    label: 'Cargo Responsibility',
+    heading: 'What partners provide.',
     support:
-      'This is the page where a logistics company is most tempted to imply a fleet. We would rather be clear.',
+      'Carriage and storage are supplied by logistics providers. Afghan Futian coordinates the booking and the communication.',
     items: [
       {
-        label: 'No owned vessels or aircraft',
-        body: 'Carriage is performed by our logistics partners. We select and coordinate it; we do not operate it.',
+        label: 'Carriers',
+        body: 'Transport is operated by the selected logistics provider. We select and coordinate it; we do not operate it.',
       },
       {
-        label: 'No owned warehouses',
-        body: 'Where consolidation or storage is needed, it is arranged with a partner facility and described as partner-operated.',
+        label: 'Facilities',
+        body: 'Consolidation and storage are arranged with partner facilities when required.',
       },
       {
-        label: 'No fixed lanes',
-        body: 'Because movement follows each requirement, there is no published route network to promise. Destinations are quoted per shipment.',
+        label: 'Per-shipment routes',
+        body: 'Routes and rates are confirmed against the cargo, destination and timing of each shipment.',
       },
     ],
   },
 
-  mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
+  mediaNote: 'Illustrative photography. Final brand photography is pending.',
 
   next: {
     label: 'Global Network',
     to: ROUTES.globalNetwork,
-    description: 'How the origin, the coordination point and the destinations fit together.',
+    description: 'How the sourcing base, coordination point and destinations fit together.',
   },
 }
 
@@ -377,67 +377,67 @@ export const NETWORK_PAGE = {
   shape: {
     index: '01',
     label: 'The Shape of the Operation',
-    heading: 'One origin, coordinated outward.',
-    support: 'A sourcing origin in China. A single coordination point. Destinations reached according to each requirement. That is the whole structure, and it is deliberately simple.',
+    heading: 'From Yiwu outward.',
+    support: 'A sourcing base in Yiwu, coordination through Afghan Futian, and destinations agreed with each buyer. That is the structure we publish.',
     body:
-      'What follows describes how the operation is arranged. It is not a claim about specific trade lanes, and no port, market or volume appears here until Afghan Futian confirms it.',
+      'This page describes how the work is arranged. We do not publish named routes, ports or volumes until the company confirms them.',
   },
 
   stations: [
     {
       index: '01',
-      role: 'Sourcing origin',
+      role: 'Sourcing base',
       place: 'China',
       detail:
-        'Where suppliers, production and export consolidation take place. This is the fixed point everything else is arranged around.',
+        'Supplier research, product matching and export preparation begin here.',
       status: 'confirmed',
-      statusLabel: 'Confirmed origin',
+      statusLabel: 'Published base',
     },
     {
       index: '02',
       role: 'Coordination',
       place: 'Afghan Futian',
       detail:
-        'One point of contact across sourcing, timeline, documentation and movement — the party responsible for the seams between them.',
+        'One contact for specifications, supplier replies, documents and cargo updates.',
       status: 'confirmed',
       statusLabel: 'Single coordinator',
     },
     {
       index: '03',
       role: 'Destinations',
-      place: 'Worldwide',
+      place: 'Agreed separately',
       detail:
-        'Buyer markets, reached according to each individual requirement rather than a fixed schedule of lanes.',
+        'Afghanistan and other agreed buyer markets, quoted by cargo and destination.',
       status: 'pending',
-      statusLabel: 'Pending verification',
+      statusLabel: 'Not yet published',
     },
   ],
 
   ledger: {
     index: '02',
-    label: 'In Plain Terms',
-    heading: 'A diagram, not a map.',
+    label: 'Reading the Diagram',
+    heading: 'A structure, not a route map.',
     support:
-      'The distinction matters, and it is the reason this page does not show you a world map with arcs across it.',
+      'The distinction matters: this shows how the work is arranged, not which lanes we operate.',
     items: [
       {
-        label: 'What this shows',
-        body: 'The structure of the operation: one sourcing origin, one coordination point, and destinations reached per requirement.',
+        label: 'What the diagram shows',
+        body: 'A sourcing base, one coordination point and destinations agreed per order.',
       },
       {
-        label: 'What this is not',
-        body: 'A route map. No lane, port, market or volume is shown, because none has been confirmed by Afghan Futian.',
+        label: 'What it does not show',
+        body: 'A route map. Lanes, ports and volumes appear only when confirmed.',
       },
     ],
   },
 
   future: {
     index: '03',
-    label: 'What Would Change This Page',
-    heading: 'It becomes a map when there is one to draw.',
-    body: 'A network diagram is only as honest as the data behind it. When Afghan Futian confirms the destinations it serves and is willing to publish them, this page gains a real map — named markets, real lanes, and the volumes to go with them. Until then it stays a diagram, and it says so.',
+    label: 'Before a Route Map',
+    heading: 'Named routes need confirmed data.',
+    body: 'When Afghan Futian can publish the markets it serves and the routes it uses, this page will show them. Until then, we publish the working structure only.',
     media: MEDIA.heroPanel,
-    mediaNote: 'Illustrative photography — placeholder pending Afghan Futian art direction.',
+    mediaNote: 'Illustrative photography. Final brand photography is pending.',
   },
 }
 

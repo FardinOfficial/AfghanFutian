@@ -11,7 +11,7 @@ import { MEDIA } from '@/data/media'
 import { usePages } from '@/i18n/hooks'
 
 /**
- * Global Sourcing.
+ * Product sourcing.
  *
  * Sourcing is sold almost everywhere with the same promises attached — verified
  * factories, audited suppliers, guaranteed quality. Afghan Futian has confirmed
@@ -30,18 +30,18 @@ export default function Sourcing() {
     <>
       <PageHero
         index="03"
-        label={t('Global Sourcing', { ns: 'common' })}
-        title={t('We start where the suppliers are.', { ns: 'common' })}
+        label={t('Product sourcing', { ns: 'common' })}
+        title={t('Sourcing from Yiwu.', { ns: 'common' })}
         description={t(
-          "Product and supplier sourcing in China, coordinated from the buyer's requirement through to a confirmed arrangement.",
+          "From our base in Yiwu, we work back from the buyer’s brief until there is a concrete supplier, price and sample position to assess.",
           { ns: 'common' },
         )}
         media={MEDIA.sourcingHero}
         meta={[
-          { label: t('Origin', { ns: 'common' }), value: t('China', { ns: 'common' }) },
-          { label: t('Input', { ns: 'common' }), value: t('Buyer requirement', { ns: 'common' }) },
-          { label: t('Output', { ns: 'common' }), value: t('Confirmed sourcing', { ns: 'common' }) },
-          { label: t('Verification', { ns: 'common' }), value: t('Not claimed', { ns: 'common' }) },
+          { label: t('Sourcing base', { ns: 'common' }), value: t('Yiwu, China', { ns: 'common' }) },
+          { label: t('Input', { ns: 'common' }), value: t('Buyer brief', { ns: 'common' }) },
+          { label: t('Output', { ns: 'common' }), value: t('Supplier options', { ns: 'common' }) },
+          { label: t('Inspection', { ns: 'common' }), value: t('Agreed separately', { ns: 'common' }) },
         ]}
       />
 

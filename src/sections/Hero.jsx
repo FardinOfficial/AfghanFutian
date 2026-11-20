@@ -33,9 +33,9 @@ export default function Hero() {
 
   /** Small factual meta rail — no invented figures. */
   const HERO_META = [
-    { label: tr('Sourcing origin'), value: tr('China') },
-    { label: tr('Coordination'), value: tr('Supply chain') },
-    { label: tr('Reach'), value: tr('Worldwide') },
+    { label: tr('Sourcing base'), value: tr('China') },
+    { label: tr('Coordination'), value: tr('Sourcing to export') },
+    { label: tr('Service'), value: tr('China–Afghanistan trade') },
   ]
 
   const rootRef = useRef(null)
@@ -148,7 +148,7 @@ export default function Hero() {
         <div className="flex items-start gap-8">
           <div ref={eyebrowRef} className="flex items-center gap-3">
             <span aria-hidden="true" className="h-[7px] w-[7px] shrink-0 bg-accent" />
-            <p className="u-eyebrow text-canvas/75">{tr('International Sourcing & Logistics')}</p>
+            <p className="u-eyebrow text-canvas/75">{tr('China–Afghanistan Sourcing & Trade')}</p>
           </div>
         </div>
 
@@ -160,11 +160,11 @@ export default function Hero() {
             className="max-w-[16ch] font-display text-hero font-medium uppercase"
           >
             <span className="line-mask">
-              <span className="line-inner">{tr('The World Moves.')}</span>
+              <span className="line-inner">{tr('From Yiwu.')}</span>
             </span>
             <span className="line-mask">
               <span className="line-inner">
-                {tr('We Connect It')}<span className="text-accent">.</span>
+                {tr('To Your Market')}<span className="text-accent">.</span>
               </span>
             </span>
           </h1>
@@ -174,7 +174,7 @@ export default function Hero() {
               ref={descriptionRef}
               className="u-lead max-w-[44ch] text-canvas/70 lg:col-span-5"
             >
-              {tr('Global sourcing and supply chain solutions, connecting China with opportunities worldwide.')}
+              {tr('Afghan Futian sources products in China and coordinates trade, documents and cargo movement for buyers in Afghanistan and other agreed markets.')}
             </p>
 
             <div
@@ -182,10 +182,10 @@ export default function Hero() {
               className="flex flex-wrap items-center gap-3 lg:col-span-6 lg:col-start-7 lg:justify-end"
             >
               <Button to={ROUTES.sourcing} variant="accent" size="lg">
-                {tr('Explore Our Services')}
+                {tr('See How We Work')}
               </Button>
               <Button to={ROUTES.contact} variant="ghost" size="lg">
-                {tr('Start a Conversation')}
+                {tr('Discuss Your Requirement')}
               </Button>
             </div>
           </div>

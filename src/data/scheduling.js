@@ -100,41 +100,41 @@ export const CAL_PUBLIC_URL = IS_SCHEDULING_CONFIGURED
 
 export const SCHEDULE_COPY = {
   label: 'Schedule',
-  heading: 'Book a meeting.',
+  heading: 'Book a sourcing call.',
   support:
-    'The official Cal.com calendar opens in Kabul, Afghanistan (GMT+04:30). Pick a genuinely open time, change the timezone inside the calendar if you need to, and receive confirmation and joining details by email.',
+    'Use the official Cal.com calendar to choose a time. It opens in Kabul (GMT+04:30), and confirmation and joining details are sent by email.',
 
   /** Shown above the embed: the provider's actual workflow. */
   stepsLabel: 'How it works',
   steps: [
-    'Choose a date and one of the open slots shown by Cal.com.',
-    'The calendar opens in Kabul time; use its timezone selector to change it.',
-    'Your confirmation email includes Google Meet details and reschedule/cancel links.',
+    'Select an open time shown by Cal.com.',
+    'The booker opens in Kabul time; use its timezone selector if needed.',
+    'Your confirmation email includes the meeting link and management options.',
   ],
 
   /** Shown beside the embed: what Cal.com will ask for. */
-  fieldsLabel: 'What you will be asked',
+  fieldsLabel: 'What you will enter',
   fields: [
-    'Your name and email address',
-    'Your company or organisation — optional',
-    'The purpose of the meeting',
-    'Anything else you want us to know — optional',
+    'Name and email address',
+    'Company (optional)',
+    'Purpose of the call',
+    'Anything else we should know (optional)',
   ],
 
   /** Reassurance about what happens after booking. */
-  afterLabel: 'After you book',
+  afterLabel: 'After booking',
   after: [
-    'A confirmation email with the date, the time and Google Meet details',
-    'A link to reschedule or cancel, should something change',
-    'A reminder before the meeting',
+    'Confirmation with date, time and joining link',
+    'Reschedule or cancel link',
+    'Reminder before the call',
   ],
 
   /** The honest state when no calendar has been connected yet. */
   unconfigured: {
-    label: 'Not yet connected',
-    heading: 'The calendar is not connected yet.',
-    body: 'Online booking is built and ready, but no Cal.com calendar has been attached to this deployment. Until one is, please send an enquiry and we will arrange a time directly.',
-    note: 'Setting this up takes one public build variable and a Cal.com account — the exact steps are in the project README.',
+    label: 'Booking unavailable',
+    heading: 'Online booking is not available yet.',
+    body: 'Please send an enquiry or email us and we will arrange a time directly.',
+    note: 'You can use the enquiry form or email contact@afghanfutian.com in the meantime.',
   },
 }
 

@@ -19,17 +19,17 @@ export const FIELD_ERROR_CODES = {
 
 /** English source strings for every stable code (also i18next keys). */
 export const ERROR_MESSAGES = {
-  required: 'This one is needed before we can reply.',
+  required: 'This detail is needed before we can reply.',
   'max-length': 'Please keep this under {{count}} characters.',
   'min-length': 'Please use at least {{count}} characters.',
-  email: 'That does not look like an email address — please check it.',
-  phone: 'Please use digits, and include the country code if you can.',
-  option: 'Please choose one of the options.',
+  email: 'Check the email address and try again.',
+  phone: 'Use digits only, with the country code if possible.',
+  option: 'Choose one of the listed options.',
 
   timeout: 'The request took too long to complete. Please try again.',
   network: 'We could not reach the server. Please check your connection and try again.',
   confirm: 'We could not confirm that your enquiry was sent. Please email us directly.',
-  validation: 'Some of the details need another look.',
+  validation: 'Some details need another look.',
   'rate-limited': 'That is a few enquiries in quick succession. Please wait a moment and try again.',
   server: 'Something went wrong at our end. Please try again, or email us directly.',
 

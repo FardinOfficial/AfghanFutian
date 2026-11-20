@@ -40,17 +40,17 @@ export default function SupplyChain() {
       <PageHero
         index="04"
         label={t('Supply Chain', { ns: 'common' })}
-        title={t('One thread from requirement to export.', { ns: 'common' })}
+        title={t('One thread to export.', { ns: 'common' })}
         description={t(
-          'Coordination across sourcing, production timelines, documentation and handover — so nothing is lost between one stage and the next.',
+          'Dates, order details, documents and handover stay aligned from supplier confirmation through export.',
           { ns: 'common' },
         )}
         media={MEDIA.supplyChainHero}
         meta={[
-          { label: t('Scope', { ns: 'common' }), value: t('Sourcing to export', { ns: 'common' }) },
-          { label: t('Coordination', { ns: 'common' }), value: t('Single point', { ns: 'common' }) },
-          { label: t('Assets', { ns: 'common' }), value: t('Partner-operated', { ns: 'common' }) },
-          { label: t('Status', { ns: 'common' }), value: t('Details pending', { ns: 'common' }) },
+          { label: t('Scope', { ns: 'common' }), value: t('Order to export', { ns: 'common' }) },
+          { label: t('Contact', { ns: 'common' }), value: t('One point', { ns: 'common' }) },
+          { label: t('Facilities', { ns: 'common' }), value: t('Partner-operated', { ns: 'common' }) },
+          { label: t('Changes', { ns: 'common' }), value: t('Reported early', { ns: 'common' }) },
         ]}
       />
 

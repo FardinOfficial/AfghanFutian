@@ -38,9 +38,9 @@ export default function ContactPage() {
       <PageHero
         index="07"
         label={t('Contact', { ns: 'common' })}
-        title={t('Start a conversation.', { ns: 'common' })}
+        title={t('Tell us your requirement.', { ns: 'common' })}
         description={t(
-          'Have a sourcing requirement or an international business opportunity? Tell us what you need and we will respond.',
+          'Send the product, quantity, destination and timing. We will confirm what we can source and how to move it.',
           { ns: 'common' },
         )}
         media={MEDIA.contactHero}
@@ -66,13 +66,13 @@ export default function ContactPage() {
             </ul>
           </li>
           <li>
-            <p className="u-eyebrow text-canvas-muted">{t('Prefer to talk', { ns: 'common' })}</p>
+            <p className="u-eyebrow text-canvas-muted">{t('By phone', { ns: 'common' })}</p>
             <LocaleLink to={ROUTES.schedule} className="u-link mt-2 text-sm text-canvas/85">
               {t('Schedule a meeting', { ns: 'common' })}
             </LocaleLink>
           </li>
           <li>
-            <p className="u-eyebrow text-canvas-muted">{t('Elsewhere', { ns: 'common' })}</p>
+            <p className="u-eyebrow text-canvas-muted">{t('Official profiles', { ns: 'common' })}</p>
             <SocialLinks tone="dark" className="mt-3" />
           </li>
         </ul>
@@ -81,10 +81,10 @@ export default function ContactPage() {
       <SectionIntro
         id="contact-inquiry"
         index="01"
-        label={t('Business Inquiry', { ns: 'common' })}
-        heading={t('Tell us what you need moved.', { ns: 'common' })}
+        label={t('Trade enquiry', { ns: 'common' })}
+        heading={t('Start with the goods.', { ns: 'common' })}
         support={t(
-          'A requirement is easier to answer than an introduction. The more of the shape you can give us — product, quantity, destination, timeline — the more useful the first reply will be.',
+          'The more specific your brief, the faster we can match suppliers and agree the next step.',
           { ns: 'common' },
         )}
         rule
@@ -110,27 +110,27 @@ export default function ContactPage() {
                 ))}
               </ul>
 
-              <Callout label={t('If you would rather write', { ns: 'common' })} className="mt-12">
+              <Callout label={t('Write to us', { ns: 'common' })} className="mt-12">
                 {t('Email', { ns: 'common' })}{' '}
                 <a href={CONTACT_DETAILS.emailHref} className="u-link text-ink">
                   {CONTACT_DETAILS.email}
                 </a>{' '}
-                {t('directly, or call our China number', { ns: 'common' })}{' '}
+                {t(', or call the China number', { ns: 'common' })}{' '}
                 <a href={CONTACT_DETAILS.phones[0].href} className="u-link text-ink">
                   {CONTACT_DETAILS.phones[0].display}
                 </a>{' '}
-                {t('or our Afghanistan number', { ns: 'common' })}{' '}
+                {t(' or the Afghanistan number', { ns: 'common' })}{' '}
                 <a href={CONTACT_DETAILS.phones[1].href} className="u-link text-ink">
                   {CONTACT_DETAILS.phones[1].display}
                 </a>
-                {t('. All three reach the same team as this form.', { ns: 'common' })}
+                {t('. The same team handles this form, email and calls.', { ns: 'common' })}
               </Callout>
 
               <div className="mt-8 border-t border-line pt-8">
-                <h3 className="u-eyebrow">{t('Prefer to talk it through', { ns: 'common' })}</h3>
+                <h3 className="u-eyebrow">{t('Book a call', { ns: 'common' })}</h3>
                 <p className="mt-4 max-w-[42ch] text-[0.9375rem] leading-relaxed text-muted-strong">
                   {t(
-                    'Choose a time that suits you and we will confirm it by email. The calendar shows the times that are genuinely open.',
+                    'Select an available slot and we will send confirmation by email.',
                     { ns: 'common' },
                   )}
                 </p>
@@ -141,9 +141,9 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              <Callout label={t('About these details', { ns: 'common' })} className="mt-8">
+              <Callout label={t('How we use this', { ns: 'common' })} className="mt-8">
                 {t(
-                  'We use what you send only to answer your enquiry. Nothing here is added to a mailing list, and no figure is quoted until we have a real requirement to quote against.',
+                  'We use your details only to answer this enquiry. No price is quoted until the requirement is clear.',
                   { ns: 'common' },
                 )}
               </Callout>
@@ -154,14 +154,14 @@ export default function ContactPage() {
         <div className="mt-20 border-t border-line pt-12 lg:mt-28">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="u-eyebrow">{t('Where we are', { ns: 'common' })}</p>
+              <p className="u-eyebrow">{t('Our locations', { ns: 'common' })}</p>
               <h3 className="mt-4 font-display text-display-3 font-medium">
-                {t('Three locations. One team.', { ns: 'common' })}
+                {t('Yiwu, Kabul and Mandawi.', { ns: 'common' })}
               </h3>
             </div>
             <p className="max-w-[38ch] text-sm leading-relaxed text-muted-strong">
               {t(
-                'Our sourcing work starts in China and our Afghanistan presence spans Kabul and Mandawi. Each address opens an area search — no unverified map pin is published.',
+                'Our China base is in Yiwu; our Afghanistan locations are in Kabul and Mandawi. Map links open an area search, not an unverified pin.',
                 { ns: 'common' },
               )}
             </p>
@@ -184,7 +184,7 @@ export default function ContactPage() {
                   rel="noreferrer noopener"
                   className="u-link mt-auto pt-8 font-sans text-[0.6875rem] font-medium uppercase tracking-[0.16em] text-ink"
                 >
-                  {t('Search the area', { ns: 'common' })}
+                  {t('Search this area', { ns: 'common' })}
                   <ArrowUpRight
                     aria-hidden="true"
                     strokeWidth={1.6}

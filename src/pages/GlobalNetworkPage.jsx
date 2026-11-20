@@ -97,17 +97,17 @@ export default function GlobalNetworkPage() {
       <PageHero
         index="06"
         label={t('Global Network', { ns: 'common' })}
-        title={t('From China. Across the world.', { ns: 'common' })}
+        title={t('From Yiwu outward.', { ns: 'common' })}
         description={t(
-          'An illustrative view of how a sourcing origin in China connects with buyers and markets internationally.',
+          'See how sourcing in Yiwu, coordination through Afghan Futian and per-enquiry destinations fit together. No unverified routes are published.',
           { ns: 'common' },
         )}
         media={MEDIA.networkHero}
         meta={[
-          { label: t('Origin', { ns: 'common' }), value: t('China', { ns: 'common' }) },
-          { label: t('Routes', { ns: 'common' }), value: t('Illustrative', { ns: 'common' }) },
-          { label: t('Markets', { ns: 'common' }), value: t('Pending verification', { ns: 'common' }) },
-          { label: t('Data', { ns: 'common' }), value: t('Not yet confirmed', { ns: 'common' }) },
+          { label: t('Sourcing base', { ns: 'common' }), value: t('Yiwu, China', { ns: 'common' }) },
+          { label: t('Coordination', { ns: 'common' }), value: t('Afghan Futian', { ns: 'common' }) },
+          { label: t('Markets', { ns: 'common' }), value: t('Per enquiry', { ns: 'common' }) },
+          { label: t('Route data', { ns: 'common' }), value: t('Not published', { ns: 'common' }) },
         ]}
       />
 

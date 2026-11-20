@@ -16,22 +16,22 @@ export const CAPABILITIES = [
   {
     id: 'sourcing',
     index: '01',
-    title: 'Global Sourcing',
+    title: 'Product sourcing',
     short: 'Sourcing',
-    summary: 'Product and supplier sourcing in China.',
+    summary: 'Product and supplier sourcing in Yiwu, China.',
     description:
-      'We work from the buyer’s requirement backwards: clarifying specification, identifying suitable suppliers in China, and coordinating the conversation between both sides.',
+      'We clarify the specification, identify suppliers in China and coordinate the conversation until a supplier and price can be assessed.',
     media: MEDIA.capabilitySourcing,
     to: ROUTES.sourcing,
   },
   {
     id: 'trade',
     index: '02',
-    title: 'International Trade',
+    title: 'Trade coordination',
     short: 'Trade',
-    summary: 'Connecting sourcing operations with worldwide markets.',
+    summary: 'Linking Chinese suppliers with buyer markets.',
     description:
-      'We sit between production and demand — aligning a confirmed requirement with the right supplier, the right terms and a workable export arrangement.',
+      'We align the buyer’s requirement with supplier terms and the export documents needed to move the order forward.',
     media: MEDIA.capabilityTrade,
     to: ROUTES.sourcing,
   },
@@ -40,9 +40,9 @@ export const CAPABILITIES = [
     index: '03',
     title: 'Supply Chain',
     short: 'Supply Chain',
-    summary: 'Coordinating supply chain operations.',
+    summary: 'Coordination from order confirmation to export.',
     description:
-      'A single point of coordination across sourcing, production timelines, documentation and handover, so nothing is lost between one stage and the next.',
+      'One contact tracks production dates, order details, documents and handover so the buyer is not left reconciling separate updates.',
     media: MEDIA.capabilitySupplyChain,
     to: ROUTES.supplyChain,
   },
@@ -51,9 +51,9 @@ export const CAPABILITIES = [
     index: '04',
     title: 'Logistics',
     short: 'Logistics',
-    summary: 'International cargo and transportation coordination.',
+    summary: 'Cargo coordination with logistics partners.',
     description:
-      'We arrange and coordinate the movement of goods — selecting transportation modes with our logistics partners and keeping the buyer informed at every stage.',
+      'We arrange transport through logistics partners, choose the service to suit the cargo and destination, and report progress until arrival.',
     media: MEDIA.capabilityLogistics,
     to: ROUTES.logistics,
   },
@@ -64,47 +64,47 @@ export const PROCESS_STEPS = [
   {
     id: 'understand',
     index: '01',
-    title: 'Understand Requirements',
+    title: 'Define the Requirement',
     description:
-      'We start with the details that decide everything downstream: product specification, quantities, target pricing, destination and timeline.',
+      'We record the product, specification, quantity, target price, packaging and destination before approaching suppliers.',
     media: MEDIA.processRequirement,
-    meta: 'Brief · Specification · Destination',
+    meta: 'Product · Quantity · Destination',
   },
   {
     id: 'source',
     index: '02',
-    title: 'Source in China',
+    title: 'Search Suppliers in China',
     description:
-      'Using our position within China’s supplier landscape, we identify and approach suppliers whose capabilities match the confirmed requirement.',
+      'From our Yiwu base, we identify suppliers whose stated capability matches the confirmed brief.',
     media: MEDIA.processSourcing,
-    meta: 'Supplier outreach · Samples · Quotation',
+    meta: 'Yiwu · Supplier search · Samples',
   },
   {
     id: 'coordinate',
     index: '03',
-    title: 'Coordinate the Supply Chain',
+    title: 'Agree the Order',
     description:
-      'Once a direction is agreed, we coordinate production timelines, order details and documentation between supplier and buyer.',
+      'We coordinate supplier communication, order details and production timelines, and report changes as soon as they are known.',
     media: MEDIA.processSupplyChain,
-    meta: 'Timelines · Documentation · Order details',
+    meta: 'Supplier · Timeline · Documents',
   },
   {
     id: 'export',
     index: '04',
-    title: 'Arrange Export & Transportation',
+    title: 'Prepare Export & Cargo',
     description:
-      'We coordinate the export formalities and arrange transportation, working with logistics partners to match mode and schedule to the destination.',
+      'We coordinate export documents and work with logistics partners to match the service to the cargo and destination.',
     media: MEDIA.processExport,
-    meta: 'Export · Freight coordination · Mode selection',
+    meta: 'Documents · Partner booking · Cargo',
   },
   {
     id: 'delivery',
     index: '05',
-    title: 'Support Global Delivery',
+    title: 'Follow the Shipment',
     description:
-      'Shipment tracking and communication continue until goods reach the destination, and we remain available for what comes next.',
+      'We track movement and keep the buyer informed until the goods reach the agreed destination.',
     media: MEDIA.processDelivery,
-    meta: 'Tracking · Communication · Follow-up',
+    meta: 'Tracking · Updates · Arrival',
   },
 ]
 
@@ -115,23 +115,23 @@ export const PROCESS_STEPS = [
 export const DIFFERENTIATORS = [
   {
     index: '01',
-    title: 'Grounded in China’s supply base',
-    body: 'Sourcing is our starting point, not an add-on. We work where the suppliers are.',
+    title: 'Based in Yiwu',
+    body: 'Our China base is in Yiwu, where supplier research and export preparation begin.',
   },
   {
     index: '02',
-    title: 'One coordinated conversation',
-    body: 'Buyers deal with us, not with a chain of intermediaries across two continents.',
+    title: 'One point of contact',
+    body: 'The buyer works with Afghan Futian across sourcing, documents and cargo instead of coordinating each stage separately.',
   },
   {
     index: '03',
-    title: 'Requirements before quotations',
-    body: 'We would rather ask the difficult questions early than correct them later.',
+    title: 'Clear brief before quotation',
+    body: 'We confirm specification, quantity and destination before asking suppliers to price.',
   },
   {
     index: '04',
-    title: 'Built around the destination',
-    body: 'Transportation and export arrangements are planned around where goods must land.',
+    title: 'Planned to the destination',
+    body: 'Transport and export steps are arranged around where the goods must arrive.',
   },
 ]
 
@@ -140,22 +140,22 @@ export const VALUES = [
   {
     index: '01',
     title: 'Clarity',
-    body: 'Clear specifications, clear timelines, clear communication — the foundation of every successful shipment.',
+    body: 'Clear specifications, documents and updates from the first brief to arrival.',
   },
   {
     index: '02',
     title: 'Reliability',
-    body: 'We follow through on what we commit to, and we say so early when something changes.',
+    body: 'We report agreed dates and flag changes as soon as we know them.',
   },
   {
     index: '03',
-    title: 'Partnership',
-    body: 'We treat suppliers and buyers as long-term relationships rather than one-off transactions.',
+    title: 'Continuity',
+    body: 'We keep the same point of contact and working method from one requirement to the next.',
   },
   {
     index: '04',
     title: 'Responsibility',
-    body: 'We only represent capabilities we can genuinely deliver, and we are candid about the rest.',
+    body: 'We describe only the work we can arrange and say when a request falls outside it.',
   },
 ]
 

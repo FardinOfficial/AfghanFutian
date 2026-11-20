@@ -66,7 +66,7 @@ describe('validateField', () => {
 
   it('falls back to a default message when a required field declares none', () => {
     const bare = { name: 'x', label: 'X', type: 'text', required: true }
-    assert.equal(validateField(bare, ''), 'This one is needed before we can reply.')
+    assert.equal(validateField(bare, ''), 'This detail is needed before we can reply.')
   })
 
   it('accepts an empty value for an optional field', () => {
@@ -115,7 +115,7 @@ describe('validateField', () => {
   })
 
   it('rejects values that are not email addresses', () => {
-    const expected = 'That does not look like an email address — please check it.'
+    const expected = 'Check the email address and try again.'
     for (const address of ['nope', 'a@b', 'a@b.c', 'a b@c.com', 'a@b .com', '@example.com']) {
       assert.equal(validateField(EMAIL, address), expected, `expected ${address} to be rejected`)
     }
@@ -128,7 +128,7 @@ describe('validateField', () => {
   })
 
   it('rejects phone numbers that are malformed or too short to dial', () => {
-    const expected = 'Please use digits, and include the country code if you can.'
+    const expected = 'Use digits only, with the country code if possible.'
     for (const number of ['call me', '12345', '+44 20', 'telephone']) {
       assert.equal(validateField(PHONE, number), expected, `expected ${number} to be rejected`)
     }
@@ -136,9 +136,9 @@ describe('validateField', () => {
 
   it('only accepts a value that is one of the declared options', () => {
     assert.equal(validateField(SERVICE, 'Sourcing'), '')
-    assert.equal(validateField(SERVICE, 'Something else'), 'Please choose one of the options.')
+    assert.equal(validateField(SERVICE, 'Something else'), 'Choose one of the listed options.')
     // Options are matched exactly; the client never sends a free-text service.
-    assert.equal(validateField(SERVICE, 'sourcing'), 'Please choose one of the options.')
+    assert.equal(validateField(SERVICE, 'sourcing'), 'Choose one of the listed options.')
   })
 })
 
@@ -217,6 +217,27 @@ describe('buildMailtoFallback', () => {
     const href = buildMailtoFallback(fields, {}, 'hello@example.com')
     const query = new URLSearchParams(href.slice(href.indexOf('?') + 1))
     assert.equal(query.get('subject'), 'Enquiry — Afghan Futian')
+  })
+
+  it('uses a supplied translator for the fallback subject and footer', () => {
+    const translations = {
+      'Enquiry — {{service}}': 'درخواست — {{service}}',
+      'Enquiry — Afghan Futian': 'درخواست — افغان فوتین',
+      'Sent from the Afghan Futian website.': 'ارسالشده از وبسایت افغان فوتین.',
+    }
+    const translate = (key, values = {}) =>
+      (translations[key] ?? key).replace(/{{(\w+)}}/g, (match, name) => values[name] ?? match)
+
+    const href = buildMailtoFallback(
+      fields,
+      { service: 'Product sourcing', message: 'Hello' },
+      'hello@example.com',
+      translate,
+    )
+    const query = new URLSearchParams(href.slice(href.indexOf('?') + 1))
+
+    assert.equal(query.get('subject'), 'درخواست — Product sourcing')
+    assert.ok(query.get('body').includes('ارسالشده از وبسایت افغان فوتین.'))
   })
 
   it('survives values containing characters that must be escaped', () => {

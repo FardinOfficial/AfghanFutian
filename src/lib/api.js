@@ -176,7 +176,7 @@ export async function submitContactForm(values, options = {}) {
   if (response.status === 400) {
     throw new ContactSubmitError(
       'validation',
-      'Some of the details need another look.',
+      'Some details need another look.',
       data?.errors ?? null,
     )
   }

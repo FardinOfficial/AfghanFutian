@@ -20,7 +20,7 @@ export const COMPANY = {
   email: 'contact@afghanfutian.com',
   emailHref: 'mailto:contact@afghanfutian.com',
   description:
-    'Afghan Futian Trading Company is an international sourcing, trading and supply chain company connecting China with buyers and business opportunities worldwide.',
+    'Afghan Futian Trading Company links buyers with Chinese suppliers and coordinates sourcing, trade documents and cargo movement. Our listed locations are in Yiwu, Kabul and Mandawi.',
   phones: [
     {
       id: 'china',

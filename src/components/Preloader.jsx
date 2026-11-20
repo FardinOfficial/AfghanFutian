@@ -187,7 +187,7 @@ export default function Preloader({ onComplete, ready }) {
       {/* Top rail */}
       <div className="flex items-start justify-between gap-6">
         <p className="preloader-meta u-eyebrow text-canvas-muted">
-          {t('Global Sourcing & Logistics', { ns: 'common' })}
+          {t('Sourcing & Trade', { ns: 'common' })}
         </p>
         <p className="preloader-meta u-eyebrow hidden text-canvas-muted sm:block">
           {t('Connecting Markets. Moving the World.', { ns: 'common' })}
@@ -221,7 +221,7 @@ export default function Preloader({ onComplete, ready }) {
         </div>
         <div className="mt-5 flex items-end justify-between gap-6">
           <p className="preloader-meta u-eyebrow text-canvas-muted">
-            {t('Preparing experience', { ns: 'common' })}
+            {t('Preparing your view', { ns: 'common' })}
           </p>
           <p
             ref={counterRef}

@@ -33,7 +33,7 @@ export function validateField(field, value) {
   const trimmed = raw.trim()
 
   if (field.required && !trimmed) {
-    return field.requiredMessage ?? 'This one is needed before we can reply.'
+    return field.requiredMessage ?? 'This detail is needed before we can reply.'
   }
 
   // Everything below only applies to values that were actually supplied.
@@ -48,17 +48,17 @@ export function validateField(field, value) {
   }
 
   if (field.type === 'email' && !EMAIL_PATTERN.test(trimmed)) {
-    return 'That does not look like an email address — please check it.'
+    return 'Check the email address and try again.'
   }
 
   if (field.type === 'tel') {
     if (!PHONE_ALLOWED.test(trimmed) || countDigits(trimmed) < 6) {
-      return 'Please use digits, and include the country code if you can.'
+      return 'Use digits only, with the country code if possible.'
     }
   }
 
   if (field.options && !optionValues(field).includes(trimmed)) {
-    return 'Please choose one of the options.'
+    return 'Choose one of the listed options.'
   }
 
   return ''
@@ -131,7 +131,7 @@ export function validateForm(fields, values) {
  * The body is plain text and line-broken, because that is what every mail client
  * renders reliably.
  */
-export function buildMailtoFallback(fields, values, to) {
+export function buildMailtoFallback(fields, values, to, translate = defaultTranslate) {
   const lines = fields
     .map((field) => {
       const value = (values[field.name] ?? '').trim()
@@ -141,12 +141,16 @@ export function buildMailtoFallback(fields, values, to) {
     .filter(Boolean)
 
   const subject = values.service
-    ? `Enquiry — ${values.service}`
-    : 'Enquiry — Afghan Futian'
+    ? translate('Enquiry — {{service}}', { service: values.service })
+    : translate('Enquiry — Afghan Futian')
 
-  const body = [...lines, '', '—', 'Sent from the Afghan Futian website.'].join('\n')
+  const body = [...lines, '', '—', translate('Sent from the Afghan Futian website.')].join('\n')
 
   return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+}
+
+function defaultTranslate(key, values = {}) {
+  return key.replace(/{{(\w+)}}/g, (match, name) => values[name] ?? match)
 }
 
 export default { validateField, validateForm, buildMailtoFallback }
