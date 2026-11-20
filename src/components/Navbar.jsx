@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
@@ -69,6 +69,23 @@ export default function Navbar() {
 
   /** True once the page's hero has scrolled up behind the bar. */
   const solid = useNavSentinel()
+
+  /**
+   * Expose the *visible* bar surface to the global progress hairline. It stays
+   * lime over the dark hero and the dark menu overlay, and switches to the
+   * deeper accent once the white bar is showing. This only mirrors state that
+   * Navbar already owns — no extra scroll listener and no visual change here.
+   */
+  useLayoutEffect(() => {
+    document.documentElement.dataset.navSurface = solid && !menuOpen ? 'solid' : 'over'
+  }, [solid, menuOpen])
+
+  useEffect(
+    () => () => {
+      delete document.documentElement.dataset.navSurface
+    },
+    [],
+  )
 
   /* ---- Entrance, after the preloader hands over ------------------------- */
   useEffect(() => onIntroComplete(() => setIntroDone(true)), [])

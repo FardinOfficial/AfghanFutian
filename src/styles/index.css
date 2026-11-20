@@ -55,6 +55,9 @@
   --color-ink: #141414;
   --color-surface: #e9e9e3;
   --color-accent: #d5ff55;
+  /* Deep sibling of the accent for the solid (white) navbar. 4.57:1 on canvas
+     and 5.08:1 on white, so the 3px progress hairline stays clearly visible. */
+  --color-accent-strong: #4f7a1f;
 
   /* Secondary text. The brand value (#777970) is specified as the secondary
      text colour, but it only reaches 4.07:1 on the canvas — below the 4.5:1
@@ -455,6 +458,24 @@
   .group:hover .u-zoom,
   .group:focus-visible .u-zoom {
     transform: none;
+  }
+}
+
+/* Global scroll progress colour follows the navbar surface:
+   - over the dark hero / dark menu overlay: the bright lime accent
+   - over the solid white bar: the deeper, contrast-safe accent sibling
+   Only the colour changes; the bar's scale, origin and ScrollTrigger are untouched. */
+[data-scroll-progress] {
+  transition: background-color 250ms ease;
+}
+
+html[data-nav-surface='solid'] [data-scroll-progress] {
+  background-color: var(--color-accent-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-scroll-progress] {
+    transition: none;
   }
 }
 
