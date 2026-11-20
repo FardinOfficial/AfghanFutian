@@ -111,7 +111,7 @@ export default function ClosingCta() {
       {/* ---- Content ------------------------------------------------------ */}
       <div className="u-container relative z-10 pb-14 pt-[clamp(5rem,16vh,10rem)] lg:pb-20">
         <div ref={eyebrowRef} className="flex items-center gap-3">
-          <span aria-hidden="true" className="h-[7px] w-[7px] shrink-0 bg-accent" />
+          <span aria-hidden="true" className="h-[7px] w-[7px] shrink-0 bg-accent-on-dark" />
           <p className="u-eyebrow text-canvas/75">{CLOSING_CTA.label}</p>
         </div>
 

@@ -54,7 +54,12 @@
   --color-canvas: #f4f3ef;
   --color-ink: #141414;
   --color-surface: #e9e9e3;
-  --color-accent: #d5ff55;
+  --color-accent: #12306b;
+  /* Light tint of the navy accent for text and icons on ink / photographic
+     grounds: 10.5:1 on #141414, while the primary navy is 11.4:1 on canvas. */
+  --color-accent-on-dark: #a9c5f5;
+  /* Type colour for filled navy plates and text selection. */
+  --color-on-accent: #ffffff;
 
   /* Secondary text. The brand value (#777970) is specified as the secondary
      text colour, but it only reaches 4.07:1 on the canvas — below the 4.5:1
@@ -233,7 +238,7 @@
 
   ::selection {
     background-color: var(--color-accent);
-    color: var(--color-ink);
+    color: var(--color-on-accent);
   }
 
   /* Visible, brand-consistent focus for keyboard users only. */
@@ -301,8 +306,8 @@
      --------------------------------------------------------------------------
      The underline colour is a custom property rather than `currentColor` so a
      link whose label must stay legible — a navbar item on the light canvas,
-     where the accent fails contrast — can still draw the brand accent
-     underneath it. `currentColor` remains the default. */
+     where navy is legible, can keep the primary accent underneath it.
+     `currentColor` remains the default. */
   .u-link {
     --u-link-underline: currentColor;
     position: relative;
@@ -585,11 +590,11 @@
 }
 
 .u-locale-switch__option.is-active {
-  color: var(--color-ink);
+  color: var(--color-on-accent);
 }
 
 .u-locale-switch--dark .u-locale-switch__option.is-active {
-  color: var(--color-ink);
+  color: var(--color-on-accent);
 }
 
 .u-locale-switch__option:disabled {
@@ -599,4 +604,8 @@
 .u-locale-switch__option:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
+}
+
+.u-locale-switch--dark .u-locale-switch__option:focus-visible {
+  outline-color: var(--color-accent-on-dark);
 }

@@ -147,7 +147,7 @@ export default function Hero() {
         {/* Top rail */}
         <div className="flex items-start gap-8">
           <div ref={eyebrowRef} className="flex items-center gap-3">
-            <span aria-hidden="true" className="h-[7px] w-[7px] shrink-0 bg-accent" />
+            <span aria-hidden="true" className="h-[7px] w-[7px] shrink-0 bg-accent-on-dark" />
             <p className="u-eyebrow text-canvas/75">{tr('International Sourcing & Logistics')}</p>
           </div>
         </div>
@@ -164,7 +164,7 @@ export default function Hero() {
             </span>
             <span className="line-mask">
               <span className="line-inner">
-                {tr('We Connect It')}<span className="text-accent">.</span>
+                {tr('We Connect It')}<span className="text-accent-on-dark">.</span>
               </span>
             </span>
           </h1>
@@ -201,7 +201,7 @@ export default function Hero() {
                 aria-hidden="true"
                 className="relative block h-11 w-px overflow-hidden bg-canvas/25"
               >
-                <span ref={cueDotRef} className="absolute inset-x-0 top-0 h-3 bg-accent" />
+                <span ref={cueDotRef} className="absolute inset-x-0 top-0 h-3 bg-accent-on-dark" />
               </span>
               <span className="u-eyebrow text-canvas-muted">{tr('Scroll')}</span>
             </div>

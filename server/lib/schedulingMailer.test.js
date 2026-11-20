@@ -79,7 +79,7 @@ test('branded templates carry plain text, official identity, calendar and manage
   assert.match(message.text, /\+86 147 5788 1420/)
   assert.match(message.text, /\+93 70 513 2426/)
   assert.match(message.html, /logo-mark-light\.png/)
-  assert.match(message.html, /#d5ff55/)
+  assert.match(message.html, /#12306b/)
   assert.doesNotMatch(message.html, /display:flex/)
 
   const attachment = calendarAttachment(booking)
@@ -105,7 +105,7 @@ test('all five scheduling emails share the branded, client-compatible structure'
     assert.ok(message.subject.length > 0)
     assert.match(message.html, /logo-mark-light\.png/)
     assert.match(message.html, /<table role="presentation"/)
-    assert.match(message.html, /#d5ff55/)
+    assert.match(message.html, /#12306b/)
     assert.match(message.html, /afghanfutian\.com/)
     assert.match(message.text, /Google Meet: https:\/\/meet\.google\.com/)
     assert.match(message.text, /Add to calendar: https:\/\/calendar\.google\.com/)

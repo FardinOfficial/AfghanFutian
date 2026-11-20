@@ -215,7 +215,7 @@ export default function Preloader({ onComplete, ready }) {
         <div className="h-px w-full overflow-hidden bg-canvas/20">
           <div
             ref={barRef}
-            className="h-full w-full origin-left scale-x-0 bg-accent"
+            className="h-full w-full origin-left scale-x-0 bg-accent-on-dark"
             style={{ transform: 'scaleX(0)' }}
           />
         </div>

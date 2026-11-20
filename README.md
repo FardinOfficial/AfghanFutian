@@ -222,7 +222,8 @@ under `@theme`, and consumed through Tailwind utilities (`bg-canvas`, `text-ink`
 `font-display`, `text-hero`). The brand can be re-tuned from that single block.
 
 ```
-canvas #F4F3EF   ink #141414   surface #E9E9E3   accent #D5FF55
+canvas #F4F3EF   ink #141414   surface #E9E9E3   accent #12306B
+on-dark #A9C5F5 (ink/photo grounds)   on-accent #FFFFFF (navy plates)
 muted  #777970   (large text only)   muted-strong #66665F   (small text)
 line   rgb(20 20 20 / 0.14)
 display/body 'Vazirmatn'   Arabic fallback 'Noto Sans Arabic'   — local OFL WOFF2

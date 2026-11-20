@@ -145,8 +145,8 @@ export default function LegalDoc({ doc }) {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
               <div className="lg:col-span-3">
                 <span className="inline-flex items-center gap-3">
-                  <span aria-hidden="true" className="h-[9px] w-[9px] shrink-0 bg-accent" />
-                  <span className="u-eyebrow text-accent">{LEGAL_DRAFT.eyebrow}</span>
+                  <span aria-hidden="true" className="h-[9px] w-[9px] shrink-0 bg-accent-on-dark" />
+                  <span className="u-eyebrow text-accent-on-dark">{LEGAL_DRAFT.eyebrow}</span>
                 </span>
               </div>
 

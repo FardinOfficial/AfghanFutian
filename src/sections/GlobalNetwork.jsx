@@ -130,7 +130,7 @@ export default function GlobalNetwork() {
                       aria-hidden="true"
                       className={
                         confirmed
-                          ? 'h-[7px] w-[7px] shrink-0 bg-accent'
+                          ? 'h-[7px] w-[7px] shrink-0 bg-accent-on-dark'
                           : 'h-[7px] w-[7px] shrink-0 border border-line-invert'
                       }
                     />

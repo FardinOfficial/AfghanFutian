@@ -74,7 +74,7 @@ export default function NextStep({ label, to, description, eyebrow }) {
                 <ArrowUpRight
                   aria-hidden="true"
                   strokeWidth={1.4}
-                  className="h-5 w-5 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px] group-hover:text-accent rtl:-scale-x-100 rtl:group-hover:-translate-x-[3px]"
+                  className="h-5 w-5 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px] group-hover:text-accent-on-dark rtl:-scale-x-100 rtl:group-hover:-translate-x-[3px]"
                 />
               </span>
             </div>

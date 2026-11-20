@@ -42,7 +42,7 @@ const TONES = {
   },
   dark: {
     rail: 'bg-line-invert',
-    node: 'bg-accent',
+    node: 'bg-accent-on-dark',
     body: 'text-canvas/60',
     meta: 'u-eyebrow text-canvas-muted',
   },

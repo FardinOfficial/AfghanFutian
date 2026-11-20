@@ -208,7 +208,7 @@ export default function Footer() {
             <button
               type="button"
               onClick={scrollToTop}
-              className="group/up inline-flex items-center gap-2 text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-canvas/70 transition-colors duration-500 hover:text-accent"
+              className="group/up inline-flex items-center gap-2 text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-canvas/70 transition-colors duration-500 hover:text-accent-on-dark"
             >
               {tr('Back to top')}
               <ArrowUp

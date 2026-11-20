@@ -36,7 +36,7 @@ test('English scheduling emails keep their current subjects and branded structur
     assert.match(message.html, /<html lang="en" dir="ltr">/)
     assert.match(message.html, /<table role="presentation"/)
     assert.match(message.html, /logo-mark-light\.png/)
-    assert.match(message.html, /#d5ff55/)
+    assert.match(message.html, /#12306b/)
     assert.match(message.html, /Afghan Futian Trading Company · Yiwu, China · Kabul, Afghanistan/)
     assert.match(message.html, /Name/)
     assert.match(message.text, /Name: Amina Rahimi/)

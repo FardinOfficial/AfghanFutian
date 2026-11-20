@@ -29,14 +29,11 @@ import { useNavSentinel } from '@/hooks/useNavSentinel'
  *
  * Link hover
  * ----------------------------------------------------------------------------
- * A nav link lifts to full-strength ink and draws an accent hairline beneath
- * itself; over the dark hero it lifts to the accent colour itself. That split is
- * deliberate rather than cosmetic: the accent is a bright yellow-green that
- * reaches roughly 1.05:1 against the canvas ground, so accent *text* on the
- * solid bar would be effectively invisible. The accent is therefore used as the
- * hover colour only where it is legible, and as the underline — which is a
- * graphic element, not text — everywhere. Font size, spacing and the bar's
- * dimensions are untouched.
+ * A nav link lifts to full-strength ink and draws the navy accent hairline
+ * beneath itself; over the dark hero it lifts to the light accent tint. That
+ * split keeps text legible on both grounds: navy clears AA on the solid canvas
+ * bar, while the tint clears AA on the dark photograph. The underline follows
+ * the same pairing. Font size, spacing and the bar's dimensions are untouched.
  *
  * The mobile overlay
  * ----------------------------------------------------------------------------
@@ -242,14 +239,14 @@ export default function Navbar() {
                   <LocaleNavLink
                     to={item.to}
                     className={({ isActive }) =>
-                      `u-link font-sans text-[0.8125rem] tracking-[0.01em] transition-colors duration-300 [--u-link-underline:var(--color-accent)] ${
+                      `u-link font-sans text-[0.8125rem] tracking-[0.01em] transition-colors duration-300 ${
                         overHero
-                          ? isActive
-                            ? 'text-canvas'
-                            : 'text-canvas/75 hover:text-accent'
-                          : isActive
-                            ? 'text-ink'
-                            : 'text-ink/70 hover:text-ink'
+                          ? `[--u-link-underline:var(--color-accent-on-dark)] ${
+                              isActive ? 'text-canvas' : 'text-canvas/75 hover:text-accent-on-dark'
+                            }`
+                          : `[--u-link-underline:var(--color-accent)] ${
+                              isActive ? 'text-ink' : 'text-ink/70 hover:text-ink'
+                            }`
                       }`
                     }
                   >

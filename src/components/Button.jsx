@@ -36,7 +36,7 @@ const VARIANTS = {
   solid: {
     surface: 'bg-ink text-canvas',
     wipe: 'bg-accent',
-    label: 'group-hover/btn:text-ink',
+    label: 'group-hover/btn:text-on-accent',
     focus: 'focus-visible:outline-ink',
   },
   /** Hairline plate on light ground. Wipes to ink. */
@@ -50,14 +50,14 @@ const VARIANTS = {
   ghost: {
     surface: 'border border-line-invert text-canvas',
     wipe: 'bg-accent',
-    label: 'group-hover/btn:text-ink',
-    focus: 'focus-visible:outline-accent',
+    label: 'group-hover/btn:text-on-accent',
+    focus: 'focus-visible:outline-accent-on-dark',
   },
   /** Accent plate — reserved for a single primary action per view. */
   accent: {
-    surface: 'bg-accent text-ink',
+    surface: 'bg-accent text-on-accent',
     wipe: 'bg-ink',
-    label: 'group-hover/btn:text-accent',
+    label: 'group-hover/btn:text-accent-on-dark',
     focus: 'focus-visible:outline-ink',
   },
 }

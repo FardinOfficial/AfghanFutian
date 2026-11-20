@@ -28,6 +28,11 @@ import {
 
 const LOGO_URL = `${COMPANY.website}/logo-mark-light.png`
 
+// Email clients need literal colours; these mirror the site's accent tokens.
+const ACCENT = '#12306b'
+const ACCENT_ON_DARK = '#a9c5f5'
+const ON_ACCENT = '#ffffff'
+
 const escapeHtml = (value) =>
   String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -115,8 +120,8 @@ function button(href, label, accent = false) {
   return `
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="display:inline-block;margin:0 8px 8px 0;">
       <tr>
-        <td style="background:${accent ? '#d5ff55' : '#141414'};border-radius:6px;">
-          <a href="${escapeHtml(href)}" style="display:inline-block;padding:13px 20px;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;line-height:1;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;color:${accent ? '#141414' : '#f4f3ef'};">${escapeHtml(label)}</a>
+        <td style="background:${accent ? ACCENT : '#141414'};border-radius:6px;">
+          <a href="${escapeHtml(href)}" style="display:inline-block;padding:13px 20px;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;line-height:1;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;color:${accent ? ON_ACCENT : '#f4f3ef'};">${escapeHtml(label)}</a>
         </td>
       </tr>
     </table>`
@@ -170,10 +175,10 @@ function htmlFor(kind, booking, { c, locale, dir }) {
   const questions = c(
     'Questions? Write to {{email}}, call {{phoneChina}} (China) or {{phoneAfghanistan}} (Afghanistan), or visit {{website}}.',
     {
-      email: `<a href="${escapeHtml(COMPANY.emailHref)}" style="color:#d5ff55;text-decoration:underline;">${escapeHtml(COMPANY.email)}</a>`,
+      email: `<a href="${escapeHtml(COMPANY.emailHref)}" style="color:${ACCENT_ON_DARK};text-decoration:underline;">${escapeHtml(COMPANY.email)}</a>`,
       phoneChina: escapeHtml(COMPANY.phones[0].display),
       phoneAfghanistan: escapeHtml(COMPANY.phones[1].display),
-      website: `<a href="${escapeHtml(COMPANY.website)}" style="color:#d5ff55;text-decoration:underline;">${escapeHtml(COMPANY.website.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a>`,
+      website: `<a href="${escapeHtml(COMPANY.website)}" style="color:${ACCENT_ON_DARK};text-decoration:underline;">${escapeHtml(COMPANY.website.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a>`,
     },
   )
   const receiving = c('You are receiving this message because a meeting was booked at {{url}}.', {
@@ -194,12 +199,12 @@ function htmlFor(kind, booking, { c, locale, dir }) {
         <td align="center" style="padding:28px 14px;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:620px;background:#f4f3ef;" dir="${dir}">
             <tr>
-              <td style="height:4px;background:#d5ff55;font-size:0;line-height:0;">&nbsp;</td>
+              <td style="height:4px;background:${ACCENT};font-size:0;line-height:0;">&nbsp;</td>
             </tr>
             <tr>
               <td style="padding:26px 36px;background:#141414;">
                 <img src="${LOGO_URL}" width="150" alt="${escapeHtml(COMPANY.legalName)}" style="display:block;max-width:150px;height:auto;border:0;" />
-                <p style="margin:12px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:10px;line-height:16px;letter-spacing:0.18em;text-transform:uppercase;color:#d5ff55;">${escapeHtml(COMPANY.legalName)}</p>
+                <p style="margin:12px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:10px;line-height:16px;letter-spacing:0.18em;text-transform:uppercase;color:${ACCENT_ON_DARK};">${escapeHtml(COMPANY.legalName)}</p>
               </td>
             </tr>
             <tr>
